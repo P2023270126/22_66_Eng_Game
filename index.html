@@ -288,23 +288,33 @@
     }
 
     .result-title {
-      font-size: 1.3rem;
-      font-weight: 800;
-      margin-bottom: 8px;
+      font-size: 2rem;
+      font-weight: 900;
+      margin-bottom: 14px;
+      line-height: 1.2;
     }
 
     .result-title.success { color: var(--success); }
     .result-title.error { color: var(--error); }
 
     .result-answer {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 6px;
+      font-size: 2.2rem;
+      font-weight: 900;
+      margin-bottom: 0;
+      line-height: 1.25;
+      word-break: break-word;
     }
 
     .result-note {
-      color: var(--subtext);
-      line-height: 1.5;
+      display: none;
+    }
+
+    .next-btn-large {
+      padding: 18px 34px;
+      font-size: 1.35rem;
+      font-weight: 800;
+      min-width: 180px;
+      border-radius: 999px;
     }
 
     .completion-card {
@@ -349,12 +359,24 @@
       .hero h1 { font-size: 1.65rem; }
       .question-word { font-size: 2rem; }
       .game-topbar { justify-content: center; }
+
+      .result-title {
+        font-size: 1.7rem;
+      }
+
+      .result-answer {
+        font-size: 1.8rem;
+      }
+
+      .next-btn-large {
+        width: 100%;
+        max-width: 260px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <!-- Page 1：學生選擇 -->
     <section id="student-screen" class="screen active">
       <div class="hero">
         <h1>English Practice Game</h1>
@@ -376,7 +398,6 @@
       </div>
     </section>
 
-    <!-- Page 2：模式選擇 -->
     <section id="mode-screen" class="screen">
       <div class="toolbar">
         <button class="back-btn" onclick="backToStudentScreen()">← 返回學生選擇</button>
@@ -422,7 +443,6 @@
       </div>
     </section>
 
-    <!-- Page 2.5：中轉英分類頁 -->
     <section id="category-screen" class="screen">
       <div class="toolbar">
         <button class="back-btn" onclick="showScreen('mode-screen')">← 返回模式選擇</button>
@@ -472,7 +492,6 @@
       </div>
     </section>
 
-    <!-- 英轉中遊戲頁 -->
     <section id="engtochi-screen" class="screen">
       <div class="game-panel">
         <div class="game-topbar">
@@ -504,13 +523,12 @@
           <div class="result-note" id="engtochi-result-note"></div>
 
           <div class="controls-row">
-            <button class="action-btn" id="engtochi-next-btn" onclick="goNextEngToChi()">下一題</button>
+            <button class="action-btn next-btn-large" id="engtochi-next-btn" onclick="goNextEngToChi()">下一題</button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 英轉中完成畫面 -->
     <section id="engtochi-complete-screen" class="screen">
       <div class="completion-card">
         <div class="trophy">🏆</div>
@@ -555,7 +573,7 @@
     }
 
     function updateStatus() {
-      // status box 已移除，這裡暫時不用更新畫面文字
+      // status box 已移除
     }
 
     function shuffleArray(arr) {
@@ -785,7 +803,7 @@
         showEngToChiResult(
           true,
           current.word + " = " + current.answer,
-          "答對了，按「下一題」繼續。"
+          ""
         );
       } else {
         engToChiState.incorrect += 1;
@@ -795,7 +813,7 @@
         showEngToChiResult(
           false,
           current.word + " = " + current.answer,
-          "這題會稍後再出現，按「下一題」繼續。"
+          ""
         );
       }
 
