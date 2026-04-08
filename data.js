@@ -1,1 +1,1 @@
-
+const GAME_DATA = {};
