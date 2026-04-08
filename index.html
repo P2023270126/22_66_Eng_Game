@@ -16,11 +16,11 @@
       --text: #2d3748;
       --subtext: #718096;
       --line: #d9e2ec;
+      --success: #38a169;
+      --error: #e53e3e;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -35,13 +35,8 @@
       padding: 24px 16px 40px;
     }
 
-    .screen {
-      display: none;
-    }
-
-    .screen.active {
-      display: block;
-    }
+    .screen { display: none; }
+    .screen.active { display: block; }
 
     .hero {
       text-align: center;
@@ -61,7 +56,8 @@
 
     .grid-2,
     .grid-5,
-    .grid-6 {
+    .grid-6,
+    .options-grid {
       display: grid;
       gap: 16px;
     }
@@ -91,21 +87,45 @@
       margin: 0 auto;
     }
 
-    .card-btn {
+    .options-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .options-grid .last-option {
+      grid-column: 1 / -1;
+      max-width: 442px;
+      width: 100%;
+      justify-self: center;
+    }
+
+    .card-btn,
+    .option-btn,
+    .back-btn,
+    .action-btn,
+    .audio-btn {
       border: none;
       border-radius: 20px;
       background: var(--card);
-      padding: 22px 18px;
-      text-align: center;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
       cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-      min-height: 150px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
     }
 
-    .card-btn:hover {
+    .card-btn:hover,
+    .option-btn:hover,
+    .back-btn:hover,
+    .action-btn:hover,
+    .audio-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 24px rgba(0,0,0,0.1);
+    }
+
+    .card-btn {
+      padding: 22px 18px;
+      text-align: center;
+      min-height: 150px;
     }
 
     .card-btn .icon {
@@ -128,7 +148,6 @@
 
     .student-a { border-top: 6px solid var(--blue); }
     .student-b { border-top: 6px solid var(--green); }
-
     .mode-1 { border-top: 6px solid var(--blue); }
     .mode-2 { border-top: 6px solid var(--green); }
     .mode-3 { border-top: 6px solid var(--pink); }
@@ -138,54 +157,207 @@
     .toolbar {
       display: flex;
       justify-content: flex-start;
+      gap: 12px;
       margin: 0 auto 20px;
       max-width: 900px;
+      flex-wrap: wrap;
     }
 
-    .back-btn {
-      border: none;
-      background: #fff;
+    .back-btn,
+    .action-btn,
+    .audio-btn {
       padding: 12px 18px;
       border-radius: 999px;
-      cursor: pointer;
       font-size: 0.95rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      background: #fff;
+    }
+
+    .game-panel,
+    .status-box,
+    .completion-card {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      padding: 22px;
+    }
+
+    .game-topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .game-mode-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      text-align: center;
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .stats-bar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .stats-item {
+      font-size: 0.98rem;
+      font-weight: 600;
+    }
+
+    .question-card {
+      text-align: center;
+      padding: 30px 20px;
+      border-radius: 20px;
+      background: #f8fbff;
+      border: 1px solid #dbeafe;
+      margin-bottom: 18px;
+    }
+
+    .question-word {
+      font-size: 2.4rem;
+      font-weight: 800;
+      word-break: break-word;
+    }
+
+    .question-note {
+      margin-top: 10px;
+      color: var(--subtext);
+      font-size: 0.96rem;
+    }
+
+    .option-btn {
+      padding: 18px 14px;
+      min-height: 82px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-align: center;
+      background: #fff;
+      border: 2px solid #e2e8f0;
+    }
+
+    .option-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.8;
+      transform: none;
+    }
+
+    .option-btn.correct {
+      border-color: var(--success);
+      background: #f0fff4;
+      color: var(--success);
+    }
+
+    .option-btn.wrong {
+      border-color: var(--error);
+      background: #fff5f5;
+      color: var(--error);
+    }
+
+    .controls-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .result-box {
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 18px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      text-align: center;
+      display: none;
+    }
+
+    .result-box.show {
+      display: block;
+    }
+
+    .result-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .result-title.success { color: var(--success); }
+    .result-title.error { color: var(--error); }
+
+    .result-answer {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .result-note {
+      color: var(--subtext);
+      line-height: 1.5;
+    }
+
+    .completion-card {
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    .trophy {
+      font-size: 4rem;
+      margin-bottom: 10px;
+    }
+
+    .completion-title {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .completion-stats {
+      color: var(--subtext);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      margin-bottom: 20px;
     }
 
     .status-box {
-      max-width: 900px;
-      margin: 24px auto 0;
-      padding: 16px 18px;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+      margin-top: 24px;
       color: var(--subtext);
       line-height: 1.6;
     }
 
-    .status-box strong {
-      color: var(--text);
-    }
+    .status-box strong { color: var(--text); }
 
     @media (max-width: 768px) {
       .grid-2,
       .grid-6,
       .grid-5,
-      .grid-5 .row-2 {
+      .grid-5 .row-2,
+      .options-grid {
         grid-template-columns: 1fr;
       }
 
-      .grid-5 .row-2 {
+      .grid-5 .row-2,
+      .options-grid .last-option {
         grid-column: auto;
+        max-width: none;
       }
 
-      .card-btn {
-        min-height: 130px;
-      }
-
-      .hero h1 {
-        font-size: 1.65rem;
-      }
+      .card-btn { min-height: 130px; }
+      .hero h1 { font-size: 1.65rem; }
+      .question-word { font-size: 2rem; }
+      .game-topbar { justify-content: center; }
     }
   </style>
 </head>
@@ -216,7 +388,7 @@
     <!-- Page 2：模式選擇 -->
     <section id="mode-screen" class="screen">
       <div class="toolbar">
-        <button class="back-btn" onclick="showScreen('student-screen')">← 返回學生選擇</button>
+        <button class="back-btn" onclick="backToStudentScreen()">← 返回學生選擇</button>
       </div>
 
       <div class="hero">
@@ -309,13 +481,69 @@
       </div>
     </section>
 
-    <!-- 暫時顯示目前選擇 -->
+    <!-- 英轉中遊戲頁 -->
+    <section id="engtochi-screen" class="screen">
+      <div class="game-panel">
+        <div class="game-topbar">
+          <button class="back-btn" onclick="returnToModeMenu()">← 返回主頁</button>
+          <div class="game-mode-title">英轉中</div>
+          <button class="action-btn" onclick="restartCurrentGame()">重新開始</button>
+        </div>
+
+        <div class="stats-bar">
+          <div class="stats-item">Question: <span id="engtochi-question-no">0</span> / <span id="engtochi-question-total">0</span></div>
+          <div class="stats-item">Correct: <span id="engtochi-correct">0</span></div>
+          <div class="stats-item">Incorrect: <span id="engtochi-incorrect">0</span></div>
+        </div>
+
+        <div class="question-card">
+          <div class="question-word" id="engtochi-word">---</div>
+          <div class="question-note">請選出正確中文意思</div>
+        </div>
+
+        <div class="controls-row" style="margin-bottom:18px;">
+          <button class="audio-btn" onclick="replayCurrentWord()">🔊 再聽一次</button>
+        </div>
+
+        <div class="options-grid" id="engtochi-options"></div>
+
+        <div class="result-box" id="engtochi-result-box">
+          <div class="result-title" id="engtochi-result-title"></div>
+          <div class="result-answer" id="engtochi-result-answer"></div>
+          <div class="result-note" id="engtochi-result-note"></div>
+
+          <div class="controls-row">
+            <button class="action-btn" id="engtochi-next-btn" onclick="goNextEngToChi()">下一題</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 英轉中完成畫面 -->
+    <section id="engtochi-complete-screen" class="screen">
+      <div class="completion-card">
+        <div class="trophy">🏆</div>
+        <div class="completion-title">Excellent!</div>
+        <div class="completion-stats">
+          英轉中完成<br />
+          Correct: <span id="engtochi-final-correct">0</span><br />
+          Incorrect: <span id="engtochi-final-incorrect">0</span>
+        </div>
+
+        <div class="controls-row">
+          <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
+          <button class="back-btn" onclick="returnToModeMenu()">返回主頁</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 狀態顯示 -->
     <section class="status-box">
       <div><strong>目前學生：</strong><span id="current-student">未選擇</span></div>
       <div><strong>目前模式：</strong><span id="current-mode">未選擇</span></div>
       <div><strong>目前分類：</strong><span id="current-category">未選擇</span></div>
       <div style="margin-top:8px;">
-        這一版只是第一階段骨架，用來測試頁面切換。下一步我們才會真正接入題目、計分和遊戲邏輯。
+        英轉中已正式接入。其餘模式暫時仍是骨架頁面。
       </div>
     </section>
   </div>
@@ -326,6 +554,17 @@
     let currentStudentLabel = "";
     let currentMode = "";
     let currentCategory = "";
+    let currentWordForSpeech = "";
+
+    const engToChiState = {
+      queue: [],
+      currentItem: null,
+      correct: 0,
+      incorrect: 0,
+      answeredCount: 0,
+      totalTarget: 0,
+      hasAnsweredCurrent: false
+    };
 
     function showScreen(screenId) {
       document.querySelectorAll('.screen').forEach(screen => {
@@ -334,13 +573,80 @@
       document.getElementById(screenId).classList.add('active');
     }
 
+    function updateStatus() {
+      document.getElementById('current-student').innerText = currentStudentLabel || "未選擇";
+      document.getElementById('current-mode').innerText = currentMode || "未選擇";
+      document.getElementById('current-category').innerText = currentCategory || "未選擇";
+    }
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function speakWord(text) {
+      if (!text || !window.speechSynthesis) return;
+
+      window.speechSynthesis.cancel();
+
+      const voices = window.speechSynthesis.getVoices();
+      let selectedVoice = null;
+
+      const preferred = voices.find(v =>
+        v.lang && v.lang.toLowerCase().startsWith('en') &&
+        /female|samantha|karen|victoria|zira|ava|susan/i.test(v.name)
+      );
+
+      const fallback = voices.find(v =>
+        v.lang && v.lang.toLowerCase().startsWith('en')
+      );
+
+      selectedVoice = preferred || fallback || null;
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+      }
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function replayCurrentWord() {
+      if (currentWordForSpeech) {
+        speakWord(currentWordForSpeech);
+      }
+    }
+
     function selectStudent(studentKey, studentLabel) {
       currentStudentKey = studentKey;
       currentStudentLabel = studentLabel;
       currentMode = "";
       currentCategory = "";
-
       document.getElementById('mode-screen-title').innerText = studentLabel + '練習模式';
+      updateStatus();
+      showScreen('mode-screen');
+    }
+
+    function backToStudentScreen() {
+      currentStudentKey = null;
+      currentStudentLabel = "";
+      currentMode = "";
+      currentCategory = "";
+      updateStatus();
+      showScreen('student-screen');
+    }
+
+    function returnToModeMenu() {
+      currentMode = "";
+      currentCategory = "";
       updateStatus();
       showScreen('mode-screen');
     }
@@ -373,15 +679,18 @@
         readingCloze: "短文填充"
       };
 
+      if (modeKey === "engToChi") {
+        startEngToChiGame();
+        return;
+      }
+
       currentMode = modeNameMap[modeKey] || modeKey;
       currentCategory = "";
       updateStatus();
 
       let count = 0;
 
-      if (modeKey === "engToChi") {
-        count = GAME_DATA[currentStudentKey].engToChi.length;
-      } else if (modeKey === "spelling") {
+      if (modeKey === "spelling") {
         count = GAME_DATA[currentStudentKey].spelling.length;
       } else if (modeKey === "listening") {
         count = GAME_DATA[currentStudentKey].listening.length;
@@ -396,11 +705,161 @@
       );
     }
 
-    function updateStatus() {
-      document.getElementById('current-student').innerText = currentStudentLabel || "未選擇";
-      document.getElementById('current-mode').innerText = currentMode || "未選擇";
-      document.getElementById('current-category').innerText = currentCategory || "未選擇";
+    function startEngToChiGame() {
+      currentMode = "英轉中";
+      currentCategory = "";
+      updateStatus();
+
+      const rawList = GAME_DATA[currentStudentKey].engToChi;
+      const shuffled = shuffleArray(rawList);
+      const target = Math.min(30, shuffled.length);
+
+      engToChiState.queue = shuffled.slice(0, target);
+      engToChiState.currentItem = null;
+      engToChiState.correct = 0;
+      engToChiState.incorrect = 0;
+      engToChiState.answeredCount = 0;
+      engToChiState.totalTarget = target;
+      engToChiState.hasAnsweredCurrent = false;
+
+      document.getElementById('engtochi-question-total').innerText = target;
+      document.getElementById('engtochi-correct').innerText = 0;
+      document.getElementById('engtochi-incorrect').innerText = 0;
+
+      showScreen('engtochi-screen');
+      loadNextEngToChiQuestion();
     }
+
+    function loadNextEngToChiQuestion() {
+      if (engToChiState.queue.length === 0) {
+        finishEngToChiGame();
+        return;
+      }
+
+      engToChiState.currentItem = engToChiState.queue[0];
+      engToChiState.hasAnsweredCurrent = false;
+      currentWordForSpeech = engToChiState.currentItem.word;
+
+      const questionNo = engToChiState.answeredCount + 1;
+      document.getElementById('engtochi-question-no').innerText = questionNo;
+      document.getElementById('engtochi-word').innerText = engToChiState.currentItem.word;
+      document.getElementById('engtochi-correct').innerText = engToChiState.correct;
+      document.getElementById('engtochi-incorrect').innerText = engToChiState.incorrect;
+
+      buildEngToChiOptions();
+      hideEngToChiResult();
+
+      setTimeout(() => {
+        speakWord(engToChiState.currentItem.word);
+      }, 200);
+    }
+
+    function buildEngToChiOptions() {
+      const optionsContainer = document.getElementById('engtochi-options');
+      optionsContainer.innerHTML = "";
+
+      const current = engToChiState.currentItem;
+      const allAnswers = GAME_DATA[currentStudentKey].engToChi
+        .map(item => item.answer)
+        .filter(answer => answer !== current.answer);
+
+      const wrongAnswers = shuffleArray(allAnswers).slice(0, 4);
+      const finalOptions = shuffleArray([current.answer, ...wrongAnswers]);
+
+      finalOptions.forEach((option, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = option;
+
+        if (index === 4) {
+          btn.classList.add('last-option');
+        }
+
+        btn.onclick = () => handleEngToChiAnswer(option, btn);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function handleEngToChiAnswer(selectedAnswer, clickedButton) {
+      if (engToChiState.hasAnsweredCurrent) return;
+      engToChiState.hasAnsweredCurrent = true;
+
+      const current = engToChiState.currentItem;
+      const isCorrect = selectedAnswer === current.answer;
+      const optionButtons = document.querySelectorAll('#engtochi-options .option-btn');
+
+      optionButtons.forEach(btn => {
+        btn.disabled = true;
+        if (btn.innerText === current.answer) {
+          btn.classList.add('correct');
+        }
+        if (!isCorrect && btn === clickedButton) {
+          btn.classList.add('wrong');
+        }
+      });
+
+      if (isCorrect) {
+        engToChiState.correct += 1;
+        engToChiState.answeredCount += 1;
+        engToChiState.queue.shift();
+
+        showEngToChiResult(
+          true,
+          current.word + " = " + current.answer,
+          "答對了，按「下一題」繼續。"
+        );
+      } else {
+        engToChiState.incorrect += 1;
+        const wrongItem = engToChiState.queue.shift();
+        engToChiState.queue.push(wrongItem);
+
+        showEngToChiResult(
+          false,
+          current.word + " = " + current.answer,
+          "這題會稍後再出現，按「下一題」繼續。"
+        );
+      }
+
+      document.getElementById('engtochi-correct').innerText = engToChiState.correct;
+      document.getElementById('engtochi-incorrect').innerText = engToChiState.incorrect;
+    }
+
+    function showEngToChiResult(isSuccess, answerText, noteText) {
+      const box = document.getElementById('engtochi-result-box');
+      const title = document.getElementById('engtochi-result-title');
+      const answer = document.getElementById('engtochi-result-answer');
+      const note = document.getElementById('engtochi-result-note');
+
+      title.innerText = isSuccess ? "✅ Correct!" : "❌ Incorrect";
+      title.className = "result-title " + (isSuccess ? "success" : "error");
+      answer.innerText = answerText;
+      note.innerText = noteText;
+
+      box.classList.add('show');
+    }
+
+    function hideEngToChiResult() {
+      const box = document.getElementById('engtochi-result-box');
+      box.classList.remove('show');
+    }
+
+    function goNextEngToChi() {
+      loadNextEngToChiQuestion();
+    }
+
+    function finishEngToChiGame() {
+      document.getElementById('engtochi-final-correct').innerText = engToChiState.correct;
+      document.getElementById('engtochi-final-incorrect').innerText = engToChiState.incorrect;
+      showScreen('engtochi-complete-screen');
+    }
+
+    function restartCurrentGame() {
+      if (currentMode === "英轉中") {
+        startEngToChiGame();
+      }
+    }
+
+    window.speechSynthesis?.onvoiceschanged = function () {};
   </script>
 </body>
 </html>
