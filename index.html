@@ -859,7 +859,9 @@
       }
     }
 
-    window.speechSynthesis?.onvoiceschanged = function () {};
+if (window.speechSynthesis) {
+  window.speechSynthesis.onvoiceschanged = function () {};
+}
   </script>
 </body>
 </html>
