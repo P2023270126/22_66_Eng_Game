@@ -1,10 +1,406 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>22_66_Eng_Game</title>
+  <style>
+    :root {
+      --blue: #4A90E2;
+      --green: #48BB78;
+      --pink: #ED64A6;
+      --orange: #F6AD55;
+      --purple: #9F7AEA;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #2d3748;
+      --subtext: #718096;
+      --line: #d9e2ec;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .app {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    .hero p {
+      margin-top: 10px;
+      color: var(--subtext);
+      font-size: 1rem;
+    }
+
+    .grid-2,
+    .grid-5,
+    .grid-6 {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .grid-5 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .grid-5 .row-2 {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .grid-6 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .card-btn {
+      border: none;
+      border-radius: 20px;
+      background: var(--card);
+      padding: 22px 18px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      min-height: 150px;
+    }
+
+    .card-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.1);
+    }
+
+    .card-btn .icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .card-btn .title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .card-btn .desc {
+      font-size: 0.95rem;
+      color: var(--subtext);
+      line-height: 1.45;
+    }
+
+    .student-a { border-top: 6px solid var(--blue); }
+    .student-b { border-top: 6px solid var(--green); }
+
+    .mode-1 { border-top: 6px solid var(--blue); }
+    .mode-2 { border-top: 6px solid var(--green); }
+    .mode-3 { border-top: 6px solid var(--pink); }
+    .mode-4 { border-top: 6px solid var(--orange); }
+    .mode-5 { border-top: 6px solid var(--purple); }
+
+    .toolbar {
+      display: flex;
+      justify-content: flex-start;
+      margin: 0 auto 20px;
+      max-width: 900px;
+    }
+
+    .back-btn {
+      border: none;
+      background: #fff;
+      padding: 12px 18px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .status-box {
+      max-width: 900px;
+      margin: 24px auto 0;
+      padding: 16px 18px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+      color: var(--subtext);
+      line-height: 1.6;
+    }
+
+    .status-box strong {
+      color: var(--text);
+    }
+
+    @media (max-width: 768px) {
+      .grid-2,
+      .grid-6,
+      .grid-5,
+      .grid-5 .row-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .grid-5 .row-2 {
+        grid-column: auto;
+      }
+
+      .card-btn {
+        min-height: 130px;
+      }
+
+      .hero h1 {
+        font-size: 1.65rem;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>22_66_Eng_Game</h1>
+  <div class="app">
+    <!-- Page 1：學生選擇 -->
+    <section id="student-screen" class="screen active">
+      <div class="hero">
+        <h1>English Practice Game</h1>
+        <p>Choose a student</p>
+      </div>
+
+      <div class="grid-2">
+        <button class="card-btn student-a" onclick="selectStudent('studentA', 'A學生')">
+          <span class="icon">👦</span>
+          <div class="title">A學生</div>
+          <div class="desc">進入 A學生專屬練習模式</div>
+        </button>
+
+        <button class="card-btn student-b" onclick="selectStudent('studentB', 'B學生')">
+          <span class="icon">👧</span>
+          <div class="title">B學生</div>
+          <div class="desc">進入 B學生專屬練習模式</div>
+        </button>
+      </div>
+    </section>
+
+    <!-- Page 2：模式選擇 -->
+    <section id="mode-screen" class="screen">
+      <div class="toolbar">
+        <button class="back-btn" onclick="showScreen('student-screen')">← 返回學生選擇</button>
+      </div>
+
+      <div class="hero">
+        <h1 id="mode-screen-title">A學生練習模式</h1>
+        <p>Choose a practice mode</p>
+      </div>
+
+      <div class="grid-5">
+        <button class="card-btn mode-1" onclick="enterMode('engToChi')">
+          <span class="icon">🔤</span>
+          <div class="title">英轉中</div>
+          <div class="desc">看英文，選出正確中文意思</div>
+        </button>
+
+        <button class="card-btn mode-2" onclick="showChiToEngCategory()">
+          <span class="icon">🀄</span>
+          <div class="title">中轉英</div>
+          <div class="desc">先選分類，再看中文選英文</div>
+        </button>
+
+        <div class="row-2">
+          <button class="card-btn mode-3" onclick="enterMode('spelling')">
+            <span class="icon">✏️</span>
+            <div class="title">拼字練習</div>
+            <div class="desc">補回單字中缺少的字母</div>
+          </button>
+
+          <button class="card-btn mode-4" onclick="enterMode('listening')">
+            <span class="icon">🔊</span>
+            <div class="title">聽音選字</div>
+            <div class="desc">先聽發音，再選正確英文</div>
+          </button>
+
+          <button class="card-btn mode-5" onclick="enterMode('readingCloze')">
+            <span class="icon">📖</span>
+            <div class="title">短文填充</div>
+            <div class="desc">閱讀短文，填入完整詞語</div>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Page 2.5：中轉英分類頁 -->
+    <section id="category-screen" class="screen">
+      <div class="toolbar">
+        <button class="back-btn" onclick="showScreen('mode-screen')">← 返回模式選擇</button>
+      </div>
+
+      <div class="hero">
+        <h1>中轉英分類</h1>
+        <p>Choose a category</p>
+      </div>
+
+      <div class="grid-6">
+        <button class="card-btn" onclick="enterChiToEngCategory('feeling')">
+          <span class="icon">😊</span>
+          <div class="title">Feeling</div>
+          <div class="desc">情緒與感受</div>
+        </button>
+
+        <button class="card-btn" onclick="enterChiToEngCategory('sports')">
+          <span class="icon">🏀</span>
+          <div class="title">Sports</div>
+          <div class="desc">運動類詞語</div>
+        </button>
+
+        <button class="card-btn" onclick="enterChiToEngCategory('pastTense')">
+          <span class="icon">⏪</span>
+          <div class="title">Past tense</div>
+          <div class="desc">過去式詞語</div>
+        </button>
+
+        <button class="card-btn" onclick="enterChiToEngCategory('time')">
+          <span class="icon">⏰</span>
+          <div class="title">Time</div>
+          <div class="desc">時間相關詞語</div>
+        </button>
+
+        <button class="card-btn" onclick="enterChiToEngCategory('other')">
+          <span class="icon">📦</span>
+          <div class="title">Other</div>
+          <div class="desc">其他常用詞語</div>
+        </button>
+
+        <button class="card-btn" onclick="enterChiToEngCategory('food')">
+          <span class="icon">🍝</span>
+          <div class="title">Food</div>
+          <div class="desc">食物類詞語</div>
+        </button>
+      </div>
+    </section>
+
+    <!-- 暫時顯示目前選擇 -->
+    <section class="status-box">
+      <div><strong>目前學生：</strong><span id="current-student">未選擇</span></div>
+      <div><strong>目前模式：</strong><span id="current-mode">未選擇</span></div>
+      <div><strong>目前分類：</strong><span id="current-category">未選擇</span></div>
+      <div style="margin-top:8px;">
+        這一版只是第一階段骨架，用來測試頁面切換。下一步我們才會真正接入題目、計分和遊戲邏輯。
+      </div>
+    </section>
+  </div>
+
+  <script src="data.js"></script>
+  <script>
+    let currentStudentKey = null;
+    let currentStudentLabel = "";
+    let currentMode = "";
+    let currentCategory = "";
+
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+      });
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    function selectStudent(studentKey, studentLabel) {
+      currentStudentKey = studentKey;
+      currentStudentLabel = studentLabel;
+      currentMode = "";
+      currentCategory = "";
+
+      document.getElementById('mode-screen-title').innerText = studentLabel + '練習模式';
+      updateStatus();
+      showScreen('mode-screen');
+    }
+
+    function showChiToEngCategory() {
+      currentMode = "中轉英";
+      currentCategory = "";
+      updateStatus();
+      showScreen('category-screen');
+    }
+
+    function enterChiToEngCategory(categoryKey) {
+      currentMode = "中轉英";
+      currentCategory = categoryKey;
+      updateStatus();
+
+      const count = GAME_DATA[currentStudentKey].chiToEng[categoryKey].length;
+      alert(
+        currentStudentLabel + " 已進入中轉英 - " + categoryKey +
+        "\\n目前此分類題目數量：" + count +
+        "\\n\\n下一步我會幫你把真正遊戲頁接上去。"
+      );
+    }
+
+    function enterMode(modeKey) {
+      const modeNameMap = {
+        engToChi: "英轉中",
+        spelling: "拼字練習",
+        listening: "聽音選字",
+        readingCloze: "短文填充"
+      };
+
+      currentMode = modeNameMap[modeKey] || modeKey;
+      currentCategory = "";
+      updateStatus();
+
+      let count = 0;
+
+      if (modeKey === "engToChi") {
+        count = GAME_DATA[currentStudentKey].engToChi.length;
+      } else if (modeKey === "spelling") {
+        count = GAME_DATA[currentStudentKey].spelling.length;
+      } else if (modeKey === "listening") {
+        count = GAME_DATA[currentStudentKey].listening.length;
+      } else if (modeKey === "readingCloze") {
+        count = GAME_DATA[currentStudentKey].readingCloze.length;
+      }
+
+      alert(
+        currentStudentLabel + " 已進入 " + currentMode +
+        "\\n目前題目數量：" + count +
+        "\\n\\n下一步我會幫你把真正遊戲頁接上去。"
+      );
+    }
+
+    function updateStatus() {
+      document.getElementById('current-student').innerText = currentStudentLabel || "未選擇";
+      document.getElementById('current-mode').innerText = currentMode || "未選擇";
+      document.getElementById('current-category').innerText = currentCategory || "未選擇";
+    }
+  </script>
 </body>
 </html>
