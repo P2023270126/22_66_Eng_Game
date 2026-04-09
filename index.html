@@ -239,10 +239,6 @@
       margin-top: 6px;
     }
 
-    .question-subtitle.hidden {
-      display: none;
-    }
-
     .option-btn {
       padding: 18px 14px;
       min-height: 76px;
@@ -550,7 +546,7 @@
             <div class="desc">先聽發音，再選正確英文</div>
           </button>
 
-          <button class="card-btn mode-5" onclick="startReadingClozeGame()">
+          <button class="card-btn mode-5" onclick="enterMode('readingCloze')">
             <span class="icon">📖</span>
             <div class="title">短文填充</div>
             <div class="desc">閱讀短文，填入完整詞語</div>
@@ -913,6 +909,13 @@
       return copy;
     }
 
+    function buildLimitedOptions(optionArray, correctAnswer) {
+      const unique = [...new Set(optionArray)];
+      let filtered = unique.filter(item => item !== correctAnswer);
+      filtered = shuffleArray(filtered).slice(0, 3);
+      return shuffleArray([correctAnswer, ...filtered]);
+    }
+
     function titleCaseWord(text) {
       if (!text) return "";
       return text.charAt(0).toUpperCase() + text.slice(1);
@@ -1013,9 +1016,7 @@
 
     function toggleAnswerArea(prefix, hide) {
       const options = document.getElementById(prefix + '-options');
-      if (options) {
-        options.classList.toggle('hide', hide);
-      }
+      if (options) options.classList.toggle('hide', hide);
 
       const audioRow = document.getElementById(prefix + '-audio-row');
       if (audioRow) {
@@ -1061,9 +1062,19 @@
       showScreen('category-screen');
     }
 
-    // =========================
+    function enterMode(modeKey) {
+      if (modeKey === "engToChi") {
+        startEngToChiGame();
+        return;
+      }
+
+      if (modeKey === "readingCloze") {
+        startReadingClozeGame();
+        return;
+      }
+    }
+
     // 英轉中
-    // =========================
     function startEngToChiGame() {
       currentMode = "英轉中";
       currentCategory = "";
@@ -1187,9 +1198,7 @@
       showScreen('engtochi-complete-screen');
     }
 
-    // =========================
     // 中轉英
-    // =========================
     function startChiToEngGame(categoryKey) {
       currentMode = "中轉英";
       currentCategory = categoryKey;
@@ -1315,9 +1324,7 @@
       showScreen('chitoeng-complete-screen');
     }
 
-    // =========================
     // 拼字練習
-    // =========================
     function startSpellingGame() {
       currentMode = "拼字練習";
       currentCategory = "";
@@ -1385,13 +1392,6 @@
       }
 
       document.getElementById('spelling-text').innerText = built;
-    }
-
-    function buildLimitedOptions(optionArray, correctAnswer) {
-      const unique = [...new Set(optionArray)];
-      let filtered = unique.filter(item => item !== correctAnswer);
-      filtered = shuffleArray(filtered).slice(0, 3);
-      return shuffleArray([correctAnswer, ...filtered]);
     }
 
     function renderSpellingOptions() {
@@ -1477,9 +1477,7 @@
       showScreen('spelling-complete-screen');
     }
 
-    // =========================
     // 聽音選字
-    // =========================
     function startListeningGame() {
       currentMode = "聽音選字";
       currentCategory = "";
@@ -1613,16 +1611,14 @@
       showScreen('listening-complete-screen');
     }
 
-    // =========================
     // 短文填充
-    // =========================
     function startReadingClozeGame() {
       currentMode = "短文填充";
       currentCategory = "";
 
-      const rawList = GAME_DATA[currentStudentKey].readingCloze || [];
+      const rawList = getReadingClozeQueueForStudent(currentStudentKey);
       const shuffled = shuffleArray(rawList);
-      const target = Math.min(30, shuffled.length);
+      const target = Math.min(15, shuffled.length);
 
       readingClozeState.queue = shuffled.slice(0, target);
       readingClozeState.currentItem = null;
@@ -1640,6 +1636,14 @@
 
       showScreen('readingcloze-screen');
       loadNextReadingClozeQuestion();
+    }
+
+    function getReadingClozeQueueForStudent(studentKey) {
+      const bank = GAME_DATA[studentKey].readingCloze || {};
+      const one = shuffleArray(bank.oneBlank || []).slice(0, 5);
+      const two = shuffleArray(bank.twoBlanks || []).slice(0, 5);
+      const three = shuffleArray(bank.threeBlanks || []).slice(0, 5);
+      return [...one, ...two, ...three];
     }
 
     function loadNextReadingClozeQuestion() {
