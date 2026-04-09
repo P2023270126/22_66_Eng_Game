@@ -226,6 +226,18 @@
     }
 
     .question-subtitle {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--subtext);
+      line-height: 1.3;
+    }
+
+    .question-subtitle.large {
+      font-size: 1.35rem;
+      margin-top: 6px;
+    }
+
+    .question-subtitle.hidden {
       display: none;
     }
 
@@ -334,10 +346,10 @@
     }
 
     .spelling-text {
-      font-size: 2.2rem;
+      font-size: 2rem;
       font-weight: 800;
       line-height: 1.3;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.03em;
       word-break: break-word;
     }
 
@@ -398,6 +410,10 @@
         font-size: 1.95rem;
       }
 
+      .question-subtitle.large {
+        font-size: 1.15rem;
+      }
+
       .result-title {
         font-size: 1.65rem;
       }
@@ -407,7 +423,7 @@
       }
 
       .spelling-text {
-        font-size: 1.95rem;
+        font-size: 1.75rem;
       }
 
       .option-btn {
@@ -476,7 +492,7 @@
             <div class="desc">補回單字中缺少的字母</div>
           </button>
 
-          <button class="card-btn mode-4" onclick="enterMode('listening')">
+          <button class="card-btn mode-4" onclick="startListeningGame()">
             <span class="icon">🔊</span>
             <div class="title">聽音選字</div>
             <div class="desc">先聽發音，再選正確英文</div>
@@ -695,6 +711,61 @@
         </div>
       </div>
     </section>
+
+    <section id="listening-screen" class="screen">
+      <div class="game-panel">
+        <div class="game-topbar">
+          <button class="back-btn" onclick="returnToModeMenu()">← 返回主頁</button>
+          <div class="game-mode-title">聽音選字</div>
+          <button class="action-btn" onclick="restartCurrentGame()">重新開始</button>
+        </div>
+
+        <div class="stats-bar">
+          <div class="stats-item">Question: <span id="listening-question-no">0</span> / <span id="listening-question-total">0</span></div>
+          <div class="stats-item">Correct: <span id="listening-correct">0</span></div>
+          <div class="stats-item">Incorrect: <span id="listening-incorrect">0</span></div>
+        </div>
+
+        <div class="question-card">
+          <div class="question-word">🔊</div>
+          <div class="question-subtitle large" id="listening-prompt">Listen carefully</div>
+        </div>
+
+        <div class="controls-row" id="listening-audio-row" style="margin-bottom:12px;">
+          <button class="audio-btn" onclick="replayListeningWord()">🔊 再播一次</button>
+        </div>
+
+        <div class="options-grid hidden-after-answer" id="listening-options"></div>
+
+        <div class="result-box" id="listening-result-box">
+          <div class="result-title" id="listening-result-title"></div>
+          <div class="result-answer" id="listening-result-answer"></div>
+          <div class="result-note" id="listening-result-note"></div>
+
+          <div class="controls-row">
+            <button class="audio-btn" onclick="replayCurrentWord()">🔊 再播一次</button>
+            <button class="action-btn next-btn-large" onclick="goNextListening()">下一題</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="listening-complete-screen" class="screen">
+      <div class="completion-card">
+        <div class="trophy">🏆</div>
+        <div class="completion-title">Excellent!</div>
+        <div class="completion-stats">
+          聽音選字完成<br />
+          Correct: <span id="listening-final-correct">0</span><br />
+          Incorrect: <span id="listening-final-incorrect">0</span>
+        </div>
+
+        <div class="controls-row">
+          <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
+          <button class="back-btn" onclick="returnToModeMenu()">返回主頁</button>
+        </div>
+      </div>
+    </section>
   </div>
 
   <script src="data.js"></script>
@@ -737,6 +808,17 @@
       userLetters: []
     };
 
+    const listeningState = {
+      queue: [],
+      currentItem: null,
+      correct: 0,
+      incorrect: 0,
+      answeredCount: 0,
+      totalTarget: 0,
+      hasAnsweredCurrent: false,
+      optionsReady: false
+    };
+
     function showScreen(screenId) {
       document.querySelectorAll('.screen').forEach(screen => {
         screen.classList.remove('active');
@@ -772,13 +854,9 @@
       return map[categoryKey] || categoryKey;
     }
 
-    function speakWord(text) {
-      if (!text || !window.speechSynthesis) return;
-
-      window.speechSynthesis.cancel();
-
+    function getPreferredVoice() {
+      if (!window.speechSynthesis) return null;
       const voices = window.speechSynthesis.getVoices();
-      let selectedVoice = null;
 
       const preferred = voices.find(v =>
         v.lang && v.lang.toLowerCase().startsWith('en') &&
@@ -789,23 +867,53 @@
         v.lang && v.lang.toLowerCase().startsWith('en')
       );
 
-      selectedVoice = preferred || fallback || null;
+      return preferred || fallback || null;
+    }
+
+    function speakWord(text, onEnd = null) {
+      if (!text || !window.speechSynthesis) {
+        if (onEnd) onEnd();
+        return;
+      }
+
+      window.speechSynthesis.cancel();
 
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'en-US';
       utterance.rate = 0.9;
       utterance.pitch = 1;
 
+      const selectedVoice = getPreferredVoice();
       if (selectedVoice) {
         utterance.voice = selectedVoice;
+      }
+
+      if (onEnd) {
+        utterance.onend = onEnd;
       }
 
       window.speechSynthesis.speak(utterance);
     }
 
+    function speakWordTwice(text, onFinish = null) {
+      speakWord(text, () => {
+        setTimeout(() => {
+          speakWord(text, () => {
+            if (onFinish) onFinish();
+          });
+        }, 280);
+      });
+    }
+
     function replayCurrentWord() {
       if (currentWordForSpeech) {
         speakWord(currentWordForSpeech);
+      }
+    }
+
+    function replayListeningWord() {
+      if (currentWordForSpeech) {
+        speakWordTwice(currentWordForSpeech);
       }
     }
 
@@ -826,7 +934,11 @@
 
       const audioRow = document.getElementById(prefix + '-audio-row');
       if (audioRow) {
-        audioRow.classList.toggle('hide', hide);
+        if (prefix === 'listening') {
+          audioRow.classList.remove('hide');
+        } else {
+          audioRow.classList.toggle('hide', hide);
+        }
       }
     }
 
@@ -870,34 +982,19 @@
     }
 
     function enterMode(modeKey) {
-      const modeNameMap = {
-        engToChi: "英轉中",
-        listening: "聽音選字",
-        readingCloze: "短文填充"
-      };
-
       if (modeKey === "engToChi") {
         startEngToChiGame();
         return;
       }
 
-      currentMode = modeNameMap[modeKey] || modeKey;
-      currentCategory = "";
-      updateStatus();
-
-      let count = 0;
-
-      if (modeKey === "listening") {
-        count = GAME_DATA[currentStudentKey].listening.length;
-      } else if (modeKey === "readingCloze") {
-        count = GAME_DATA[currentStudentKey].readingCloze.length;
+      if (modeKey === "readingCloze") {
+        const count = GAME_DATA[currentStudentKey].readingCloze.length;
+        alert(
+          currentStudentLabel + " 已進入 短文填充" +
+          "\n目前題目數量：" + count +
+          "\n\n下一步我會幫你把真正遊戲頁接上去。"
+        );
       }
-
-      alert(
-        currentStudentLabel + " 已進入 " + currentMode +
-        "\n目前題目數量：" + count +
-        "\n\n下一步我會幫你把真正遊戲頁接上去。"
-      );
     }
 
     // =========================
@@ -906,7 +1003,6 @@
     function startEngToChiGame() {
       currentMode = "英轉中";
       currentCategory = "";
-      updateStatus();
 
       const rawList = GAME_DATA[currentStudentKey].engToChi;
       const shuffled = shuffleArray(rawList);
@@ -1045,7 +1141,6 @@
     function startChiToEngGame(categoryKey) {
       currentMode = "中轉英";
       currentCategory = categoryKey;
-      updateStatus();
 
       const rawList = GAME_DATA[currentStudentKey].chiToEng[categoryKey] || [];
       const shuffled = shuffleArray(rawList);
@@ -1186,7 +1281,6 @@
     function startSpellingGame() {
       currentMode = "拼字練習";
       currentCategory = "";
-      updateStatus();
 
       const rawList = GAME_DATA[currentStudentKey].spelling || [];
       const shuffled = shuffleArray(rawList);
@@ -1351,6 +1445,152 @@
       showScreen('spelling-complete-screen');
     }
 
+    // =========================
+    // 聽音選字
+    // =========================
+    function startListeningGame() {
+      currentMode = "聽音選字";
+      currentCategory = "";
+
+      const rawList = GAME_DATA[currentStudentKey].listening || [];
+      const shuffled = shuffleArray(rawList);
+      const target = Math.min(30, shuffled.length);
+
+      listeningState.queue = shuffled.slice(0, target);
+      listeningState.currentItem = null;
+      listeningState.correct = 0;
+      listeningState.incorrect = 0;
+      listeningState.answeredCount = 0;
+      listeningState.totalTarget = target;
+      listeningState.hasAnsweredCurrent = false;
+      listeningState.optionsReady = false;
+
+      document.getElementById('listening-question-total').innerText = target;
+      document.getElementById('listening-correct').innerText = 0;
+      document.getElementById('listening-incorrect').innerText = 0;
+
+      showScreen('listening-screen');
+      loadNextListeningQuestion();
+    }
+
+    function loadNextListeningQuestion() {
+      if (listeningState.queue.length === 0) {
+        finishListeningGame();
+        return;
+      }
+
+      listeningState.currentItem = listeningState.queue[0];
+      listeningState.hasAnsweredCurrent = false;
+      listeningState.optionsReady = false;
+      currentWordForSpeech = listeningState.currentItem.word;
+
+      const questionNo = listeningState.answeredCount + 1;
+      document.getElementById('listening-question-no').innerText = questionNo;
+      document.getElementById('listening-correct').innerText = listeningState.correct;
+      document.getElementById('listening-incorrect').innerText = listeningState.incorrect;
+      document.getElementById('listening-prompt').innerText = "Listen carefully";
+
+      hideListeningResult();
+      toggleAnswerArea('listening', false);
+      document.getElementById('listening-options').innerHTML = "";
+
+      setTimeout(() => {
+        speakWordTwice(currentWordForSpeech, () => {
+          buildListeningOptions();
+          listeningState.optionsReady = true;
+          document.getElementById('listening-prompt').innerText = "Choose the correct word";
+        });
+      }, 180);
+    }
+
+    function buildListeningOptions() {
+      const optionsContainer = document.getElementById('listening-options');
+      optionsContainer.innerHTML = "";
+
+      const current = listeningState.currentItem;
+      const allWords = GAME_DATA[currentStudentKey].listening
+        .map(item => item.word)
+        .filter(word => word !== current.word);
+
+      const wrongWords = shuffleArray(allWords).slice(0, 3);
+      const finalOptions = shuffleArray([current.word, ...wrongWords]);
+
+      finalOptions.forEach(option => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = titleCaseWord(option);
+        btn.onclick = () => handleListeningAnswer(option, btn);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function handleListeningAnswer(selectedWord, clickedButton) {
+      if (!listeningState.optionsReady || listeningState.hasAnsweredCurrent) return;
+      listeningState.hasAnsweredCurrent = true;
+
+      const current = listeningState.currentItem;
+      const isCorrect = selectedWord === current.word;
+      const optionButtons = document.querySelectorAll('#listening-options .option-btn');
+
+      optionButtons.forEach(btn => {
+        btn.disabled = true;
+        if (btn.innerText.toLowerCase() === current.word.toLowerCase()) {
+          btn.classList.add('correct');
+        }
+        if (!isCorrect && btn === clickedButton) {
+          btn.classList.add('wrong');
+        }
+      });
+
+      currentWordForSpeech = current.word;
+
+      if (isCorrect) {
+        listeningState.correct += 1;
+        listeningState.answeredCount += 1;
+        listeningState.queue.shift();
+        showListeningResult(true, titleCaseWord(current.word), "");
+      } else {
+        listeningState.incorrect += 1;
+        const wrongItem = listeningState.queue.shift();
+        listeningState.queue.push(wrongItem);
+        showListeningResult(false, titleCaseWord(current.word), "");
+      }
+
+      document.getElementById('listening-correct').innerText = listeningState.correct;
+      document.getElementById('listening-incorrect').innerText = listeningState.incorrect;
+
+      toggleAnswerArea('listening', true);
+      scrollToResult('listening-result-box');
+    }
+
+    function showListeningResult(isSuccess, answerText, noteText) {
+      const box = document.getElementById('listening-result-box');
+      const title = document.getElementById('listening-result-title');
+      const answer = document.getElementById('listening-result-answer');
+      const note = document.getElementById('listening-result-note');
+
+      title.innerText = isSuccess ? "✅ Correct!" : "❌ Incorrect";
+      title.className = "result-title " + (isSuccess ? "success" : "error");
+      answer.innerText = answerText;
+      note.innerText = noteText;
+
+      box.classList.add('show');
+    }
+
+    function hideListeningResult() {
+      document.getElementById('listening-result-box').classList.remove('show');
+    }
+
+    function goNextListening() {
+      loadNextListeningQuestion();
+    }
+
+    function finishListeningGame() {
+      document.getElementById('listening-final-correct').innerText = listeningState.correct;
+      document.getElementById('listening-final-incorrect').innerText = listeningState.incorrect;
+      showScreen('listening-complete-screen');
+    }
+
     function restartCurrentGame() {
       if (currentMode === "英轉中") {
         startEngToChiGame();
@@ -1358,6 +1598,8 @@
         startChiToEngGame(currentCategory);
       } else if (currentMode === "拼字練習") {
         startSpellingGame();
+      } else if (currentMode === "聽音選字") {
+        startListeningGame();
       }
     }
 
