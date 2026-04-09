@@ -97,7 +97,8 @@
     .option-btn,
     .back-btn,
     .action-btn,
-    .audio-btn {
+    .audio-btn,
+    .blank-pill {
       border: none;
       border-radius: 20px;
       background: var(--card);
@@ -110,7 +111,8 @@
     .option-btn:hover,
     .back-btn:hover,
     .action-btn:hover,
-    .audio-btn:hover {
+    .audio-btn:hover,
+    .blank-pill:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 24px rgba(0,0,0,0.1);
     }
@@ -353,6 +355,45 @@
       word-break: break-word;
     }
 
+    .cloze-passage {
+      font-size: 1.55rem;
+      font-weight: 700;
+      line-height: 1.8;
+      text-align: left;
+      max-width: 760px;
+      margin: 0 auto;
+      word-break: break-word;
+    }
+
+    .blank-pill {
+      display: inline-block;
+      min-width: 110px;
+      padding: 4px 16px;
+      margin: 0 4px;
+      text-align: center;
+      font-weight: 900;
+      font-size: 1.15rem;
+      border-radius: 999px;
+      box-shadow: none;
+      border: 2px solid #dbeafe;
+      background: #ffffff;
+      vertical-align: middle;
+    }
+
+    .blank-pill.active {
+      border-color: var(--orange);
+      background: #fff7ed;
+    }
+
+    .blank-pill.filled {
+      border-color: var(--purple);
+      background: #faf5ff;
+    }
+
+    .blank-pill.empty {
+      color: #94a3b8;
+    }
+
     .hidden-after-answer {
       transition: opacity 0.2s ease;
     }
@@ -424,6 +465,17 @@
 
       .spelling-text {
         font-size: 1.75rem;
+      }
+
+      .cloze-passage {
+        font-size: 1.2rem;
+        line-height: 1.9;
+      }
+
+      .blank-pill {
+        min-width: 90px;
+        font-size: 1rem;
+        padding: 4px 12px;
       }
 
       .option-btn {
@@ -498,7 +550,7 @@
             <div class="desc">先聽發音，再選正確英文</div>
           </button>
 
-          <button class="card-btn mode-5" onclick="enterMode('readingCloze')">
+          <button class="card-btn mode-5" onclick="startReadingClozeGame()">
             <span class="icon">📖</span>
             <div class="title">短文填充</div>
             <div class="desc">閱讀短文，填入完整詞語</div>
@@ -584,7 +636,6 @@
           <div class="result-title" id="engtochi-result-title"></div>
           <div class="result-answer" id="engtochi-result-answer"></div>
           <div class="result-note" id="engtochi-result-note"></div>
-
           <div class="controls-row">
             <button class="action-btn next-btn-large" onclick="goNextEngToChi()">下一題</button>
           </div>
@@ -601,7 +652,6 @@
           Correct: <span id="engtochi-final-correct">0</span><br />
           Incorrect: <span id="engtochi-final-incorrect">0</span>
         </div>
-
         <div class="controls-row">
           <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
           <button class="back-btn" onclick="returnToModeMenu()">返回主頁</button>
@@ -633,7 +683,6 @@
           <div class="result-title" id="chitoeng-result-title"></div>
           <div class="result-answer" id="chitoeng-result-answer"></div>
           <div class="result-note" id="chitoeng-result-note"></div>
-
           <div class="controls-row">
             <button class="audio-btn" onclick="replayCurrentWord()">🔊 再聽一次</button>
             <button class="action-btn next-btn-large" onclick="goNextChiToEng()">下一題</button>
@@ -651,7 +700,6 @@
           Correct: <span id="chitoeng-final-correct">0</span><br />
           Incorrect: <span id="chitoeng-final-incorrect">0</span>
         </div>
-
         <div class="controls-row">
           <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
           <button class="back-btn" onclick="returnToCategoryMenu()">返回分類</button>
@@ -687,7 +735,6 @@
           <div class="result-title" id="spelling-result-title"></div>
           <div class="result-answer" id="spelling-result-answer"></div>
           <div class="result-note" id="spelling-result-note"></div>
-
           <div class="controls-row">
             <button class="action-btn next-btn-large" onclick="goNextSpelling()">下一題</button>
           </div>
@@ -704,7 +751,6 @@
           Correct: <span id="spelling-final-correct">0</span><br />
           Incorrect: <span id="spelling-final-incorrect">0</span>
         </div>
-
         <div class="controls-row">
           <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
           <button class="back-btn" onclick="returnToModeMenu()">返回主頁</button>
@@ -741,7 +787,6 @@
           <div class="result-title" id="listening-result-title"></div>
           <div class="result-answer" id="listening-result-answer"></div>
           <div class="result-note" id="listening-result-note"></div>
-
           <div class="controls-row">
             <button class="audio-btn" onclick="replayCurrentWord()">🔊 再播一次</button>
             <button class="action-btn next-btn-large" onclick="goNextListening()">下一題</button>
@@ -759,7 +804,54 @@
           Correct: <span id="listening-final-correct">0</span><br />
           Incorrect: <span id="listening-final-incorrect">0</span>
         </div>
+        <div class="controls-row">
+          <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
+          <button class="back-btn" onclick="returnToModeMenu()">返回主頁</button>
+        </div>
+      </div>
+    </section>
 
+    <section id="readingcloze-screen" class="screen">
+      <div class="game-panel">
+        <div class="game-topbar">
+          <button class="back-btn" onclick="returnToModeMenu()">← 返回主頁</button>
+          <div class="game-mode-title">短文填充</div>
+          <button class="action-btn" onclick="restartCurrentGame()">重新開始</button>
+        </div>
+
+        <div class="stats-bar">
+          <div class="stats-item">Question: <span id="readingcloze-question-no">0</span> / <span id="readingcloze-question-total">0</span></div>
+          <div class="stats-item">Correct: <span id="readingcloze-correct">0</span></div>
+          <div class="stats-item">Incorrect: <span id="readingcloze-incorrect">0</span></div>
+        </div>
+
+        <div class="question-card">
+          <div class="cloze-passage" id="readingcloze-passage">---</div>
+        </div>
+
+        <div class="options-grid hidden-after-answer" id="readingcloze-options"></div>
+
+        <div class="result-box" id="readingcloze-result-box">
+          <div class="result-title" id="readingcloze-result-title"></div>
+          <div class="result-answer" id="readingcloze-result-answer"></div>
+          <div class="result-note" id="readingcloze-result-note"></div>
+          <div class="controls-row">
+            <button class="audio-btn" onclick="playCurrentPassage()">🔊 聽全文</button>
+            <button class="action-btn next-btn-large" onclick="goNextReadingCloze()">下一題</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="readingcloze-complete-screen" class="screen">
+      <div class="completion-card">
+        <div class="trophy">🏆</div>
+        <div class="completion-title">Excellent!</div>
+        <div class="completion-stats">
+          短文填充完成<br />
+          Correct: <span id="readingcloze-final-correct">0</span><br />
+          Incorrect: <span id="readingcloze-final-incorrect">0</span>
+        </div>
         <div class="controls-row">
           <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
           <button class="back-btn" onclick="returnToModeMenu()">返回主頁</button>
@@ -775,28 +867,25 @@
     let currentMode = "";
     let currentCategory = "";
     let currentWordForSpeech = "";
+    let currentPassageForSpeech = "";
 
     const engToChiState = {
-      queue: [],
-      currentItem: null,
-      correct: 0,
-      incorrect: 0,
-      answeredCount: 0,
-      totalTarget: 0,
-      hasAnsweredCurrent: false
+      queue: [], currentItem: null, correct: 0, incorrect: 0, answeredCount: 0, totalTarget: 0, hasAnsweredCurrent: false
     };
 
     const chiToEngState = {
-      queue: [],
-      currentItem: null,
-      correct: 0,
-      incorrect: 0,
-      answeredCount: 0,
-      totalTarget: 0,
-      hasAnsweredCurrent: false
+      queue: [], currentItem: null, correct: 0, incorrect: 0, answeredCount: 0, totalTarget: 0, hasAnsweredCurrent: false
     };
 
     const spellingState = {
+      queue: [], currentItem: null, correct: 0, incorrect: 0, answeredCount: 0, totalTarget: 0, hasAnsweredCurrent: false, currentBlankIndex: 0, userLetters: []
+    };
+
+    const listeningState = {
+      queue: [], currentItem: null, correct: 0, incorrect: 0, answeredCount: 0, totalTarget: 0, hasAnsweredCurrent: false, optionsReady: false
+    };
+
+    const readingClozeState = {
       queue: [],
       currentItem: null,
       correct: 0,
@@ -805,18 +894,7 @@
       totalTarget: 0,
       hasAnsweredCurrent: false,
       currentBlankIndex: 0,
-      userLetters: []
-    };
-
-    const listeningState = {
-      queue: [],
-      currentItem: null,
-      correct: 0,
-      incorrect: 0,
-      answeredCount: 0,
-      totalTarget: 0,
-      hasAnsweredCurrent: false,
-      optionsReady: false
+      userAnswers: []
     };
 
     function showScreen(screenId) {
@@ -825,8 +903,6 @@
       });
       document.getElementById(screenId).classList.add('active');
     }
-
-    function updateStatus() {}
 
     function shuffleArray(arr) {
       const copy = [...arr];
@@ -884,13 +960,8 @@
       utterance.pitch = 1;
 
       const selectedVoice = getPreferredVoice();
-      if (selectedVoice) {
-        utterance.voice = selectedVoice;
-      }
-
-      if (onEnd) {
-        utterance.onend = onEnd;
-      }
+      if (selectedVoice) utterance.voice = selectedVoice;
+      if (onEnd) utterance.onend = onEnd;
 
       window.speechSynthesis.speak(utterance);
     }
@@ -905,24 +976,38 @@
       });
     }
 
+    function speakPassage(text) {
+      if (!text || !window.speechSynthesis) return;
+
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.88;
+      utterance.pitch = 1;
+
+      const selectedVoice = getPreferredVoice();
+      if (selectedVoice) utterance.voice = selectedVoice;
+
+      window.speechSynthesis.speak(utterance);
+    }
+
     function replayCurrentWord() {
-      if (currentWordForSpeech) {
-        speakWord(currentWordForSpeech);
-      }
+      if (currentWordForSpeech) speakWord(currentWordForSpeech);
     }
 
     function replayListeningWord() {
-      if (currentWordForSpeech) {
-        speakWordTwice(currentWordForSpeech);
-      }
+      if (currentWordForSpeech) speakWordTwice(currentWordForSpeech);
+    }
+
+    function playCurrentPassage() {
+      if (currentPassageForSpeech) speakPassage(currentPassageForSpeech);
     }
 
     function scrollToResult(resultBoxId) {
       setTimeout(() => {
         const box = document.getElementById(resultBoxId);
-        if (box) {
-          box.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+        if (box) box.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 120);
     }
 
@@ -947,7 +1032,6 @@
       currentStudentLabel = studentLabel;
       currentMode = "";
       currentCategory = "";
-      updateStatus();
       document.getElementById('mode-screen-title').innerText = studentLabel + '練習模式';
       showScreen('mode-screen');
     }
@@ -957,44 +1041,24 @@
       currentStudentLabel = "";
       currentMode = "";
       currentCategory = "";
-      updateStatus();
       showScreen('student-screen');
     }
 
     function returnToModeMenu() {
       currentMode = "";
       currentCategory = "";
-      updateStatus();
       showScreen('mode-screen');
     }
 
     function returnToCategoryMenu() {
       currentMode = "中轉英";
-      updateStatus();
       showScreen('category-screen');
     }
 
     function showChiToEngCategory() {
       currentMode = "中轉英";
       currentCategory = "";
-      updateStatus();
       showScreen('category-screen');
-    }
-
-    function enterMode(modeKey) {
-      if (modeKey === "engToChi") {
-        startEngToChiGame();
-        return;
-      }
-
-      if (modeKey === "readingCloze") {
-        const count = GAME_DATA[currentStudentKey].readingCloze.length;
-        alert(
-          currentStudentLabel + " 已進入 短文填充" +
-          "\n目前題目數量：" + count +
-          "\n\n下一步我會幫你把真正遊戲頁接上去。"
-        );
-      }
     }
 
     // =========================
@@ -1034,8 +1098,7 @@
       engToChiState.hasAnsweredCurrent = false;
       currentWordForSpeech = engToChiState.currentItem.word;
 
-      const questionNo = engToChiState.answeredCount + 1;
-      document.getElementById('engtochi-question-no').innerText = questionNo;
+      document.getElementById('engtochi-question-no').innerText = engToChiState.answeredCount + 1;
       document.getElementById('engtochi-word').innerText = engToChiState.currentItem.word;
       document.getElementById('engtochi-correct').innerText = engToChiState.correct;
       document.getElementById('engtochi-incorrect').innerText = engToChiState.incorrect;
@@ -1044,9 +1107,7 @@
       hideEngToChiResult();
       toggleAnswerArea('engtochi', false);
 
-      setTimeout(() => {
-        speakWord(engToChiState.currentItem.word);
-      }, 200);
+      setTimeout(() => speakWord(engToChiState.currentItem.word), 200);
     }
 
     function buildEngToChiOptions() {
@@ -1080,12 +1141,8 @@
 
       optionButtons.forEach(btn => {
         btn.disabled = true;
-        if (btn.innerText === current.answer) {
-          btn.classList.add('correct');
-        }
-        if (!isCorrect && btn === clickedButton) {
-          btn.classList.add('wrong');
-        }
+        if (btn.innerText === current.answer) btn.classList.add('correct');
+        if (!isCorrect && btn === clickedButton) btn.classList.add('wrong');
       });
 
       if (isCorrect) {
@@ -1109,15 +1166,10 @@
 
     function showEngToChiResult(isSuccess, answerText, noteText) {
       const box = document.getElementById('engtochi-result-box');
-      const title = document.getElementById('engtochi-result-title');
-      const answer = document.getElementById('engtochi-result-answer');
-      const note = document.getElementById('engtochi-result-note');
-
-      title.innerText = isSuccess ? "✅ Correct!" : "❌ Incorrect";
-      title.className = "result-title " + (isSuccess ? "success" : "error");
-      answer.innerText = answerText;
-      note.innerText = noteText;
-
+      document.getElementById('engtochi-result-title').innerText = isSuccess ? "✅ Correct!" : "❌ Incorrect";
+      document.getElementById('engtochi-result-title').className = "result-title " + (isSuccess ? "success" : "error");
+      document.getElementById('engtochi-result-answer').innerText = answerText;
+      document.getElementById('engtochi-result-note').innerText = noteText;
       box.classList.add('show');
     }
 
@@ -1173,8 +1225,7 @@
       chiToEngState.hasAnsweredCurrent = false;
       currentWordForSpeech = "";
 
-      const questionNo = chiToEngState.answeredCount + 1;
-      document.getElementById('chitoeng-question-no').innerText = questionNo;
+      document.getElementById('chitoeng-question-no').innerText = chiToEngState.answeredCount + 1;
       document.getElementById('chitoeng-word').innerText = chiToEngState.currentItem.answer;
       document.getElementById('chitoeng-correct').innerText = chiToEngState.correct;
       document.getElementById('chitoeng-incorrect').innerText = chiToEngState.incorrect;
@@ -1215,12 +1266,8 @@
 
       optionButtons.forEach(btn => {
         btn.disabled = true;
-        if (btn.innerText.toLowerCase() === current.word.toLowerCase()) {
-          btn.classList.add('correct');
-        }
-        if (!isCorrect && btn === clickedButton) {
-          btn.classList.add('wrong');
-        }
+        if (btn.innerText.toLowerCase() === current.word.toLowerCase()) btn.classList.add('correct');
+        if (!isCorrect && btn === clickedButton) btn.classList.add('wrong');
       });
 
       currentWordForSpeech = current.word;
@@ -1241,23 +1288,16 @@
       document.getElementById('chitoeng-incorrect').innerText = chiToEngState.incorrect;
 
       toggleAnswerArea('chitoeng', true);
-      setTimeout(() => {
-        speakWord(current.word);
-      }, 150);
+      setTimeout(() => speakWord(current.word), 150);
       scrollToResult('chitoeng-result-box');
     }
 
     function showChiToEngResult(isSuccess, answerText, noteText) {
       const box = document.getElementById('chitoeng-result-box');
-      const title = document.getElementById('chitoeng-result-title');
-      const answer = document.getElementById('chitoeng-result-answer');
-      const note = document.getElementById('chitoeng-result-note');
-
-      title.innerText = isSuccess ? "✅ Correct!" : "❌ Incorrect";
-      title.className = "result-title " + (isSuccess ? "success" : "error");
-      answer.innerText = answerText;
-      note.innerText = noteText;
-
+      document.getElementById('chitoeng-result-title').innerText = isSuccess ? "✅ Correct!" : "❌ Incorrect";
+      document.getElementById('chitoeng-result-title').className = "result-title " + (isSuccess ? "success" : "error");
+      document.getElementById('chitoeng-result-answer').innerText = answerText;
+      document.getElementById('chitoeng-result-note').innerText = noteText;
       box.classList.add('show');
     }
 
@@ -1317,8 +1357,7 @@
 
       currentWordForSpeech = spellingState.currentItem.word;
 
-      const questionNo = spellingState.answeredCount + 1;
-      document.getElementById('spelling-question-no').innerText = questionNo;
+      document.getElementById('spelling-question-no').innerText = spellingState.answeredCount + 1;
       document.getElementById('spelling-correct').innerText = spellingState.correct;
       document.getElementById('spelling-incorrect').innerText = spellingState.incorrect;
 
@@ -1327,9 +1366,7 @@
       hideSpellingResult();
       toggleAnswerArea('spelling', false);
 
-      setTimeout(() => {
-        speakWord(spellingState.currentItem.word);
-      }, 200);
+      setTimeout(() => speakWord(spellingState.currentItem.word), 200);
     }
 
     function renderSpellingText() {
@@ -1419,15 +1456,10 @@
 
     function showSpellingResult(isSuccess, answerText, noteText) {
       const box = document.getElementById('spelling-result-box');
-      const title = document.getElementById('spelling-result-title');
-      const answer = document.getElementById('spelling-result-answer');
-      const note = document.getElementById('spelling-result-note');
-
-      title.innerText = isSuccess ? "✅ Correct!" : "❌ Incorrect";
-      title.className = "result-title " + (isSuccess ? "success" : "error");
-      answer.innerText = answerText;
-      note.innerText = noteText;
-
+      document.getElementById('spelling-result-title').innerText = isSuccess ? "✅ Correct!" : "❌ Incorrect";
+      document.getElementById('spelling-result-title').className = "result-title " + (isSuccess ? "success" : "error");
+      document.getElementById('spelling-result-answer').innerText = answerText;
+      document.getElementById('spelling-result-note').innerText = noteText;
       box.classList.add('show');
     }
 
@@ -1484,8 +1516,7 @@
       listeningState.optionsReady = false;
       currentWordForSpeech = listeningState.currentItem.word;
 
-      const questionNo = listeningState.answeredCount + 1;
-      document.getElementById('listening-question-no').innerText = questionNo;
+      document.getElementById('listening-question-no').innerText = listeningState.answeredCount + 1;
       document.getElementById('listening-correct').innerText = listeningState.correct;
       document.getElementById('listening-incorrect').innerText = listeningState.incorrect;
       document.getElementById('listening-prompt').innerText = "Listen carefully";
@@ -1534,12 +1565,8 @@
 
       optionButtons.forEach(btn => {
         btn.disabled = true;
-        if (btn.innerText.toLowerCase() === current.word.toLowerCase()) {
-          btn.classList.add('correct');
-        }
-        if (!isCorrect && btn === clickedButton) {
-          btn.classList.add('wrong');
-        }
+        if (btn.innerText.toLowerCase() === current.word.toLowerCase()) btn.classList.add('correct');
+        if (!isCorrect && btn === clickedButton) btn.classList.add('wrong');
       });
 
       currentWordForSpeech = current.word;
@@ -1565,15 +1592,10 @@
 
     function showListeningResult(isSuccess, answerText, noteText) {
       const box = document.getElementById('listening-result-box');
-      const title = document.getElementById('listening-result-title');
-      const answer = document.getElementById('listening-result-answer');
-      const note = document.getElementById('listening-result-note');
-
-      title.innerText = isSuccess ? "✅ Correct!" : "❌ Incorrect";
-      title.className = "result-title " + (isSuccess ? "success" : "error");
-      answer.innerText = answerText;
-      note.innerText = noteText;
-
+      document.getElementById('listening-result-title').innerText = isSuccess ? "✅ Correct!" : "❌ Incorrect";
+      document.getElementById('listening-result-title').className = "result-title " + (isSuccess ? "success" : "error");
+      document.getElementById('listening-result-answer').innerText = answerText;
+      document.getElementById('listening-result-note').innerText = noteText;
       box.classList.add('show');
     }
 
@@ -1591,6 +1613,191 @@
       showScreen('listening-complete-screen');
     }
 
+    // =========================
+    // 短文填充
+    // =========================
+    function startReadingClozeGame() {
+      currentMode = "短文填充";
+      currentCategory = "";
+
+      const rawList = GAME_DATA[currentStudentKey].readingCloze || [];
+      const shuffled = shuffleArray(rawList);
+      const target = Math.min(30, shuffled.length);
+
+      readingClozeState.queue = shuffled.slice(0, target);
+      readingClozeState.currentItem = null;
+      readingClozeState.correct = 0;
+      readingClozeState.incorrect = 0;
+      readingClozeState.answeredCount = 0;
+      readingClozeState.totalTarget = target;
+      readingClozeState.hasAnsweredCurrent = false;
+      readingClozeState.currentBlankIndex = 0;
+      readingClozeState.userAnswers = [];
+
+      document.getElementById('readingcloze-question-total').innerText = target;
+      document.getElementById('readingcloze-correct').innerText = 0;
+      document.getElementById('readingcloze-incorrect').innerText = 0;
+
+      showScreen('readingcloze-screen');
+      loadNextReadingClozeQuestion();
+    }
+
+    function loadNextReadingClozeQuestion() {
+      if (readingClozeState.queue.length === 0) {
+        finishReadingClozeGame();
+        return;
+      }
+
+      readingClozeState.currentItem = readingClozeState.queue[0];
+      readingClozeState.hasAnsweredCurrent = false;
+      readingClozeState.currentBlankIndex = 0;
+      readingClozeState.userAnswers = new Array(readingClozeState.currentItem.blanks.length).fill("");
+
+      document.getElementById('readingcloze-question-no').innerText = readingClozeState.answeredCount + 1;
+      document.getElementById('readingcloze-correct').innerText = readingClozeState.correct;
+      document.getElementById('readingcloze-incorrect').innerText = readingClozeState.incorrect;
+
+      renderReadingClozePassage();
+      renderReadingClozeOptions();
+      hideReadingClozeResult();
+      toggleAnswerArea('readingcloze', false);
+      currentPassageForSpeech = "";
+    }
+
+    function renderReadingClozePassage() {
+      const passageEl = document.getElementById('readingcloze-passage');
+      const parts = readingClozeState.currentItem.passage.split('___');
+
+      let html = '';
+      for (let i = 0; i < parts.length; i++) {
+        html += escapeHtml(parts[i]);
+
+        if (i < readingClozeState.currentItem.blanks.length) {
+          const answer = readingClozeState.userAnswers[i];
+          let cls = 'blank-pill ';
+          if (answer) {
+            cls += 'filled';
+          } else if (i === readingClozeState.currentBlankIndex && !readingClozeState.hasAnsweredCurrent) {
+            cls += 'active empty';
+          } else {
+            cls += 'empty';
+          }
+
+          html += `<span class="${cls}">${answer ? escapeHtml(answer) : '____'}</span>`;
+        }
+      }
+
+      passageEl.innerHTML = html;
+    }
+
+    function renderReadingClozeOptions() {
+      const optionsContainer = document.getElementById('readingcloze-options');
+      optionsContainer.innerHTML = "";
+
+      const currentBlank = readingClozeState.currentItem.blanks[readingClozeState.currentBlankIndex];
+      const finalOptions = buildLimitedOptions(currentBlank.options || [], currentBlank.answer);
+
+      finalOptions.forEach(option => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = option;
+        btn.onclick = () => handleReadingClozeChoice(option);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function handleReadingClozeChoice(choice) {
+      if (readingClozeState.hasAnsweredCurrent) return;
+
+      readingClozeState.userAnswers[readingClozeState.currentBlankIndex] = choice;
+
+      if (readingClozeState.currentBlankIndex < readingClozeState.userAnswers.length - 1) {
+        readingClozeState.currentBlankIndex += 1;
+        renderReadingClozePassage();
+        renderReadingClozeOptions();
+      } else {
+        renderReadingClozePassage();
+        checkReadingClozeAnswer();
+      }
+    }
+
+    function checkReadingClozeAnswer() {
+      readingClozeState.hasAnsweredCurrent = true;
+
+      const current = readingClozeState.currentItem;
+      const isCorrect = current.blanks.every((blank, i) => {
+        return (readingClozeState.userAnswers[i] || "").trim().toLowerCase() === blank.answer.trim().toLowerCase();
+      });
+
+      const optionButtons = document.querySelectorAll('#readingcloze-options .option-btn');
+      optionButtons.forEach(btn => btn.disabled = true);
+
+      currentPassageForSpeech = buildReadingClozeFullPassage(current, current.blanks.map(b => b.answer));
+
+      if (isCorrect) {
+        readingClozeState.correct += 1;
+        readingClozeState.answeredCount += 1;
+        readingClozeState.queue.shift();
+        showReadingClozeResult(true, currentPassageForSpeech, "");
+      } else {
+        readingClozeState.incorrect += 1;
+        const wrongItem = readingClozeState.queue.shift();
+        readingClozeState.queue.push(wrongItem);
+        showReadingClozeResult(false, currentPassageForSpeech, "");
+      }
+
+      document.getElementById('readingcloze-correct').innerText = readingClozeState.correct;
+      document.getElementById('readingcloze-incorrect').innerText = readingClozeState.incorrect;
+
+      toggleAnswerArea('readingcloze', true);
+      scrollToResult('readingcloze-result-box');
+    }
+
+    function buildReadingClozeFullPassage(item, answers) {
+      const parts = item.passage.split('___');
+      let text = '';
+
+      for (let i = 0; i < parts.length; i++) {
+        text += parts[i];
+        if (i < answers.length) {
+          text += answers[i];
+        }
+      }
+      return text.trim();
+    }
+
+    function showReadingClozeResult(isSuccess, answerText, noteText) {
+      const box = document.getElementById('readingcloze-result-box');
+      document.getElementById('readingcloze-result-title').innerText = isSuccess ? "✅ Correct!" : "❌ Incorrect";
+      document.getElementById('readingcloze-result-title').className = "result-title " + (isSuccess ? "success" : "error");
+      document.getElementById('readingcloze-result-answer').innerText = answerText;
+      document.getElementById('readingcloze-result-note').innerText = noteText;
+      box.classList.add('show');
+    }
+
+    function hideReadingClozeResult() {
+      document.getElementById('readingcloze-result-box').classList.remove('show');
+    }
+
+    function goNextReadingCloze() {
+      loadNextReadingClozeQuestion();
+    }
+
+    function finishReadingClozeGame() {
+      document.getElementById('readingcloze-final-correct').innerText = readingClozeState.correct;
+      document.getElementById('readingcloze-final-incorrect').innerText = readingClozeState.incorrect;
+      showScreen('readingcloze-complete-screen');
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
     function restartCurrentGame() {
       if (currentMode === "英轉中") {
         startEngToChiGame();
@@ -1600,6 +1807,8 @@
         startSpellingGame();
       } else if (currentMode === "聽音選字") {
         startListeningGame();
+      } else if (currentMode === "短文填充") {
+        startReadingClozeGame();
       }
     }
 
