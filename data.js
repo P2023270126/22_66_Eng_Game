@@ -42,7 +42,7 @@ const GAME_DATA = {
     spelling: [
       {
         word: "Police",
-        display: "P_lic_e",
+        display: "P_lic_",
         missingLetters: ["o", "e"],
         options: [
           ["o", "a", "u", "i", "y"],
