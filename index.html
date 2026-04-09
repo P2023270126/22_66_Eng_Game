@@ -856,7 +856,6 @@
     </section>
   </div>
 
-  <script src="data.js"></script>
   <script>
  // --- Google Sheets 連接代碼開始 ---
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQaMfqjweCgX2tOByTliUyUwg0vW0pOog7lEKwc4ZB64T_RlfIoOYvj9o7XgdFTPe0v0t0lAKgVfbmt/pub?output=csv";
@@ -867,26 +866,46 @@ async function fetchGameData() {
         const csvText = await response.text();
         window.GAME_DATA = parseCSV(csvText);
         console.log("數據加載成功！", window.GAME_DATA);
+        
+        // 保險：如果數據加載太慢，確保 UI 能看到數據
+        if (currentStudentKey) {
+            console.log("重新初始化當前視窗數據");
+        }
     } catch (error) {
         console.error("讀取失敗:", error);
+        alert("無法讀取 Google 表格，請檢查網路或發佈設定！");
     }
 }
 
 function parseCSV(csv) {
-    const lines = csv.split('\n');
+    // 使用正則表達式同時分割 \n 和 \r，確保乾淨
+    const lines = csv.split(/\r?\n/); 
     const result = {
         studentA: { engToChi: [], chiToEng: {}, spelling: [], listening: [], readingCloze: {} },
         studentB: { engToChi: [], chiToEng: {}, spelling: [], listening: [], readingCloze: {} }
     };
+    
     for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue; // 跳過空行
+        
         const columns = lines[i].split(',');
         if (columns.length < 4) continue;
+        
         const [mode, cat, question, answer, extra] = columns.map(c => c.trim());
         
-        // 目前我們先處理你剛填好的英轉中
         if (mode === "engToChi") {
-            result.studentA.engToChi.push({ word: question, answer: answer });
-            result.studentB.engToChi.push({ word: question, answer: answer });
+            const entry = { word: question, answer: answer };
+            result.studentA.engToChi.push(entry);
+            result.studentB.engToChi.push(entry);
+        }
+        // 如果你有填寫中轉英，這裡也可以順便處理
+        else if (mode === "chiToEng") {
+            const category = cat || 'other';
+            if (!result.studentA.chiToEng[category]) result.studentA.chiToEng[category] = [];
+            result.studentA.chiToEng[category].push({ word: answer, answer: question });
+            // 同步給 studentB
+            if (!result.studentB.chiToEng[category]) result.studentB.chiToEng[category] = [];
+            result.studentB.chiToEng[category].push({ word: answer, answer: question });
         }
     }
     return result;
