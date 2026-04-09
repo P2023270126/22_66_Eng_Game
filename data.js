@@ -209,8 +209,8 @@ const GAME_DATA = {
         { word: "swimming", answer: "游泳" }
       ],
       pastTense: [
-        { word: "forgot", answer: "忘記了" },
-        { word: "brought", answer: "帶來了" }
+        { word: "forgot", answer: "Forget" },
+        { word: "brought", answer: "Bring" }
       ],
       time: [
         { word: "recently", answer: "最近" },
