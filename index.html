@@ -18,6 +18,8 @@
       --line: #d9e2ec;
       --success: #38a169;
       --error: #e53e3e;
+      --active: #fff7e6;
+      --active-border: #f6ad55;
     }
 
     * { box-sizing: border-box; }
@@ -104,7 +106,8 @@
     .option-btn,
     .back-btn,
     .action-btn,
-    .audio-btn {
+    .audio-btn,
+    .letter-box {
       border: none;
       border-radius: 20px;
       background: var(--card);
@@ -117,7 +120,8 @@
     .option-btn:hover,
     .back-btn:hover,
     .action-btn:hover,
-    .audio-btn:hover {
+    .audio-btn:hover,
+    .letter-box:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 24px rgba(0,0,0,0.1);
     }
@@ -249,7 +253,7 @@
 
     .option-btn:disabled {
       cursor: not-allowed;
-      opacity: 0.8;
+      opacity: 0.85;
       transform: none;
     }
 
@@ -340,6 +344,48 @@
       margin-bottom: 20px;
     }
 
+    .spelling-display {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+
+    .letter-box {
+      width: 62px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 900;
+      background: #fff;
+      border: 2px solid #e2e8f0;
+      border-radius: 18px;
+      box-shadow: none;
+      cursor: default;
+    }
+
+    .letter-box.fixed {
+      background: #f8fafc;
+    }
+
+    .letter-box.blank {
+      background: #fff;
+    }
+
+    .letter-box.active {
+      background: var(--active);
+      border-color: var(--active-border);
+    }
+
+    .letter-box.filled {
+      background: #fffaf0;
+      border-color: #f6ad55;
+    }
+
     @media (max-width: 768px) {
       .grid-2,
       .grid-6,
@@ -372,12 +418,17 @@
         width: 100%;
         max-width: 260px;
       }
+
+      .letter-box {
+        width: 52px;
+        height: 62px;
+        font-size: 1.7rem;
+      }
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <!-- Page 1：學生選擇 -->
     <section id="student-screen" class="screen active">
       <div class="hero">
         <h1>English Practice Game</h1>
@@ -399,7 +450,6 @@
       </div>
     </section>
 
-    <!-- Page 2：模式選擇 -->
     <section id="mode-screen" class="screen">
       <div class="toolbar">
         <button class="back-btn" onclick="backToStudentScreen()">← 返回學生選擇</button>
@@ -424,7 +474,7 @@
         </button>
 
         <div class="row-2">
-          <button class="card-btn mode-3" onclick="enterMode('spelling')">
+          <button class="card-btn mode-3" onclick="startSpellingGame()">
             <span class="icon">✏️</span>
             <div class="title">拼字練習</div>
             <div class="desc">補回單字中缺少的字母</div>
@@ -445,7 +495,6 @@
       </div>
     </section>
 
-    <!-- Page 2.5：中轉英分類頁 -->
     <section id="category-screen" class="screen">
       <div class="toolbar">
         <button class="back-btn" onclick="showScreen('mode-screen')">← 返回模式選擇</button>
@@ -495,7 +544,6 @@
       </div>
     </section>
 
-    <!-- 英轉中遊戲頁 -->
     <section id="engtochi-screen" class="screen">
       <div class="game-panel">
         <div class="game-topbar">
@@ -533,7 +581,6 @@
       </div>
     </section>
 
-    <!-- 英轉中完成畫面 -->
     <section id="engtochi-complete-screen" class="screen">
       <div class="completion-card">
         <div class="trophy">🏆</div>
@@ -551,7 +598,6 @@
       </div>
     </section>
 
-    <!-- 中轉英遊戲頁 -->
     <section id="chitoeng-screen" class="screen">
       <div class="game-panel">
         <div class="game-topbar">
@@ -586,7 +632,6 @@
       </div>
     </section>
 
-    <!-- 中轉英完成畫面 -->
     <section id="chitoeng-complete-screen" class="screen">
       <div class="completion-card">
         <div class="trophy">🏆</div>
@@ -600,6 +645,60 @@
         <div class="controls-row">
           <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
           <button class="back-btn" onclick="returnToCategoryMenu()">返回分類</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="spelling-screen" class="screen">
+      <div class="game-panel">
+        <div class="game-topbar">
+          <button class="back-btn" onclick="returnToModeMenu()">← 返回主頁</button>
+          <div class="game-mode-title">拼字練習</div>
+          <button class="action-btn" onclick="restartCurrentGame()">重新開始</button>
+        </div>
+
+        <div class="stats-bar">
+          <div class="stats-item">Question: <span id="spelling-question-no">0</span> / <span id="spelling-question-total">0</span></div>
+          <div class="stats-item">Correct: <span id="spelling-correct">0</span></div>
+          <div class="stats-item">Incorrect: <span id="spelling-incorrect">0</span></div>
+        </div>
+
+        <div class="question-card">
+          <div class="spelling-display" id="spelling-display"></div>
+          <div class="question-note">請補回缺少的字母</div>
+        </div>
+
+        <div class="controls-row" style="margin-bottom:18px;">
+          <button class="audio-btn" onclick="replayCurrentWord()">🔊 再聽一次</button>
+        </div>
+
+        <div class="options-grid" id="spelling-options"></div>
+
+        <div class="result-box" id="spelling-result-box">
+          <div class="result-title" id="spelling-result-title"></div>
+          <div class="result-answer" id="spelling-result-answer"></div>
+          <div class="result-note" id="spelling-result-note"></div>
+
+          <div class="controls-row">
+            <button class="action-btn next-btn-large" onclick="goNextSpelling()">下一題</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="spelling-complete-screen" class="screen">
+      <div class="completion-card">
+        <div class="trophy">🏆</div>
+        <div class="completion-title">Excellent!</div>
+        <div class="completion-stats">
+          拼字練習完成<br />
+          Correct: <span id="spelling-final-correct">0</span><br />
+          Incorrect: <span id="spelling-final-incorrect">0</span>
+        </div>
+
+        <div class="controls-row">
+          <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
+          <button class="back-btn" onclick="returnToModeMenu()">返回主頁</button>
         </div>
       </div>
     </section>
@@ -633,6 +732,18 @@
       hasAnsweredCurrent: false
     };
 
+    const spellingState = {
+      queue: [],
+      currentItem: null,
+      correct: 0,
+      incorrect: 0,
+      answeredCount: 0,
+      totalTarget: 0,
+      hasAnsweredCurrent: false,
+      currentBlankIndex: 0,
+      userLetters: []
+    };
+
     function showScreen(screenId) {
       document.querySelectorAll('.screen').forEach(screen => {
         screen.classList.remove('active');
@@ -640,9 +751,7 @@
       document.getElementById(screenId).classList.add('active');
     }
 
-    function updateStatus() {
-      // status box 已移除
-    }
+    function updateStatus() {}
 
     function shuffleArray(arr) {
       const copy = [...arr];
@@ -749,7 +858,6 @@
     function enterMode(modeKey) {
       const modeNameMap = {
         engToChi: "英轉中",
-        spelling: "拼字練習",
         listening: "聽音選字",
         readingCloze: "短文填充"
       };
@@ -765,9 +873,7 @@
 
       let count = 0;
 
-      if (modeKey === "spelling") {
-        count = GAME_DATA[currentStudentKey].spelling.length;
-      } else if (modeKey === "listening") {
+      if (modeKey === "listening") {
         count = GAME_DATA[currentStudentKey].listening.length;
       } else if (modeKey === "readingCloze") {
         count = GAME_DATA[currentStudentKey].readingCloze.length;
@@ -880,13 +986,11 @@
         engToChiState.correct += 1;
         engToChiState.answeredCount += 1;
         engToChiState.queue.shift();
-
         showEngToChiResult(true, current.word + " = " + current.answer, "");
       } else {
         engToChiState.incorrect += 1;
         const wrongItem = engToChiState.queue.shift();
         engToChiState.queue.push(wrongItem);
-
         showEngToChiResult(false, current.word + " = " + current.answer, "");
       }
 
@@ -1021,13 +1125,11 @@
         chiToEngState.correct += 1;
         chiToEngState.answeredCount += 1;
         chiToEngState.queue.shift();
-
         showChiToEngResult(true, titleCaseWord(current.word), "");
       } else {
         chiToEngState.incorrect += 1;
         const wrongItem = chiToEngState.queue.shift();
         chiToEngState.queue.push(wrongItem);
-
         showChiToEngResult(false, titleCaseWord(current.word), "");
       }
 
@@ -1068,13 +1170,193 @@
     }
 
     // =========================
-    // 共用 restart
+    // 拼字練習
     // =========================
+    function startSpellingGame() {
+      currentMode = "拼字練習";
+      currentCategory = "";
+      updateStatus();
+
+      const rawList = GAME_DATA[currentStudentKey].spelling || [];
+      const shuffled = shuffleArray(rawList);
+      const target = Math.min(30, shuffled.length);
+
+      spellingState.queue = shuffled.slice(0, target);
+      spellingState.currentItem = null;
+      spellingState.correct = 0;
+      spellingState.incorrect = 0;
+      spellingState.answeredCount = 0;
+      spellingState.totalTarget = target;
+      spellingState.hasAnsweredCurrent = false;
+      spellingState.currentBlankIndex = 0;
+      spellingState.userLetters = [];
+
+      document.getElementById('spelling-question-total').innerText = target;
+      document.getElementById('spelling-correct').innerText = 0;
+      document.getElementById('spelling-incorrect').innerText = 0;
+
+      showScreen('spelling-screen');
+      loadNextSpellingQuestion();
+    }
+
+    function loadNextSpellingQuestion() {
+      if (spellingState.queue.length === 0) {
+        finishSpellingGame();
+        return;
+      }
+
+      spellingState.currentItem = spellingState.queue[0];
+      spellingState.hasAnsweredCurrent = false;
+      spellingState.currentBlankIndex = 0;
+      spellingState.userLetters = new Array(spellingState.currentItem.missingLetters.length).fill("");
+
+      currentWordForSpeech = spellingState.currentItem.word;
+
+      const questionNo = spellingState.answeredCount + 1;
+      document.getElementById('spelling-question-no').innerText = questionNo;
+      document.getElementById('spelling-correct').innerText = spellingState.correct;
+      document.getElementById('spelling-incorrect').innerText = spellingState.incorrect;
+
+      renderSpellingDisplay();
+      renderSpellingOptions();
+      hideSpellingResult();
+
+      setTimeout(() => {
+        speakWord(spellingState.currentItem.word);
+      }, 200);
+    }
+
+    function renderSpellingDisplay() {
+      const container = document.getElementById('spelling-display');
+      container.innerHTML = "";
+
+      const displayText = spellingState.currentItem.display;
+      let blankCounter = 0;
+
+      for (const ch of displayText) {
+        const box = document.createElement('div');
+        box.className = 'letter-box';
+
+        if (ch === '_') {
+          const userLetter = spellingState.userLetters[blankCounter];
+          box.classList.add('blank');
+
+          if (blankCounter === spellingState.currentBlankIndex && !spellingState.hasAnsweredCurrent) {
+            box.classList.add('active');
+          }
+
+          if (userLetter) {
+            box.classList.add('filled');
+            box.innerText = userLetter;
+          } else {
+            box.innerText = "_";
+          }
+
+          blankCounter += 1;
+        } else {
+          box.classList.add('fixed');
+          box.innerText = ch;
+        }
+
+        container.appendChild(box);
+      }
+    }
+
+    function renderSpellingOptions() {
+      const optionsContainer = document.getElementById('spelling-options');
+      optionsContainer.innerHTML = "";
+
+      const currentOptions = spellingState.currentItem.options[spellingState.currentBlankIndex] || [];
+
+      currentOptions.forEach((option, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = option;
+
+        if (index === 4) {
+          btn.classList.add('last-option');
+        }
+
+        btn.onclick = () => handleSpellingLetter(option);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function handleSpellingLetter(letter) {
+      if (spellingState.hasAnsweredCurrent) return;
+
+      spellingState.userLetters[spellingState.currentBlankIndex] = letter;
+
+      if (spellingState.currentBlankIndex < spellingState.currentItem.missingLetters.length - 1) {
+        spellingState.currentBlankIndex += 1;
+        renderSpellingDisplay();
+        renderSpellingOptions();
+      } else {
+        checkSpellingAnswer();
+      }
+    }
+
+    function checkSpellingAnswer() {
+      spellingState.hasAnsweredCurrent = true;
+
+      const current = spellingState.currentItem;
+      const isCorrect = current.missingLetters.every((ans, i) => ans.toLowerCase() === spellingState.userLetters[i].toLowerCase());
+
+      const optionButtons = document.querySelectorAll('#spelling-options .option-btn');
+      optionButtons.forEach(btn => btn.disabled = true);
+
+      if (isCorrect) {
+        spellingState.correct += 1;
+        spellingState.answeredCount += 1;
+        spellingState.queue.shift();
+        showSpellingResult(true, current.word, "");
+      } else {
+        spellingState.incorrect += 1;
+        const wrongItem = spellingState.queue.shift();
+        spellingState.queue.push(wrongItem);
+        showSpellingResult(false, current.word, "");
+      }
+
+      document.getElementById('spelling-correct').innerText = spellingState.correct;
+      document.getElementById('spelling-incorrect').innerText = spellingState.incorrect;
+      renderSpellingDisplay();
+    }
+
+    function showSpellingResult(isSuccess, answerText, noteText) {
+      const box = document.getElementById('spelling-result-box');
+      const title = document.getElementById('spelling-result-title');
+      const answer = document.getElementById('spelling-result-answer');
+      const note = document.getElementById('spelling-result-note');
+
+      title.innerText = isSuccess ? "✅ Correct!" : "❌ Incorrect";
+      title.className = "result-title " + (isSuccess ? "success" : "error");
+      answer.innerText = answerText;
+      note.innerText = noteText;
+
+      box.classList.add('show');
+    }
+
+    function hideSpellingResult() {
+      document.getElementById('spelling-result-box').classList.remove('show');
+    }
+
+    function goNextSpelling() {
+      loadNextSpellingQuestion();
+    }
+
+    function finishSpellingGame() {
+      document.getElementById('spelling-final-correct').innerText = spellingState.correct;
+      document.getElementById('spelling-final-incorrect').innerText = spellingState.incorrect;
+      showScreen('spelling-complete-screen');
+    }
+
     function restartCurrentGame() {
       if (currentMode === "英轉中") {
         startEngToChiGame();
       } else if (currentMode === "中轉英" && currentCategory) {
         startChiToEngGame(currentCategory);
+      } else if (currentMode === "拼字練習") {
+        startSpellingGame();
       }
     }
 
