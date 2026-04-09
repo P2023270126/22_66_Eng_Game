@@ -18,8 +18,6 @@
       --line: #d9e2ec;
       --success: #38a169;
       --error: #e53e3e;
-      --active: #fff7e6;
-      --active-border: #f6ad55;
     }
 
     * { box-sizing: border-box; }
@@ -34,7 +32,7 @@
     .app {
       max-width: 1000px;
       margin: 0 auto;
-      padding: 24px 16px 40px;
+      padding: 20px 14px 32px;
     }
 
     .screen { display: none; }
@@ -42,7 +40,7 @@
 
     .hero {
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
     }
 
     .hero h1 {
@@ -95,19 +93,11 @@
       margin: 0 auto;
     }
 
-    .options-grid .last-option {
-      grid-column: 1 / -1;
-      max-width: 442px;
-      width: 100%;
-      justify-self: center;
-    }
-
     .card-btn,
     .option-btn,
     .back-btn,
     .action-btn,
-    .audio-btn,
-    .letter-box {
+    .audio-btn {
       border: none;
       border-radius: 20px;
       background: var(--card);
@@ -120,8 +110,7 @@
     .option-btn:hover,
     .back-btn:hover,
     .action-btn:hover,
-    .audio-btn:hover,
-    .letter-box:hover {
+    .audio-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 24px rgba(0,0,0,0.1);
     }
@@ -162,7 +151,7 @@
       display: flex;
       justify-content: flex-start;
       gap: 12px;
-      margin: 0 auto 20px;
+      margin: 0 auto 18px;
       max-width: 900px;
       flex-wrap: wrap;
     }
@@ -183,7 +172,7 @@
       background: #fff;
       border-radius: 24px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-      padding: 22px;
+      padding: 18px;
     }
 
     .game-topbar {
@@ -191,7 +180,7 @@
       justify-content: space-between;
       gap: 12px;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       flex-wrap: wrap;
     }
 
@@ -211,7 +200,7 @@
       border-radius: 16px;
       background: #f8fafc;
       border: 1px solid var(--line);
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       flex-wrap: wrap;
     }
 
@@ -222,30 +211,29 @@
 
     .question-card {
       text-align: center;
-      padding: 30px 20px;
+      padding: 24px 18px;
       border-radius: 20px;
       background: #f8fbff;
       border: 1px solid #dbeafe;
-      margin-bottom: 18px;
+      margin-bottom: 14px;
     }
 
     .question-word {
-      font-size: 2.4rem;
+      font-size: 2.25rem;
       font-weight: 800;
       word-break: break-word;
+      line-height: 1.2;
     }
 
-    .question-note {
-      margin-top: 10px;
-      color: var(--subtext);
-      font-size: 0.96rem;
+    .question-subtitle {
+      display: none;
     }
 
     .option-btn {
       padding: 18px 14px;
-      min-height: 82px;
-      font-size: 1.1rem;
-      font-weight: 700;
+      min-height: 76px;
+      font-size: 1.35rem;
+      font-weight: 800;
       text-align: center;
       background: #fff;
       border: 2px solid #e2e8f0;
@@ -253,7 +241,7 @@
 
     .option-btn:disabled {
       cursor: not-allowed;
-      opacity: 0.85;
+      opacity: 0.88;
       transform: none;
     }
 
@@ -273,13 +261,13 @@
       display: flex;
       justify-content: center;
       gap: 12px;
-      margin-top: 20px;
+      margin-top: 14px;
       flex-wrap: wrap;
     }
 
     .result-box {
-      margin-top: 20px;
-      padding: 18px;
+      margin-top: 14px;
+      padding: 18px 16px;
       border-radius: 18px;
       background: #f8fafc;
       border: 1px solid var(--line);
@@ -294,7 +282,7 @@
     .result-title {
       font-size: 2rem;
       font-weight: 900;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       line-height: 1.2;
     }
 
@@ -302,7 +290,7 @@
     .result-title.error { color: var(--error); }
 
     .result-answer {
-      font-size: 2.2rem;
+      font-size: 2.15rem;
       font-weight: 900;
       margin-bottom: 0;
       line-height: 1.25;
@@ -315,15 +303,16 @@
 
     .next-btn-large {
       padding: 18px 34px;
-      font-size: 1.35rem;
-      font-weight: 800;
-      min-width: 180px;
+      font-size: 1.4rem;
+      font-weight: 900;
+      min-width: 190px;
       border-radius: 999px;
+      margin-top: 6px;
     }
 
     .completion-card {
       text-align: center;
-      margin-top: 12px;
+      margin-top: 10px;
     }
 
     .trophy {
@@ -344,49 +333,27 @@
       margin-bottom: 20px;
     }
 
-    .spelling-display {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 8px;
-      margin-bottom: 8px;
+    .spelling-text {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.3;
+      letter-spacing: 0.04em;
+      word-break: break-word;
     }
 
-    .letter-box {
-      width: 62px;
-      height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      font-weight: 900;
-      background: #fff;
-      border: 2px solid #e2e8f0;
-      border-radius: 18px;
-      box-shadow: none;
-      cursor: default;
+    .hidden-after-answer {
+      transition: opacity 0.2s ease;
     }
 
-    .letter-box.fixed {
-      background: #f8fafc;
-    }
-
-    .letter-box.blank {
-      background: #fff;
-    }
-
-    .letter-box.active {
-      background: var(--active);
-      border-color: var(--active-border);
-    }
-
-    .letter-box.filled {
-      background: #fffaf0;
-      border-color: #f6ad55;
+    .hidden-after-answer.hide {
+      display: none;
     }
 
     @media (max-width: 768px) {
+      .app {
+        padding: 12px 10px 24px;
+      }
+
       .grid-2,
       .grid-6,
       .grid-5,
@@ -395,34 +362,63 @@
         grid-template-columns: 1fr;
       }
 
-      .grid-5 .row-2,
-      .options-grid .last-option {
-        grid-column: auto;
-        max-width: none;
+      .card-btn {
+        min-height: 126px;
       }
 
-      .card-btn { min-height: 130px; }
-      .hero h1 { font-size: 1.65rem; }
-      .question-word { font-size: 2rem; }
-      .game-topbar { justify-content: center; }
+      .hero {
+        margin-bottom: 18px;
+      }
+
+      .hero h1 {
+        font-size: 1.65rem;
+      }
+
+      .game-panel,
+      .completion-card {
+        padding: 14px;
+        border-radius: 20px;
+      }
+
+      .game-topbar {
+        margin-bottom: 12px;
+      }
+
+      .stats-bar {
+        margin-bottom: 14px;
+        padding: 12px 14px;
+      }
+
+      .question-card {
+        padding: 18px 14px;
+        margin-bottom: 10px;
+      }
+
+      .question-word {
+        font-size: 1.95rem;
+      }
 
       .result-title {
-        font-size: 1.7rem;
+        font-size: 1.65rem;
       }
 
       .result-answer {
         font-size: 1.8rem;
       }
 
-      .next-btn-large {
-        width: 100%;
-        max-width: 260px;
+      .spelling-text {
+        font-size: 1.95rem;
       }
 
-      .letter-box {
-        width: 52px;
-        height: 62px;
-        font-size: 1.7rem;
+      .option-btn {
+        min-height: 72px;
+        font-size: 1.5rem;
+        font-weight: 900;
+      }
+
+      .next-btn-large {
+        width: 100%;
+        max-width: 280px;
       }
     }
   </style>
@@ -560,14 +556,13 @@
 
         <div class="question-card">
           <div class="question-word" id="engtochi-word">---</div>
-          <div class="question-note">請選出正確中文意思</div>
         </div>
 
-        <div class="controls-row" style="margin-bottom:18px;">
+        <div class="controls-row hidden-after-answer" id="engtochi-audio-row" style="margin-bottom:12px;">
           <button class="audio-btn" onclick="replayCurrentWord()">🔊 再聽一次</button>
         </div>
 
-        <div class="options-grid" id="engtochi-options"></div>
+        <div class="options-grid hidden-after-answer" id="engtochi-options"></div>
 
         <div class="result-box" id="engtochi-result-box">
           <div class="result-title" id="engtochi-result-title"></div>
@@ -614,10 +609,9 @@
 
         <div class="question-card">
           <div class="question-word" id="chitoeng-word">---</div>
-          <div class="question-note">請選出正確英文單字</div>
         </div>
 
-        <div class="options-grid" id="chitoeng-options"></div>
+        <div class="options-grid hidden-after-answer" id="chitoeng-options"></div>
 
         <div class="result-box" id="chitoeng-result-box">
           <div class="result-title" id="chitoeng-result-title"></div>
@@ -664,15 +658,14 @@
         </div>
 
         <div class="question-card">
-          <div class="spelling-display" id="spelling-display"></div>
-          <div class="question-note">請補回缺少的字母</div>
+          <div class="spelling-text" id="spelling-text">---</div>
         </div>
 
-        <div class="controls-row" style="margin-bottom:18px;">
+        <div class="controls-row hidden-after-answer" id="spelling-audio-row" style="margin-bottom:12px;">
           <button class="audio-btn" onclick="replayCurrentWord()">🔊 再聽一次</button>
         </div>
 
-        <div class="options-grid" id="spelling-options"></div>
+        <div class="options-grid hidden-after-answer" id="spelling-options"></div>
 
         <div class="result-box" id="spelling-result-box">
           <div class="result-title" id="spelling-result-title"></div>
@@ -816,6 +809,27 @@
       }
     }
 
+    function scrollToResult(resultBoxId) {
+      setTimeout(() => {
+        const box = document.getElementById(resultBoxId);
+        if (box) {
+          box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 120);
+    }
+
+    function toggleAnswerArea(prefix, hide) {
+      const options = document.getElementById(prefix + '-options');
+      if (options) {
+        options.classList.toggle('hide', hide);
+      }
+
+      const audioRow = document.getElementById(prefix + '-audio-row');
+      if (audioRow) {
+        audioRow.classList.toggle('hide', hide);
+      }
+    }
+
     function selectStudent(studentKey, studentLabel) {
       currentStudentKey = studentKey;
       currentStudentLabel = studentLabel;
@@ -932,6 +946,7 @@
 
       buildEngToChiOptions();
       hideEngToChiResult();
+      toggleAnswerArea('engtochi', false);
 
       setTimeout(() => {
         speakWord(engToChiState.currentItem.word);
@@ -947,18 +962,13 @@
         .map(item => item.answer)
         .filter(answer => answer !== current.answer);
 
-      const wrongAnswers = shuffleArray(allAnswers).slice(0, 4);
+      const wrongAnswers = shuffleArray(allAnswers).slice(0, 3);
       const finalOptions = shuffleArray([current.answer, ...wrongAnswers]);
 
-      finalOptions.forEach((option, index) => {
+      finalOptions.forEach(option => {
         const btn = document.createElement('button');
         btn.className = 'option-btn';
         btn.innerText = option;
-
-        if (index === 4) {
-          btn.classList.add('last-option');
-        }
-
         btn.onclick = () => handleEngToChiAnswer(option, btn);
         optionsContainer.appendChild(btn);
       });
@@ -996,6 +1006,9 @@
 
       document.getElementById('engtochi-correct').innerText = engToChiState.correct;
       document.getElementById('engtochi-incorrect').innerText = engToChiState.incorrect;
+
+      toggleAnswerArea('engtochi', true);
+      scrollToResult('engtochi-result-box');
     }
 
     function showEngToChiResult(isSuccess, answerText, noteText) {
@@ -1073,6 +1086,7 @@
 
       buildChiToEngOptions();
       hideChiToEngResult();
+      toggleAnswerArea('chitoeng', false);
     }
 
     function buildChiToEngOptions() {
@@ -1084,18 +1098,13 @@
         .map(item => item.word)
         .filter(word => word !== current.word);
 
-      const wrongWords = shuffleArray(allWords).slice(0, 4);
+      const wrongWords = shuffleArray(allWords).slice(0, 3);
       const finalOptions = shuffleArray([current.word, ...wrongWords]);
 
-      finalOptions.forEach((option, index) => {
+      finalOptions.forEach(option => {
         const btn = document.createElement('button');
         btn.className = 'option-btn';
         btn.innerText = titleCaseWord(option);
-
-        if (index === 4) {
-          btn.classList.add('last-option');
-        }
-
         btn.onclick = () => handleChiToEngAnswer(option, btn);
         optionsContainer.appendChild(btn);
       });
@@ -1136,9 +1145,11 @@
       document.getElementById('chitoeng-correct').innerText = chiToEngState.correct;
       document.getElementById('chitoeng-incorrect').innerText = chiToEngState.incorrect;
 
+      toggleAnswerArea('chitoeng', true);
       setTimeout(() => {
         speakWord(current.word);
       }, 150);
+      scrollToResult('chitoeng-result-box');
     }
 
     function showChiToEngResult(isSuccess, answerText, noteText) {
@@ -1208,7 +1219,7 @@
       spellingState.currentItem = spellingState.queue[0];
       spellingState.hasAnsweredCurrent = false;
       spellingState.currentBlankIndex = 0;
-      spellingState.userLetters = new Array(spellingState.currentItem.missingLetters.length).fill("");
+      spellingState.userLetters = new Array((spellingState.currentItem.display.match(/_/g) || []).length).fill("");
 
       currentWordForSpeech = spellingState.currentItem.word;
 
@@ -1217,66 +1228,53 @@
       document.getElementById('spelling-correct').innerText = spellingState.correct;
       document.getElementById('spelling-incorrect').innerText = spellingState.incorrect;
 
-      renderSpellingDisplay();
+      renderSpellingText();
       renderSpellingOptions();
       hideSpellingResult();
+      toggleAnswerArea('spelling', false);
 
       setTimeout(() => {
         speakWord(spellingState.currentItem.word);
       }, 200);
     }
 
-    function renderSpellingDisplay() {
-      const container = document.getElementById('spelling-display');
-      container.innerHTML = "";
+    function renderSpellingText() {
+      const display = spellingState.currentItem.display;
+      let built = "";
+      let blankIndex = 0;
 
-      const displayText = spellingState.currentItem.display;
-      let blankCounter = 0;
-
-      for (const ch of displayText) {
-        const box = document.createElement('div');
-        box.className = 'letter-box';
-
-        if (ch === '_') {
-          const userLetter = spellingState.userLetters[blankCounter];
-          box.classList.add('blank');
-
-          if (blankCounter === spellingState.currentBlankIndex && !spellingState.hasAnsweredCurrent) {
-            box.classList.add('active');
-          }
-
-          if (userLetter) {
-            box.classList.add('filled');
-            box.innerText = userLetter;
-          } else {
-            box.innerText = "_";
-          }
-
-          blankCounter += 1;
+      for (const ch of display) {
+        if (ch === "_") {
+          const userLetter = spellingState.userLetters[blankIndex];
+          built += userLetter || "_";
+          blankIndex += 1;
         } else {
-          box.classList.add('fixed');
-          box.innerText = ch;
+          built += ch;
         }
-
-        container.appendChild(box);
       }
+
+      document.getElementById('spelling-text').innerText = built;
+    }
+
+    function buildLimitedOptions(optionArray, correctAnswer) {
+      const unique = [...new Set(optionArray)];
+      let filtered = unique.filter(item => item !== correctAnswer);
+      filtered = shuffleArray(filtered).slice(0, 3);
+      return shuffleArray([correctAnswer, ...filtered]);
     }
 
     function renderSpellingOptions() {
       const optionsContainer = document.getElementById('spelling-options');
       optionsContainer.innerHTML = "";
 
-      const currentOptions = spellingState.currentItem.options[spellingState.currentBlankIndex] || [];
+      const correctLetter = spellingState.currentItem.missingLetters[spellingState.currentBlankIndex];
+      const sourceOptions = spellingState.currentItem.options[spellingState.currentBlankIndex] || [];
+      const finalOptions = buildLimitedOptions(sourceOptions, correctLetter);
 
-      currentOptions.forEach((option, index) => {
+      finalOptions.forEach(option => {
         const btn = document.createElement('button');
         btn.className = 'option-btn';
         btn.innerText = option;
-
-        if (index === 4) {
-          btn.classList.add('last-option');
-        }
-
         btn.onclick = () => handleSpellingLetter(option);
         optionsContainer.appendChild(btn);
       });
@@ -1287,11 +1285,12 @@
 
       spellingState.userLetters[spellingState.currentBlankIndex] = letter;
 
-      if (spellingState.currentBlankIndex < spellingState.currentItem.missingLetters.length - 1) {
+      if (spellingState.currentBlankIndex < spellingState.userLetters.length - 1) {
         spellingState.currentBlankIndex += 1;
-        renderSpellingDisplay();
+        renderSpellingText();
         renderSpellingOptions();
       } else {
+        renderSpellingText();
         checkSpellingAnswer();
       }
     }
@@ -1319,7 +1318,9 @@
 
       document.getElementById('spelling-correct').innerText = spellingState.correct;
       document.getElementById('spelling-incorrect').innerText = spellingState.incorrect;
-      renderSpellingDisplay();
+
+      toggleAnswerArea('spelling', true);
+      scrollToResult('spelling-result-box');
     }
 
     function showSpellingResult(isSuccess, answerText, noteText) {
