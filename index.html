@@ -858,6 +858,44 @@
 
   <script src="data.js"></script>
   <script>
+ // --- Google Sheets 連接代碼開始 ---
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQaMfqjweCgX2tOByTliUyUwg0vW0pOog7lEKwc4ZB64T_RlfIoOYvj9o7XgdFTPe0v0t0lAKgVfbmt/pub?output=csv";
+
+async function fetchGameData() {
+    try {
+        const response = await fetch(SHEET_URL);
+        const csvText = await response.text();
+        window.GAME_DATA = parseCSV(csvText);
+        console.log("數據加載成功！", window.GAME_DATA);
+    } catch (error) {
+        console.error("讀取失敗:", error);
+    }
+}
+
+function parseCSV(csv) {
+    const lines = csv.split('\n');
+    const result = {
+        studentA: { engToChi: [], chiToEng: {}, spelling: [], listening: [], readingCloze: {} },
+        studentB: { engToChi: [], chiToEng: {}, spelling: [], listening: [], readingCloze: {} }
+    };
+    for (let i = 1; i < lines.length; i++) {
+        const columns = lines[i].split(',');
+        if (columns.length < 4) continue;
+        const [mode, cat, question, answer, extra] = columns.map(c => c.trim());
+        
+        // 目前我們先處理你剛填好的英轉中
+        if (mode === "engToChi") {
+            result.studentA.engToChi.push({ word: question, answer: answer });
+            result.studentB.engToChi.push({ word: question, answer: answer });
+        }
+    }
+    return result;
+}
+
+// 啟動加載
+fetchGameData();
+// --- Google Sheets 連接代碼結束 ---   
+    
     let currentStudentKey = null;
     let currentStudentLabel = "";
     let currentMode = "";
