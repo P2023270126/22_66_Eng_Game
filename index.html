@@ -377,6 +377,7 @@
 </head>
 <body>
   <div class="app">
+    <!-- Page 1：學生選擇 -->
     <section id="student-screen" class="screen active">
       <div class="hero">
         <h1>English Practice Game</h1>
@@ -398,6 +399,7 @@
       </div>
     </section>
 
+    <!-- Page 2：模式選擇 -->
     <section id="mode-screen" class="screen">
       <div class="toolbar">
         <button class="back-btn" onclick="backToStudentScreen()">← 返回學生選擇</button>
@@ -443,6 +445,7 @@
       </div>
     </section>
 
+    <!-- Page 2.5：中轉英分類頁 -->
     <section id="category-screen" class="screen">
       <div class="toolbar">
         <button class="back-btn" onclick="showScreen('mode-screen')">← 返回模式選擇</button>
@@ -454,37 +457,37 @@
       </div>
 
       <div class="grid-6">
-        <button class="card-btn" onclick="enterChiToEngCategory('feeling')">
+        <button class="card-btn" onclick="startChiToEngGame('feeling')">
           <span class="icon">😊</span>
           <div class="title">Feeling</div>
           <div class="desc">情緒與感受</div>
         </button>
 
-        <button class="card-btn" onclick="enterChiToEngCategory('sports')">
+        <button class="card-btn" onclick="startChiToEngGame('sports')">
           <span class="icon">🏀</span>
           <div class="title">Sports</div>
           <div class="desc">運動類詞語</div>
         </button>
 
-        <button class="card-btn" onclick="enterChiToEngCategory('pastTense')">
+        <button class="card-btn" onclick="startChiToEngGame('pastTense')">
           <span class="icon">⏪</span>
           <div class="title">Past tense</div>
           <div class="desc">過去式詞語</div>
         </button>
 
-        <button class="card-btn" onclick="enterChiToEngCategory('time')">
+        <button class="card-btn" onclick="startChiToEngGame('time')">
           <span class="icon">⏰</span>
           <div class="title">Time</div>
           <div class="desc">時間相關詞語</div>
         </button>
 
-        <button class="card-btn" onclick="enterChiToEngCategory('other')">
+        <button class="card-btn" onclick="startChiToEngGame('other')">
           <span class="icon">📦</span>
           <div class="title">Other</div>
           <div class="desc">其他常用詞語</div>
         </button>
 
-        <button class="card-btn" onclick="enterChiToEngCategory('food')">
+        <button class="card-btn" onclick="startChiToEngGame('food')">
           <span class="icon">🍝</span>
           <div class="title">Food</div>
           <div class="desc">食物類詞語</div>
@@ -492,6 +495,7 @@
       </div>
     </section>
 
+    <!-- 英轉中遊戲頁 -->
     <section id="engtochi-screen" class="screen">
       <div class="game-panel">
         <div class="game-topbar">
@@ -523,12 +527,13 @@
           <div class="result-note" id="engtochi-result-note"></div>
 
           <div class="controls-row">
-            <button class="action-btn next-btn-large" id="engtochi-next-btn" onclick="goNextEngToChi()">下一題</button>
+            <button class="action-btn next-btn-large" onclick="goNextEngToChi()">下一題</button>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- 英轉中完成畫面 -->
     <section id="engtochi-complete-screen" class="screen">
       <div class="completion-card">
         <div class="trophy">🏆</div>
@@ -545,6 +550,59 @@
         </div>
       </div>
     </section>
+
+    <!-- 中轉英遊戲頁 -->
+    <section id="chitoeng-screen" class="screen">
+      <div class="game-panel">
+        <div class="game-topbar">
+          <button class="back-btn" onclick="returnToCategoryMenu()">← 返回分類</button>
+          <div class="game-mode-title" id="chitoeng-title">中轉英</div>
+          <button class="action-btn" onclick="restartCurrentGame()">重新開始</button>
+        </div>
+
+        <div class="stats-bar">
+          <div class="stats-item">Question: <span id="chitoeng-question-no">0</span> / <span id="chitoeng-question-total">0</span></div>
+          <div class="stats-item">Correct: <span id="chitoeng-correct">0</span></div>
+          <div class="stats-item">Incorrect: <span id="chitoeng-incorrect">0</span></div>
+        </div>
+
+        <div class="question-card">
+          <div class="question-word" id="chitoeng-word">---</div>
+          <div class="question-note">請選出正確英文單字</div>
+        </div>
+
+        <div class="options-grid" id="chitoeng-options"></div>
+
+        <div class="result-box" id="chitoeng-result-box">
+          <div class="result-title" id="chitoeng-result-title"></div>
+          <div class="result-answer" id="chitoeng-result-answer"></div>
+          <div class="result-note" id="chitoeng-result-note"></div>
+
+          <div class="controls-row">
+            <button class="audio-btn" onclick="replayCurrentWord()">🔊 再聽一次</button>
+            <button class="action-btn next-btn-large" onclick="goNextChiToEng()">下一題</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 中轉英完成畫面 -->
+    <section id="chitoeng-complete-screen" class="screen">
+      <div class="completion-card">
+        <div class="trophy">🏆</div>
+        <div class="completion-title">Excellent!</div>
+        <div class="completion-stats">
+          中轉英完成<br />
+          Correct: <span id="chitoeng-final-correct">0</span><br />
+          Incorrect: <span id="chitoeng-final-incorrect">0</span>
+        </div>
+
+        <div class="controls-row">
+          <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
+          <button class="back-btn" onclick="returnToCategoryMenu()">返回分類</button>
+        </div>
+      </div>
+    </section>
   </div>
 
   <script src="data.js"></script>
@@ -556,6 +614,16 @@
     let currentWordForSpeech = "";
 
     const engToChiState = {
+      queue: [],
+      currentItem: null,
+      correct: 0,
+      incorrect: 0,
+      answeredCount: 0,
+      totalTarget: 0,
+      hasAnsweredCurrent: false
+    };
+
+    const chiToEngState = {
       queue: [],
       currentItem: null,
       correct: 0,
@@ -583,6 +651,23 @@
         [copy[i], copy[j]] = [copy[j], copy[i]];
       }
       return copy;
+    }
+
+    function titleCaseWord(text) {
+      if (!text) return "";
+      return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
+    function categoryLabel(categoryKey) {
+      const map = {
+        feeling: "Feeling",
+        sports: "Sports",
+        pastTense: "Past tense",
+        time: "Time",
+        other: "Other",
+        food: "Food"
+      };
+      return map[categoryKey] || categoryKey;
     }
 
     function speakWord(text) {
@@ -648,24 +733,17 @@
       showScreen('mode-screen');
     }
 
+    function returnToCategoryMenu() {
+      currentMode = "中轉英";
+      updateStatus();
+      showScreen('category-screen');
+    }
+
     function showChiToEngCategory() {
       currentMode = "中轉英";
       currentCategory = "";
       updateStatus();
       showScreen('category-screen');
-    }
-
-    function enterChiToEngCategory(categoryKey) {
-      currentMode = "中轉英";
-      currentCategory = categoryKey;
-      updateStatus();
-
-      const count = GAME_DATA[currentStudentKey].chiToEng[categoryKey].length;
-      alert(
-        currentStudentLabel + " 已進入中轉英 - " + categoryKey +
-        "\n目前此分類題目數量：" + count +
-        "\n\n下一步我會幫你把真正遊戲頁接上去。"
-      );
     }
 
     function enterMode(modeKey) {
@@ -702,6 +780,9 @@
       );
     }
 
+    // =========================
+    // 英轉中
+    // =========================
     function startEngToChiGame() {
       currentMode = "英轉中";
       currentCategory = "";
@@ -800,21 +881,13 @@
         engToChiState.answeredCount += 1;
         engToChiState.queue.shift();
 
-        showEngToChiResult(
-          true,
-          current.word + " = " + current.answer,
-          ""
-        );
+        showEngToChiResult(true, current.word + " = " + current.answer, "");
       } else {
         engToChiState.incorrect += 1;
         const wrongItem = engToChiState.queue.shift();
         engToChiState.queue.push(wrongItem);
 
-        showEngToChiResult(
-          false,
-          current.word + " = " + current.answer,
-          ""
-        );
+        showEngToChiResult(false, current.word + " = " + current.answer, "");
       }
 
       document.getElementById('engtochi-correct').innerText = engToChiState.correct;
@@ -836,8 +909,7 @@
     }
 
     function hideEngToChiResult() {
-      const box = document.getElementById('engtochi-result-box');
-      box.classList.remove('show');
+      document.getElementById('engtochi-result-box').classList.remove('show');
     }
 
     function goNextEngToChi() {
@@ -850,9 +922,159 @@
       showScreen('engtochi-complete-screen');
     }
 
+    // =========================
+    // 中轉英
+    // =========================
+    function startChiToEngGame(categoryKey) {
+      currentMode = "中轉英";
+      currentCategory = categoryKey;
+      updateStatus();
+
+      const rawList = GAME_DATA[currentStudentKey].chiToEng[categoryKey] || [];
+      const shuffled = shuffleArray(rawList);
+      const target = Math.min(30, shuffled.length);
+
+      chiToEngState.queue = shuffled.slice(0, target);
+      chiToEngState.currentItem = null;
+      chiToEngState.correct = 0;
+      chiToEngState.incorrect = 0;
+      chiToEngState.answeredCount = 0;
+      chiToEngState.totalTarget = target;
+      chiToEngState.hasAnsweredCurrent = false;
+
+      document.getElementById('chitoeng-title').innerText = "中轉英 - " + categoryLabel(categoryKey);
+      document.getElementById('chitoeng-question-total').innerText = target;
+      document.getElementById('chitoeng-correct').innerText = 0;
+      document.getElementById('chitoeng-incorrect').innerText = 0;
+
+      showScreen('chitoeng-screen');
+      loadNextChiToEngQuestion();
+    }
+
+    function loadNextChiToEngQuestion() {
+      if (chiToEngState.queue.length === 0) {
+        finishChiToEngGame();
+        return;
+      }
+
+      chiToEngState.currentItem = chiToEngState.queue[0];
+      chiToEngState.hasAnsweredCurrent = false;
+      currentWordForSpeech = "";
+
+      const questionNo = chiToEngState.answeredCount + 1;
+      document.getElementById('chitoeng-question-no').innerText = questionNo;
+      document.getElementById('chitoeng-word').innerText = chiToEngState.currentItem.answer;
+      document.getElementById('chitoeng-correct').innerText = chiToEngState.correct;
+      document.getElementById('chitoeng-incorrect').innerText = chiToEngState.incorrect;
+
+      buildChiToEngOptions();
+      hideChiToEngResult();
+    }
+
+    function buildChiToEngOptions() {
+      const optionsContainer = document.getElementById('chitoeng-options');
+      optionsContainer.innerHTML = "";
+
+      const current = chiToEngState.currentItem;
+      const allWords = GAME_DATA[currentStudentKey].chiToEng[currentCategory]
+        .map(item => item.word)
+        .filter(word => word !== current.word);
+
+      const wrongWords = shuffleArray(allWords).slice(0, 4);
+      const finalOptions = shuffleArray([current.word, ...wrongWords]);
+
+      finalOptions.forEach((option, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = titleCaseWord(option);
+
+        if (index === 4) {
+          btn.classList.add('last-option');
+        }
+
+        btn.onclick = () => handleChiToEngAnswer(option, btn);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function handleChiToEngAnswer(selectedWord, clickedButton) {
+      if (chiToEngState.hasAnsweredCurrent) return;
+      chiToEngState.hasAnsweredCurrent = true;
+
+      const current = chiToEngState.currentItem;
+      const isCorrect = selectedWord === current.word;
+      const optionButtons = document.querySelectorAll('#chitoeng-options .option-btn');
+
+      optionButtons.forEach(btn => {
+        btn.disabled = true;
+        if (btn.innerText.toLowerCase() === current.word.toLowerCase()) {
+          btn.classList.add('correct');
+        }
+        if (!isCorrect && btn === clickedButton) {
+          btn.classList.add('wrong');
+        }
+      });
+
+      currentWordForSpeech = current.word;
+
+      if (isCorrect) {
+        chiToEngState.correct += 1;
+        chiToEngState.answeredCount += 1;
+        chiToEngState.queue.shift();
+
+        showChiToEngResult(true, titleCaseWord(current.word), "");
+      } else {
+        chiToEngState.incorrect += 1;
+        const wrongItem = chiToEngState.queue.shift();
+        chiToEngState.queue.push(wrongItem);
+
+        showChiToEngResult(false, titleCaseWord(current.word), "");
+      }
+
+      document.getElementById('chitoeng-correct').innerText = chiToEngState.correct;
+      document.getElementById('chitoeng-incorrect').innerText = chiToEngState.incorrect;
+
+      setTimeout(() => {
+        speakWord(current.word);
+      }, 150);
+    }
+
+    function showChiToEngResult(isSuccess, answerText, noteText) {
+      const box = document.getElementById('chitoeng-result-box');
+      const title = document.getElementById('chitoeng-result-title');
+      const answer = document.getElementById('chitoeng-result-answer');
+      const note = document.getElementById('chitoeng-result-note');
+
+      title.innerText = isSuccess ? "✅ Correct!" : "❌ Incorrect";
+      title.className = "result-title " + (isSuccess ? "success" : "error");
+      answer.innerText = answerText;
+      note.innerText = noteText;
+
+      box.classList.add('show');
+    }
+
+    function hideChiToEngResult() {
+      document.getElementById('chitoeng-result-box').classList.remove('show');
+    }
+
+    function goNextChiToEng() {
+      loadNextChiToEngQuestion();
+    }
+
+    function finishChiToEngGame() {
+      document.getElementById('chitoeng-final-correct').innerText = chiToEngState.correct;
+      document.getElementById('chitoeng-final-incorrect').innerText = chiToEngState.incorrect;
+      showScreen('chitoeng-complete-screen');
+    }
+
+    // =========================
+    // 共用 restart
+    // =========================
     function restartCurrentGame() {
       if (currentMode === "英轉中") {
         startEngToChiGame();
+      } else if (currentMode === "中轉英" && currentCategory) {
+        startChiToEngGame(currentCategory);
       }
     }
 
