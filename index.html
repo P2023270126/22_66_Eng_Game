@@ -857,7 +857,7 @@
   </div>
 
   <script>
- // --- Google Sheets 連接代碼開始 ---
+// --- Google Sheets 連接與解析修正版 ---
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQaMfqjweCgX2tOByTliUyUwg0vW0pOog7lEKwc4ZB64T_RlfIoOYvj9o7XgdFTPe0v0t0lAKgVfbmt/pub?output=csv";
 
 async function fetchGameData() {
@@ -866,11 +866,6 @@ async function fetchGameData() {
         const csvText = await response.text();
         window.GAME_DATA = parseCSV(csvText);
         console.log("數據加載成功！", window.GAME_DATA);
-        
-        // 保險：如果數據加載太慢，確保 UI 能看到數據
-        if (currentStudentKey) {
-            console.log("重新初始化當前視窗數據");
-        }
     } catch (error) {
         console.error("讀取失敗:", error);
         alert("無法讀取 Google 表格，請檢查網路或發佈設定！");
@@ -886,40 +881,39 @@ function parseCSV(csv) {
 
     for (let i = 1; i < lines.length; i++) {
         if (!lines[i].trim()) continue;
-        const columns = lines[i].split(',');
+        const columns = lines[i].split(',').map(c => c.trim());
         if (columns.length < 4) continue;
-        const [mode, cat, question, answer, extra] = columns.map(c => c.trim());
+        const [mode, cat, question, answer] = columns;
+
+        const entry = { word: question, answer: answer };
 
         if (mode === "engToChi") {
-            const entry = { word: question, answer: answer };
             result.studentA.engToChi.push(entry);
             result.studentB.engToChi.push(entry);
         } 
         else if (mode === "chiToEng") {
             const category = cat || 'other';
             if (!result.studentA.chiToEng[category]) result.studentA.chiToEng[category] = [];
-            const entry = { word: question, answer: answer };
+            if (!result.studentB.chiToEng[category]) result.studentB.chiToEng[category] = [];
             result.studentA.chiToEng[category].push(entry);
             result.studentB.chiToEng[category].push(entry);
         }
         else if (mode === "spelling") {
-            const entry = { word: question, answer: answer };
             result.studentA.spelling.push(entry);
             result.studentB.spelling.push(entry);
         }
         else if (mode === "listening") {
-            const entry = { word: question, answer: answer };
             result.studentA.listening.push(entry);
             result.studentB.listening.push(entry);
         }
     }
     return result;
-} 
+}
 
-// 啟動加載
+// 立即執行抓取
 fetchGameData();
-// --- Google Sheets 連接代碼結束 ---   
-    
+// --- 連接代碼結束 ---
+     
     let currentStudentKey = null;
     let currentStudentLabel = "";
     let currentMode = "";
