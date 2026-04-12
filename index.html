@@ -878,38 +878,43 @@ async function fetchGameData() {
 }
 
 function parseCSV(csv) {
-    // 使用正則表達式同時分割 \n 和 \r，確保乾淨
-    const lines = csv.split(/\r?\n/); 
+    const lines = csv.split(/\r?\n/);
     const result = {
         studentA: { engToChi: [], chiToEng: {}, spelling: [], listening: [], readingCloze: {} },
         studentB: { engToChi: [], chiToEng: {}, spelling: [], listening: [], readingCloze: {} }
     };
-    
+
     for (let i = 1; i < lines.length; i++) {
-        if (!lines[i].trim()) continue; // 跳過空行
-        
+        if (!lines[i].trim()) continue;
         const columns = lines[i].split(',');
         if (columns.length < 4) continue;
-        
         const [mode, cat, question, answer, extra] = columns.map(c => c.trim());
-        
+
         if (mode === "engToChi") {
             const entry = { word: question, answer: answer };
             result.studentA.engToChi.push(entry);
             result.studentB.engToChi.push(entry);
-        }
-        // 如果你有填寫中轉英，這裡也可以順便處理
+        } 
         else if (mode === "chiToEng") {
             const category = cat || 'other';
             if (!result.studentA.chiToEng[category]) result.studentA.chiToEng[category] = [];
-            result.studentA.chiToEng[category].push({ word: answer, answer: question });
-            // 同步給 studentB
-            if (!result.studentB.chiToEng[category]) result.studentB.chiToEng[category] = [];
-            result.studentB.chiToEng[category].push({ word: answer, answer: question });
+            const entry = { word: question, answer: answer };
+            result.studentA.chiToEng[category].push(entry);
+            result.studentB.chiToEng[category].push(entry);
+        }
+        else if (mode === "spelling") {
+            const entry = { word: question, answer: answer };
+            result.studentA.spelling.push(entry);
+            result.studentB.spelling.push(entry);
+        }
+        else if (mode === "listening") {
+            const entry = { word: question, answer: answer };
+            result.studentA.listening.push(entry);
+            result.studentB.listening.push(entry);
         }
     }
     return result;
-}
+} 
 
 // 啟動加載
 fetchGameData();
