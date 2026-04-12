@@ -878,34 +878,40 @@ async function fetchGameData() {
 }
 
 function parseCSV(csv) {
-    // 使用正則表達式同時分割 \n 和 \r，確保乾淨
-    const lines = csv.split(/\r?\n/); 
+    const lines = csv.split(/\r?\n/);
     const result = {
         studentA: { engToChi: [], chiToEng: {}, spelling: [], listening: [], readingCloze: {} },
         studentB: { engToChi: [], chiToEng: {}, spelling: [], listening: [], readingCloze: {} }
     };
-    
+
     for (let i = 1; i < lines.length; i++) {
-        if (!lines[i].trim()) continue; // 跳過空行
-        
-        const columns = lines[i].split(',');
+        if (!lines[i].trim()) continue;
+        const columns = lines[i].split(',').map(c => c.trim());
         if (columns.length < 4) continue;
-        
-        const [mode, cat, question, answer, extra] = columns.map(c => c.trim());
-        
+
+        const [mode, cat, question, answer] = columns;
+        const entry = { word: question, answer: answer };
+
+        // --- 核心邏輯：根據表格 A 欄 (mode) 分配數據 ---
         if (mode === "engToChi") {
-            const entry = { word: question, answer: answer };
             result.studentA.engToChi.push(entry);
             result.studentB.engToChi.push(entry);
-        }
-        // 如果你有填寫中轉英，這裡也可以順便處理
+        } 
         else if (mode === "chiToEng") {
             const category = cat || 'other';
             if (!result.studentA.chiToEng[category]) result.studentA.chiToEng[category] = [];
-            result.studentA.chiToEng[category].push({ word: answer, answer: question });
-            // 同步給 studentB
             if (!result.studentB.chiToEng[category]) result.studentB.chiToEng[category] = [];
+            // 中轉英通常是把「答案」當題目，「題目」當正確答案
+            result.studentA.chiToEng[category].push({ word: answer, answer: question });
             result.studentB.chiToEng[category].push({ word: answer, answer: question });
+        } 
+        else if (mode === "spelling") {
+            result.studentA.spelling.push(entry);
+            result.studentB.spelling.push(entry);
+        } 
+        else if (mode === "listening") {
+            result.studentA.listening.push(entry);
+            result.studentB.listening.push(entry);
         }
     }
     return result;
