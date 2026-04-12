@@ -1,1880 +1,1100 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>22_66_Eng_Game</title>
-  <style>
-    :root {
-      --blue: #4A90E2;
-      --green: #48BB78;
-      --pink: #ED64A6;
-      --orange: #F6AD55;
-      --purple: #9F7AEA;
-      --bg: #f4f7fb;
-      --card: #ffffff;
-      --text: #2d3748;
-      --subtext: #718096;
-      --line: #d9e2ec;
-      --success: #38a169;
-      --error: #e53e3e;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .app {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 20px 14px 32px;
-    }
-
-    .screen { display: none; }
-    .screen.active { display: block; }
-
-    .hero {
-      text-align: center;
-      margin-bottom: 22px;
-    }
-
-    .hero h1 {
-      margin: 0;
-      font-size: 2rem;
-    }
-
-    .hero p {
-      margin-top: 10px;
-      color: var(--subtext);
-      font-size: 1rem;
-    }
-
-    .grid-2,
-    .grid-5,
-    .grid-6,
-    .options-grid {
-      display: grid;
-      gap: 16px;
-    }
-
-    .grid-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      max-width: 700px;
-      margin: 0 auto;
-    }
-
-    .grid-5 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .grid-5 .row-2 {
-      grid-column: 1 / -1;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    .grid-6 {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .options-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .card-btn,
-    .option-btn,
-    .back-btn,
-    .action-btn,
-    .audio-btn,
-    .blank-pill {
-      border: none;
-      border-radius: 20px;
-      background: var(--card);
-      cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    }
-
-    .card-btn:hover,
-    .option-btn:hover,
-    .back-btn:hover,
-    .action-btn:hover,
-    .audio-btn:hover,
-    .blank-pill:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 24px rgba(0,0,0,0.1);
-    }
-
-    .card-btn {
-      padding: 22px 18px;
-      text-align: center;
-      min-height: 150px;
-    }
-
-    .card-btn .icon {
-      font-size: 2rem;
-      margin-bottom: 10px;
-      display: block;
-    }
-
-    .card-btn .title {
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .card-btn .desc {
-      font-size: 0.95rem;
-      color: var(--subtext);
-      line-height: 1.45;
-    }
-
-    .student-a { border-top: 6px solid var(--blue); }
-    .student-b { border-top: 6px solid var(--green); }
-    .mode-1 { border-top: 6px solid var(--blue); }
-    .mode-2 { border-top: 6px solid var(--green); }
-    .mode-3 { border-top: 6px solid var(--pink); }
-    .mode-4 { border-top: 6px solid var(--orange); }
-    .mode-5 { border-top: 6px solid var(--purple); }
-
-    .toolbar {
-      display: flex;
-      justify-content: flex-start;
-      gap: 12px;
-      margin: 0 auto 18px;
-      max-width: 900px;
-      flex-wrap: wrap;
-    }
-
-    .back-btn,
-    .action-btn,
-    .audio-btn {
-      padding: 12px 18px;
-      border-radius: 999px;
-      font-size: 0.95rem;
-      background: #fff;
-    }
-
-    .game-panel,
-    .completion-card {
-      max-width: 900px;
-      margin: 0 auto;
-      background: #fff;
-      border-radius: 24px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-      padding: 18px;
-    }
-
-    .game-topbar {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-
-    .game-mode-title {
-      font-size: 1.5rem;
-      font-weight: 800;
-      text-align: center;
-      flex: 1;
-      min-width: 180px;
-    }
-
-    .stats-bar {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 14px 16px;
-      border-radius: 16px;
-      background: #f8fafc;
-      border: 1px solid var(--line);
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-    }
-
-    .stats-item {
-      font-size: 0.98rem;
-      font-weight: 600;
-    }
-
-    .question-card {
-      text-align: center;
-      padding: 24px 18px;
-      border-radius: 20px;
-      background: #f8fbff;
-      border: 1px solid #dbeafe;
-      margin-bottom: 14px;
-    }
-
-    .question-word {
-      font-size: 2.25rem;
-      font-weight: 800;
-      word-break: break-word;
-      line-height: 1.2;
-    }
-
-    .question-subtitle {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--subtext);
-      line-height: 1.3;
-    }
-
-    .question-subtitle.large {
-      font-size: 1.35rem;
-      margin-top: 6px;
-    }
-
-    .option-btn {
-      padding: 18px 14px;
-      min-height: 76px;
-      font-size: 1.35rem;
-      font-weight: 800;
-      text-align: center;
-      background: #fff;
-      border: 2px solid #e2e8f0;
-    }
-
-    .option-btn:disabled {
-      cursor: not-allowed;
-      opacity: 0.88;
-      transform: none;
-    }
-
-    .option-btn.correct {
-      border-color: var(--success);
-      background: #f0fff4;
-      color: var(--success);
-    }
-
-    .option-btn.wrong {
-      border-color: var(--error);
-      background: #fff5f5;
-      color: var(--error);
-    }
-
-    .controls-row {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin-top: 14px;
-      flex-wrap: wrap;
-    }
-
-    .result-box {
-      margin-top: 14px;
-      padding: 18px 16px;
-      border-radius: 18px;
-      background: #f8fafc;
-      border: 1px solid var(--line);
-      text-align: center;
-      display: none;
-    }
-
-    .result-box.show {
-      display: block;
-    }
-
-    .result-title {
-      font-size: 2rem;
-      font-weight: 900;
-      margin-bottom: 12px;
-      line-height: 1.2;
-    }
-
-    .result-title.success { color: var(--success); }
-    .result-title.error { color: var(--error); }
-
-    .result-answer {
-      font-size: 2.15rem;
-      font-weight: 900;
-      margin-bottom: 0;
-      line-height: 1.25;
-      word-break: break-word;
-    }
-
-    .result-note {
-      display: none;
-    }
-
-    .next-btn-large {
-      padding: 18px 34px;
-      font-size: 1.4rem;
-      font-weight: 900;
-      min-width: 190px;
-      border-radius: 999px;
-      margin-top: 6px;
-    }
-
-    .completion-card {
-      text-align: center;
-      margin-top: 10px;
-    }
-
-    .trophy {
-      font-size: 4rem;
-      margin-bottom: 10px;
-    }
-
-    .completion-title {
-      font-size: 2rem;
-      font-weight: 800;
-      margin-bottom: 10px;
-    }
-
-    .completion-stats {
-      color: var(--subtext);
-      font-size: 1.05rem;
-      line-height: 1.7;
-      margin-bottom: 20px;
-    }
-
-    .spelling-text {
-      font-size: 2rem;
-      font-weight: 800;
-      line-height: 1.3;
-      letter-spacing: 0.03em;
-      word-break: break-word;
-    }
-
-    .cloze-passage {
-      font-size: 1.55rem;
-      font-weight: 700;
-      line-height: 1.8;
-      text-align: left;
-      max-width: 760px;
-      margin: 0 auto;
-      word-break: break-word;
-    }
-
-    .blank-pill {
-      display: inline-block;
-      min-width: 110px;
-      padding: 4px 16px;
-      margin: 0 4px;
-      text-align: center;
-      font-weight: 900;
-      font-size: 1.15rem;
-      border-radius: 999px;
-      box-shadow: none;
-      border: 2px solid #dbeafe;
-      background: #ffffff;
-      vertical-align: middle;
-    }
-
-    .blank-pill.active {
-      border-color: var(--orange);
-      background: #fff7ed;
-    }
-
-    .blank-pill.filled {
-      border-color: var(--purple);
-      background: #faf5ff;
-    }
-
-    .blank-pill.empty {
-      color: #94a3b8;
-    }
-
-    .hidden-after-answer {
-      transition: opacity 0.2s ease;
-    }
-
-    .hidden-after-answer.hide {
-      display: none;
-    }
-
-    @media (max-width: 768px) {
-      .app {
-        padding: 12px 10px 24px;
-      }
-
-      .grid-2,
-      .grid-6,
-      .grid-5,
-      .grid-5 .row-2,
-      .options-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .card-btn {
-        min-height: 126px;
-      }
-
-      .hero {
-        margin-bottom: 18px;
-      }
-
-      .hero h1 {
-        font-size: 1.65rem;
-      }
-
-      .game-panel,
-      .completion-card {
-        padding: 14px;
-        border-radius: 20px;
-      }
-
-      .game-topbar {
-        margin-bottom: 12px;
-      }
-
-      .stats-bar {
-        margin-bottom: 14px;
-        padding: 12px 14px;
-      }
-
-      .question-card {
-        padding: 18px 14px;
-        margin-bottom: 10px;
-      }
-
-      .question-word {
-        font-size: 1.95rem;
-      }
-
-      .question-subtitle.large {
-        font-size: 1.15rem;
-      }
-
-      .result-title {
-        font-size: 1.65rem;
-      }
-
-      .result-answer {
-        font-size: 1.8rem;
-      }
-
-      .spelling-text {
-        font-size: 1.75rem;
-      }
-
-      .cloze-passage {
-        font-size: 1.2rem;
-        line-height: 1.9;
-      }
-
-      .blank-pill {
-        min-width: 90px;
-        font-size: 1rem;
-        padding: 4px 12px;
-      }
-
-      .option-btn {
-        min-height: 72px;
-        font-size: 1.5rem;
-        font-weight: 900;
-      }
-
-      .next-btn-large {
-        width: 100%;
-        max-width: 280px;
-      }
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>22_66_Eng_Game</title>
+  <style>
+    :root {
+      --blue: #4A90E2;
+      --green: #48BB78;
+      --pink: #ED64A6;
+      --orange: #F6AD55;
+      --purple: #9F7AEA;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #2d3748;
+      --subtext: #718096;
+      --line: #d9e2ec;
+      --success: #38a169;
+      --error: #e53e3e;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .app {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px 14px 32px;
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    .hero p {
+      margin-top: 10px;
+      color: var(--subtext);
+      font-size: 1rem;
+    }
+
+    .grid-2,
+    .grid-5,
+    .grid-6,
+    .options-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .grid-5 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .grid-5 .row-2 {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .grid-6 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .options-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .card-btn,
+    .option-btn,
+    .back-btn,
+    .action-btn,
+    .audio-btn,
+    .blank-pill {
+      border: none;
+      border-radius: 20px;
+      background: var(--card);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    .card-btn:hover,
+    .option-btn:hover,
+    .back-btn:hover,
+    .action-btn:hover,
+    .audio-btn:hover,
+    .blank-pill:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.1);
+    }
+
+    .card-btn {
+      padding: 22px 18px;
+      text-align: center;
+      min-height: 150px;
+    }
+
+    .card-btn .icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .card-btn .title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .card-btn .desc {
+      font-size: 0.95rem;
+      color: var(--subtext);
+      line-height: 1.45;
+    }
+
+    .student-a { border-top: 6px solid var(--blue); }
+    .student-b { border-top: 6px solid var(--green); }
+    .mode-1 { border-top: 6px solid var(--blue); }
+    .mode-2 { border-top: 6px solid var(--green); }
+    .mode-3 { border-top: 6px solid var(--pink); }
+    .mode-4 { border-top: 6px solid var(--orange); }
+    .mode-5 { border-top: 6px solid var(--purple); }
+
+    .toolbar {
+      display: flex;
+      justify-content: flex-start;
+      gap: 12px;
+      margin: 0 auto 18px;
+      max-width: 900px;
+      flex-wrap: wrap;
+    }
+
+    .back-btn,
+    .action-btn,
+    .audio-btn {
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      background: #fff;
+    }
+
+    .game-panel,
+    .completion-card {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      padding: 18px;
+    }
+
+    .game-topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .game-mode-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      text-align: center;
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .stats-bar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .stats-item {
+      font-size: 0.98rem;
+      font-weight: 600;
+    }
+
+    .question-card {
+      text-align: center;
+      padding: 24px 18px;
+      border-radius: 20px;
+      background: #f8fbff;
+      border: 1px solid #dbeafe;
+      margin-bottom: 14px;
+    }
+
+    .question-word {
+      font-size: 2.25rem;
+      font-weight: 800;
+      word-break: break-word;
+      line-height: 1.2;
+    }
+
+    .question-subtitle {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--subtext);
+      line-height: 1.3;
+    }
+
+    .question-subtitle.large {
+      font-size: 1.35rem;
+      margin-top: 6px;
+    }
+
+    .option-btn {
+      padding: 18px 14px;
+      min-height: 76px;
+      font-size: 1.35rem;
+      font-weight: 800;
+      text-align: center;
+      background: #fff;
+      border: 2px solid #e2e8f0;
+    }
+
+    .option-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.88;
+      transform: none;
+    }
+
+    .option-btn.correct {
+      border-color: var(--success);
+      background: #f0fff4;
+      color: var(--success);
+    }
+
+    .option-btn.wrong {
+      border-color: var(--error);
+      background: #fff5f5;
+      color: var(--error);
+    }
+
+    .controls-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .result-box {
+      margin-top: 14px;
+      padding: 18px 16px;
+      border-radius: 18px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      text-align: center;
+      display: none;
+    }
+
+    .result-box.show {
+      display: block;
+    }
+
+    .result-title {
+      font-size: 2rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+
+    .result-title.success { color: var(--success); }
+    .result-title.error { color: var(--error); }
+
+    .result-answer {
+      font-size: 2.15rem;
+      font-weight: 900;
+      margin-bottom: 0;
+      line-height: 1.25;
+      word-break: break-word;
+    }
+
+    .result-note {
+      display: none;
+    }
+
+    .next-btn-large {
+      padding: 18px 34px;
+      font-size: 1.4rem;
+      font-weight: 900;
+      min-width: 190px;
+      border-radius: 999px;
+      margin-top: 6px;
+    }
+
+    .completion-card {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .trophy {
+      font-size: 4rem;
+      margin-bottom: 10px;
+    }
+
+    .completion-title {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .completion-stats {
+      color: var(--subtext);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .spelling-text {
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1.3;
+      letter-spacing: 0.03em;
+      word-break: break-word;
+    }
+
+    .cloze-passage {
+      font-size: 1.55rem;
+      font-weight: 700;
+      line-height: 1.8;
+      text-align: left;
+      max-width: 760px;
+      margin: 0 auto;
+      word-break: break-word;
+    }
+
+    .blank-pill {
+      display: inline-block;
+      min-width: 110px;
+      padding: 4px 16px;
+      margin: 0 4px;
+      text-align: center;
+      font-weight: 900;
+      font-size: 1.15rem;
+      border-radius: 999px;
+      box-shadow: none;
+      border: 2px solid #dbeafe;
+      background: #ffffff;
+      vertical-align: middle;
+    }
+
+    .blank-pill.active {
+      border-color: var(--orange);
+      background: #fff7ed;
+    }
+
+    .blank-pill.filled {
+      border-color: var(--purple);
+      background: #faf5ff;
+    }
+
+    .blank-pill.empty {
+      color: #94a3b8;
+    }
+
+    .hidden-after-answer {
+      transition: opacity 0.2s ease;
+    }
+
+    .hidden-after-answer.hide {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .app {
+        padding: 12px 10px 24px;
+      }
+
+      .grid-2,
+      .grid-6,
+      .grid-5,
+      .grid-5 .row-2,
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card-btn {
+        min-height: 126px;
+      }
+
+      .hero {
+        margin-bottom: 18px;
+      }
+
+      .hero h1 {
+        font-size: 1.65rem;
+      }
+
+      .game-panel,
+      .completion-card {
+        padding: 14px;
+        border-radius: 20px;
+      }
+
+      .game-topbar {
+        margin-bottom: 12px;
+      }
+
+      .stats-bar {
+        margin-bottom: 14px;
+        padding: 12px 14px;
+      }
+
+      .question-card {
+        padding: 18px 14px;
+        margin-bottom: 10px;
+      }
+
+      .question-word {
+        font-size: 1.95rem;
+      }
+
+      .question-subtitle.large {
+        font-size: 1.15rem;
+      }
+
+      .result-title {
+        font-size: 1.65rem;
+      }
+
+      .result-answer {
+        font-size: 1.8rem;
+      }
+
+      .spelling-text {
+        font-size: 1.75rem;
+      }
+
+      .cloze-passage {
+        font-size: 1.2rem;
+        line-height: 1.9;
+      }
+
+      .blank-pill {
+        min-width: 90px;
+        font-size: 1rem;
+        padding: 4px 12px;
+      }
+
+      .option-btn {
+        min-height: 72px;
+        font-size: 1.5rem;
+        font-weight: 900;
+      }
+
+      .next-btn-large {
+        width: 100%;
+        max-width: 280px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="app">
-    <section id="student-screen" class="screen active">
-      <div class="hero">
-        <h1>English Practice Game</h1>
-        <p>Choose a student</p>
-      </div>
+  <div class="app">
+    <section id="student-screen" class="screen active">
+      <div class="hero">
+        <h1>English Practice Game</h1>
+        <p>Choose a student</p>
+      </div>
 
-      <div class="grid-2">
-        <button class="card-btn student-a" onclick="selectStudent('studentA', '66 Jasper')">
-          <span class="icon">👦</span>
-          <div class="title">66 Jasper</div>
-          <div class="desc">進入 66 Jasper 專屬練習模式</div>
-        </button>
+      <div class="grid-2">
+        <button class="card-btn student-a" onclick="selectStudent('studentA', '66 Jasper')">
+          <span class="icon">👦</span>
+          <div class="title">66 Jasper</div>
+          <div class="desc">進入 66 Jasper 專屬練習模式</div>
+        </button>
 
-        <button class="card-btn student-b" onclick="selectStudent('studentB', '22 Jolie')">
-          <span class="icon">👧</span>
-          <div class="title">22 Jolie</div>
-          <div class="desc">進入 22 Jolie 專屬練習模式</div>
-        </button>
-      </div>
-    </section>
+        <button class="card-btn student-b" onclick="selectStudent('studentB', '22 Jolie')">
+          <span class="icon">👧</span>
+          <div class="title">22 Jolie</div>
+          <div class="desc">進入 22 Jolie 專屬練習模式</div>
+        </button>
+      </div>
+    </section>
 
-    <section id="mode-screen" class="screen">
-      <div class="toolbar">
-        <button class="back-btn" onclick="backToStudentScreen()">← 返回學生選擇</button>
-      </div>
+    <section id="mode-screen" class="screen">
+      <div class="toolbar">
+        <button class="back-btn" onclick="backToStudentScreen()">← 返回學生選擇</button>
+      </div>
 
-      <div class="hero">
-        <h1 id="mode-screen-title">66 Jasper 練習模式</h1>
-        <p>Choose a practice mode</p>
-      </div>
+      <div class="hero">
+        <h1 id="mode-screen-title">66 Jasper 練習模式</h1>
+        <p>Choose a practice mode</p>
+      </div>
 
-      <div class="grid-5">
-        <button class="card-btn mode-1" onclick="enterMode('engToChi')">
-          <span class="icon">🔤</span>
-          <div class="title">英轉中</div>
-          <div class="desc">看英文，選出正確中文意思</div>
-        </button>
+      <div class="grid-5">
+        <button class="card-btn mode-1" onclick="enterMode('engToChi')">
+          <span class="icon">🔤</span>
+          <div class="title">英轉中</div>
+          <div class="desc">看英文，選出正確中文意思</div>
+        </button>
 
-        <button class="card-btn mode-2" onclick="showChiToEngCategory()">
-          <span class="icon">🀄</span>
-          <div class="title">中轉英</div>
-          <div class="desc">先選分類，再看中文選英文</div>
-        </button>
+        <button class="card-btn mode-2" onclick="showChiToEngCategory()">
+          <span class="icon">🀄</span>
+          <div class="title">中轉英</div>
+          <div class="desc">先選分類，再看中文選英文</div>
+        </button>
 
-        <div class="row-2">
-          <button class="card-btn mode-3" onclick="startSpellingGame()">
-            <span class="icon">✏️</span>
-            <div class="title">拼字練習</div>
-            <div class="desc">補回單字中缺少的字母</div>
-          </button>
+        <div class="row-2">
+          <button class="card-btn mode-3" onclick="startSpellingGame()">
+            <span class="icon">✏️</span>
+            <div class="title">拼字練習</div>
+            <div class="desc">補回單字中缺少的字母</div>
+          </button>
 
-          <button class="card-btn mode-4" onclick="startListeningGame()">
-            <span class="icon">🔊</span>
-            <div class="title">聽音選字</div>
-            <div class="desc">先聽發音，再選正確英文</div>
-          </button>
+          <button class="card-btn mode-4" onclick="startListeningGame()">
+            <span class="icon">🔊</span>
+            <div class="title">聽音選字</div>
+            <div class="desc">先聽發音，再選正確英文</div>
+          </button>
 
-          <button class="card-btn mode-5" onclick="enterMode('readingCloze')">
-            <span class="icon">📖</span>
-            <div class="title">短文填充</div>
-            <div class="desc">閱讀短文，填入完整詞語</div>
-          </button>
-        </div>
-      </div>
-    </section>
+          <button class="card-btn mode-5" onclick="enterMode('readingCloze')">
+            <span class="icon">📖</span>
+            <div class="title">短文填充</div>
+            <div class="desc">閱讀短文，填入完整詞語</div>
+          </button>
+        </div>
+      </div>
+    </section>
 
-    <section id="category-screen" class="screen">
-      <div class="toolbar">
-        <button class="back-btn" onclick="showScreen('mode-screen')">← 返回模式選擇</button>
-      </div>
+    <section id="category-screen" class="screen">
+      <div class="toolbar">
+        <button class="back-btn" onclick="showScreen('mode-screen')">← 返回模式選擇</button>
+      </div>
 
-      <div class="hero">
-        <h1>中轉英分類</h1>
-        <p>Choose a category</p>
-      </div>
+      <div class="hero">
+        <h1>中轉英分類</h1>
+        <p>Choose a category</p>
+      </div>
 
-      <div class="grid-6">
-        <button class="card-btn" onclick="startChiToEngGame('feeling')">
-          <span class="icon">😊</span>
-          <div class="title">Feeling</div>
-          <div class="desc">情緒與感受</div>
-        </button>
+      <div class="grid-6">
+        <button class="card-btn" onclick="startChiToEngGame('feeling')">
+          <span class="icon">😊</span>
+          <div class="title">Feeling</div>
+          <div class="desc">情緒與感受</div>
+        </button>
 
-        <button class="card-btn" onclick="startChiToEngGame('sports')">
-          <span class="icon">🏀</span>
-          <div class="title">Sports</div>
-          <div class="desc">運動類詞語</div>
-        </button>
+        <button class="card-btn" onclick="startChiToEngGame('sports')">
+          <span class="icon">🏀</span>
+          <div class="title">Sports</div>
+          <div class="desc">運動類詞語</div>
+        </button>
 
-        <button class="card-btn" onclick="startChiToEngGame('pastTense')">
-          <span class="icon">⏪</span>
-          <div class="title">Past tense</div>
-          <div class="desc">過去式詞語</div>
-        </button>
+        <button class="card-btn" onclick="startChiToEngGame('pastTense')">
+          <span class="icon">⏪</span>
+          <div class="title">Past tense</div>
+          <div class="desc">過去式詞語</div>
+        </button>
 
-        <button class="card-btn" onclick="startChiToEngGame('time')">
-          <span class="icon">⏰</span>
-          <div class="title">Time</div>
-          <div class="desc">時間相關詞語</div>
-        </button>
+        <button class="card-btn" onclick="startChiToEngGame('time')">
+          <span class="icon">⏰</span>
+          <div class="title">Time</div>
+          <div class="desc">時間相關詞語</div>
+        </button>
 
-        <button class="card-btn" onclick="startChiToEngGame('other')">
-          <span class="icon">📦</span>
-          <div class="title">Other</div>
-          <div class="desc">其他常用詞語</div>
-        </button>
+        <button class="card-btn" onclick="startChiToEngGame('other')">
+          <span class="icon">📦</span>
+          <div class="title">Other</div>
+          <div class="desc">其他常用詞語</div>
+        </button>
 
-        <button class="card-btn" onclick="startChiToEngGame('food')">
-          <span class="icon">🍝</span>
-          <div class="title">Food</div>
-          <div class="desc">食物類詞語</div>
-        </button>
-      </div>
-    </section>
+        <button class="card-btn" onclick="startChiToEngGame('food')">
+          <span class="icon">🍝</span>
+          <div class="title">Food</div>
+          <div class="desc">食物類詞語</div>
+        </button>
+      </div>
+    </section>
 
-    <section id="engtochi-screen" class="screen">
-      <div class="game-panel">
-        <div class="game-topbar">
-          <button class="back-btn" onclick="returnToModeMenu()">← 返回主頁</button>
-          <div class="game-mode-title">英轉中</div>
-          <button class="action-btn" onclick="restartCurrentGame()">重新開始</button>
-        </div>
+    <section id="engtochi-screen" class="screen">
+      <div class="game-panel">
+        <div class="game-topbar">
+          <button class="back-btn" onclick="returnToModeMenu()">← 返回主頁</button>
+          <div class="game-mode-title">英轉中</div>
+          <button class="action-btn" onclick="restartCurrentGame()">重新開始</button>
+        </div>
 
-        <div class="stats-bar">
-          <div class="stats-item">Question: <span id="engtochi-question-no">0</span> / <span id="engtochi-question-total">0</span></div>
-          <div class="stats-item">Correct: <span id="engtochi-correct">0</span></div>
-          <div class="stats-item">Incorrect: <span id="engtochi-incorrect">0</span></div>
-        </div>
+        <div class="stats-bar">
+          <div class="stats-item">Question: <span id="engtochi-question-no">0</span> / <span id="engtochi-question-total">0</span></div>
+          <div class="stats-item">Correct: <span id="engtochi-correct">0</span></div>
+          <div class="stats-item">Incorrect: <span id="engtochi-incorrect">0</span></div>
+        </div>
 
-        <div class="question-card">
-          <div class="question-word" id="engtochi-word">---</div>
-        </div>
+        <div class="question-card">
+          <div class="question-word" id="engtochi-word">---</div>
+        </div>
 
-        <div class="controls-row hidden-after-answer" id="engtochi-audio-row" style="margin-bottom:12px;">
-          <button class="audio-btn" onclick="replayCurrentWord()">🔊 再聽一次</button>
-        </div>
+        <div class="controls-row hidden-after-answer" id="engtochi-audio-row" style="margin-bottom:12px;">
+          <button class="audio-btn" onclick="replayCurrentWord()">🔊 再聽一次</button>
+        </div>
 
-        <div class="options-grid hidden-after-answer" id="engtochi-options"></div>
+        <div class="options-grid hidden-after-answer" id="engtochi-options"></div>
 
-        <div class="result-box" id="engtochi-result-box">
-          <div class="result-title" id="engtochi-result-title"></div>
-          <div class="result-answer" id="engtochi-result-answer"></div>
-          <div class="result-note" id="engtochi-result-note"></div>
-          <div class="controls-row">
-            <button class="action-btn next-btn-large" onclick="goNextEngToChi()">下一題</button>
-          </div>
-        </div>
-      </div>
-    </section>
+        <div class="result-box" id="engtochi-result-box">
+          <div class="result-title" id="engtochi-result-title"></div>
+          <div class="result-answer" id="engtochi-result-answer"></div>
+          <div class="result-note" id="engtochi-result-note"></div>
+          <div class="controls-row">
+            <button class="action-btn next-btn-large" onclick="goNextEngToChi()">下一題</button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <section id="engtochi-complete-screen" class="screen">
-      <div class="completion-card">
-        <div class="trophy">🏆</div>
-        <div class="completion-title">Excellent!</div>
-        <div class="completion-stats">
-          英轉中完成<br />
-          Correct: <span id="engtochi-final-correct">0</span><br />
-          Incorrect: <span id="engtochi-final-incorrect">0</span>
-        </div>
-        <div class="controls-row">
-          <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
-          <button class="back-btn" onclick="returnToModeMenu()">返回主頁</button>
-        </div>
-      </div>
-    </section>
+    <section id="engtochi-complete-screen" class="screen">
+      <div class="completion-card">
+        <div class="trophy">🏆</div>
+        <div class="completion-title">Excellent!</div>
+        <div class="completion-stats">
+          英轉中完成<br />
+          Correct: <span id="engtochi-final-correct">0</span><br />
+          Incorrect: <span id="engtochi-final-incorrect">0</span>
+        </div>
+        <div class="controls-row">
+          <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
+          <button class="back-btn" onclick="returnToModeMenu()">返回主頁</button>
+        </div>
+      </div>
+    </section>
 
-    <section id="chitoeng-screen" class="screen">
-      <div class="game-panel">
-        <div class="game-topbar">
-          <button class="back-btn" onclick="returnToCategoryMenu()">← 返回分類</button>
-          <div class="game-mode-title" id="chitoeng-title">中轉英</div>
-          <button class="action-btn" onclick="restartCurrentGame()">重新開始</button>
-        </div>
+    <section id="chitoeng-screen" class="screen">
+      <div class="game-panel">
+        <div class="game-topbar">
+          <button class="back-btn" onclick="returnToCategoryMenu()">← 返回分類</button>
+          <div class="game-mode-title" id="chitoeng-title">中轉英</div>
+          <button class="action-btn" onclick="restartCurrentGame()">重新開始</button>
+        </div>
 
-        <div class="stats-bar">
-          <div class="stats-item">Question: <span id="chitoeng-question-no">0</span> / <span id="chitoeng-question-total">0</span></div>
-          <div class="stats-item">Correct: <span id="chitoeng-correct">0</span></div>
-          <div class="stats-item">Incorrect: <span id="chitoeng-incorrect">0</span></div>
-        </div>
+        <div class="stats-bar">
+          <div class="stats-item">Question: <span id="chitoeng-question-no">0</span> / <span id="chitoeng-question-total">0</span></div>
+          <div class="stats-item">Correct: <span id="chitoeng-correct">0</span></div>
+          <div class="stats-item">Incorrect: <span id="chitoeng-incorrect">0</span></div>
+        </div>
 
-        <div class="question-card">
-          <div class="question-word" id="chitoeng-word">---</div>
-        </div>
+        <div class="question-card">
+          <div class="question-word" id="chitoeng-word">---</div>
+        </div>
 
-        <div class="options-grid hidden-after-answer" id="chitoeng-options"></div>
+        <div class="options-grid hidden-after-answer" id="chitoeng-options"></div>
 
-        <div class="result-box" id="chitoeng-result-box">
-          <div class="result-title" id="chitoeng-result-title"></div>
-          <div class="result-answer" id="chitoeng-result-answer"></div>
-          <div class="result-note" id="chitoeng-result-note"></div>
-          <div class="controls-row">
-            <button class="audio-btn" onclick="replayCurrentWord()">🔊 再聽一次</button>
-            <button class="action-btn next-btn-large" onclick="goNextChiToEng()">下一題</button>
-          </div>
-        </div>
-      </div>
-    </section>
+        <div class="result-box" id="chitoeng-result-box">
+          <div class="result-title" id="chitoeng-result-title"></div>
+          <div class="result-answer" id="chitoeng-result-answer"></div>
+          <div class="result-note" id="chitoeng-result-note"></div>
+          <div class="controls-row">
+            <button class="audio-btn" onclick="replayCurrentWord()">🔊 再聽一次</button>
+            <button class="action-btn next-btn-large" onclick="goNextChiToEng()">下一題</button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <section id="chitoeng-complete-screen" class="screen">
-      <div class="completion-card">
-        <div class="trophy">🏆</div>
-        <div class="completion-title">Excellent!</div>
-        <div class="completion-stats">
-          中轉英完成<br />
-          Correct: <span id="chitoeng-final-correct">0</span><br />
-          Incorrect: <span id="chitoeng-final-incorrect">0</span>
-        </div>
-        <div class="controls-row">
-          <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
-          <button class="back-btn" onclick="returnToCategoryMenu()">返回分類</button>
-        </div>
-      </div>
-    </section>
+    <section id="chitoeng-complete-screen" class="screen">
+      <div class="completion-card">
+        <div class="trophy">🏆</div>
+        <div class="completion-title">Excellent!</div>
+        <div class="completion-stats">
+          中轉英完成<br />
+          Correct: <span id="chitoeng-final-correct">0</span><br />
+          Incorrect: <span id="chitoeng-final-incorrect">0</span>
+        </div>
+        <div class="controls-row">
+          <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
+          <button class="back-btn" onclick="returnToCategoryMenu()">返回分類</button>
+        </div>
+      </div>
+    </section>
 
-    <section id="spelling-screen" class="screen">
-      <div class="game-panel">
-        <div class="game-topbar">
-          <button class="back-btn" onclick="returnToModeMenu()">← 返回主頁</button>
-          <div class="game-mode-title">拼字練習</div>
-          <button class="action-btn" onclick="restartCurrentGame()">重新開始</button>
-        </div>
+    <section id="spelling-screen" class="screen">
+      <div class="game-panel">
+        <div class="game-topbar">
+          <button class="back-btn" onclick="returnToModeMenu()">← 返回主頁</button>
+          <div class="game-mode-title">拼字練習</div>
+          <button class="action-btn" onclick="restartCurrentGame()">重新開始</button>
+        </div>
 
-        <div class="stats-bar">
-          <div class="stats-item">Question: <span id="spelling-question-no">0</span> / <span id="spelling-question-total">0</span></div>
-          <div class="stats-item">Correct: <span id="spelling-correct">0</span></div>
-          <div class="stats-item">Incorrect: <span id="spelling-incorrect">0</span></div>
-        </div>
+        <div class="stats-bar">
+          <div class="stats-item">Question: <span id="spelling-question-no">0</span> / <span id="spelling-question-total">0</span></div>
+          <div class="stats-item">Correct: <span id="spelling-correct">0</span></div>
+          <div class="stats-item">Incorrect: <span id="spelling-incorrect">0</span></div>
+        </div>
 
-        <div class="question-card">
-          <div class="spelling-text" id="spelling-text">---</div>
-        </div>
+        <div class="question-card">
+          <div class="spelling-text" id="spelling-text">---</div>
+        </div>
 
-        <div class="controls-row hidden-after-answer" id="spelling-audio-row" style="margin-bottom:12px;">
-          <button class="audio-btn" onclick="replayCurrentWord()">🔊 再聽一次</button>
-        </div>
+        <div class="controls-row hidden-after-answer" id="spelling-audio-row" style="margin-bottom:12px;">
+          <button class="audio-btn" onclick="replayCurrentWord()">🔊 再聽一次</button>
+        </div>
 
-        <div class="options-grid hidden-after-answer" id="spelling-options"></div>
+        <div class="options-grid hidden-after-answer" id="spelling-options"></div>
 
-        <div class="result-box" id="spelling-result-box">
-          <div class="result-title" id="spelling-result-title"></div>
-          <div class="result-answer" id="spelling-result-answer"></div>
-          <div class="result-note" id="spelling-result-note"></div>
-          <div class="controls-row">
-            <button class="action-btn next-btn-large" onclick="goNextSpelling()">下一題</button>
-          </div>
-        </div>
-      </div>
-    </section>
+        <div class="result-box" id="spelling-result-box">
+          <div class="result-title" id="spelling-result-title"></div>
+          <div class="result-answer" id="spelling-result-answer"></div>
+          <div class="result-note" id="spelling-result-note"></div>
+          <div class="controls-row">
+            <button class="action-btn next-btn-large" onclick="goNextSpelling()">下一題</button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <section id="spelling-complete-screen" class="screen">
-      <div class="completion-card">
-        <div class="trophy">🏆</div>
-        <div class="completion-title">Excellent!</div>
-        <div class="completion-stats">
-          拼字練習完成<br />
-          Correct: <span id="spelling-final-correct">0</span><br />
-          Incorrect: <span id="spelling-final-incorrect">0</span>
-        </div>
-        <div class="controls-row">
-          <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
-          <button class="back-btn" onclick="returnToModeMenu()">返回主頁</button>
-        </div>
-      </div>
-    </section>
+    <section id="spelling-complete-screen" class="screen">
+      <div class="completion-card">
+        <div class="trophy">🏆</div>
+        <div class="completion-title">Excellent!</div>
+        <div class="completion-stats">
+          拼字練習完成<br />
+          Correct: <span id="spelling-final-correct">0</span><br />
+          Incorrect: <span id="spelling-final-incorrect">0</span>
+        </div>
+        <div class="controls-row">
+          <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
+          <button class="back-btn" onclick="returnToModeMenu()">返回主頁</button>
+        </div>
+      </div>
+    </section>
 
-    <section id="listening-screen" class="screen">
-      <div class="game-panel">
-        <div class="game-topbar">
-          <button class="back-btn" onclick="returnToModeMenu()">← 返回主頁</button>
-          <div class="game-mode-title">聽音選字</div>
-          <button class="action-btn" onclick="restartCurrentGame()">重新開始</button>
-        </div>
+    <section id="listening-screen" class="screen">
+      <div class="game-panel">
+        <div class="game-topbar">
+          <button class="back-btn" onclick="returnToModeMenu()">← 返回主頁</button>
+          <div class="game-mode-title">聽音選字</div>
+          <button class="action-btn" onclick="restartCurrentGame()">重新開始</button>
+        </div>
 
-        <div class="stats-bar">
-          <div class="stats-item">Question: <span id="listening-question-no">0</span> / <span id="listening-question-total">0</span></div>
-          <div class="stats-item">Correct: <span id="listening-correct">0</span></div>
-          <div class="stats-item">Incorrect: <span id="listening-incorrect">0</span></div>
-        </div>
+        <div class="stats-bar">
+          <div class="stats-item">Question: <span id="listening-question-no">0</span> / <span id="listening-question-total">0</span></div>
+          <div class="stats-item">Correct: <span id="listening-correct">0</span></div>
+          <div class="stats-item">Incorrect: <span id="listening-incorrect">0</span></div>
+        </div>
 
-        <div class="question-card">
-          <div class="question-word">🔊</div>
-          <div class="question-subtitle large" id="listening-prompt">Listen carefully</div>
-        </div>
+        <div class="question-card">
+          <div class="question-word">🔊</div>
+          <div class="question-subtitle large" id="listening-prompt">Listen carefully</div>
+        </div>
 
-        <div class="controls-row" id="listening-audio-row" style="margin-bottom:12px;">
-          <button class="audio-btn" onclick="replayListeningWord()">🔊 再播一次</button>
-        </div>
+        <div class="controls-row" id="listening-audio-row" style="margin-bottom:12px;">
+          <button class="audio-btn" onclick="replayListeningWord()">🔊 再播一次</button>
+        </div>
 
-        <div class="options-grid hidden-after-answer" id="listening-options"></div>
+        <div class="options-grid hidden-after-answer" id="listening-options"></div>
 
-        <div class="result-box" id="listening-result-box">
-          <div class="result-title" id="listening-result-title"></div>
-          <div class="result-answer" id="listening-result-answer"></div>
-          <div class="result-note" id="listening-result-note"></div>
-          <div class="controls-row">
-            <button class="audio-btn" onclick="replayCurrentWord()">🔊 再播一次</button>
-            <button class="action-btn next-btn-large" onclick="goNextListening()">下一題</button>
-          </div>
-        </div>
-      </div>
-    </section>
+        <div class="result-box" id="listening-result-box">
+          <div class="result-title" id="listening-result-title"></div>
+          <div class="result-answer" id="listening-result-answer"></div>
+          <div class="result-note" id="listening-result-note"></div>
+          <div class="controls-row">
+            <button class="audio-btn" onclick="replayCurrentWord()">🔊 再播一次</button>
+            <button class="action-btn next-btn-large" onclick="goNextListening()">下一題</button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <section id="listening-complete-screen" class="screen">
-      <div class="completion-card">
-        <div class="trophy">🏆</div>
-        <div class="completion-title">Excellent!</div>
-        <div class="completion-stats">
-          聽音選字完成<br />
-          Correct: <span id="listening-final-correct">0</span><br />
-          Incorrect: <span id="listening-final-incorrect">0</span>
-        </div>
-        <div class="controls-row">
-          <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
-          <button class="back-btn" onclick="returnToModeMenu()">返回主頁</button>
-        </div>
-      </div>
-    </section>
+    <section id="listening-complete-screen" class="screen">
+      <div class="completion-card">
+        <div class="trophy">🏆</div>
+        <div class="completion-title">Excellent!</div>
+        <div class="completion-stats">
+          聽音選字完成<br />
+          Correct: <span id="listening-final-correct">0</span><br />
+          Incorrect: <span id="listening-final-incorrect">0</span>
+        </div>
+        <div class="controls-row">
+          <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
+          <button class="back-btn" onclick="returnToModeMenu()">返回主頁</button>
+        </div>
+      </div>
+    </section>
 
-    <section id="readingcloze-screen" class="screen">
-      <div class="game-panel">
-        <div class="game-topbar">
-          <button class="back-btn" onclick="returnToModeMenu()">← 返回主頁</button>
-          <div class="game-mode-title">短文填充</div>
-          <button class="action-btn" onclick="restartCurrentGame()">重新開始</button>
-        </div>
+    <section id="readingcloze-screen" class="screen">
+      <div class="game-panel">
+        <div class="game-topbar">
+          <button class="back-btn" onclick="returnToModeMenu()">← 返回主頁</button>
+          <div class="game-mode-title">短文填充</div>
+          <button class="action-btn" onclick="restartCurrentGame()">重新開始</button>
+        </div>
 
-        <div class="stats-bar">
-          <div class="stats-item">Question: <span id="readingcloze-question-no">0</span> / <span id="readingcloze-question-total">0</span></div>
-          <div class="stats-item">Correct: <span id="readingcloze-correct">0</span></div>
-          <div class="stats-item">Incorrect: <span id="readingcloze-incorrect">0</span></div>
-        </div>
+        <div class="stats-bar">
+          <div class="stats-item">Question: <span id="readingcloze-question-no">0</span> / <span id="readingcloze-question-total">0</span></div>
+          <div class="stats-item">Correct: <span id="readingcloze-correct">0</span></div>
+          <div class="stats-item">Incorrect: <span id="readingcloze-incorrect">0</span></div>
+        </div>
 
-        <div class="question-card">
-          <div class="cloze-passage" id="readingcloze-passage">---</div>
-        </div>
+        <div class="question-card">
+          <div class="cloze-passage" id="readingcloze-passage">---</div>
+        </div>
 
-        <div class="options-grid hidden-after-answer" id="readingcloze-options"></div>
+        <div class="options-grid hidden-after-answer" id="readingcloze-options"></div>
 
-        <div class="result-box" id="readingcloze-result-box">
-          <div class="result-title" id="readingcloze-result-title"></div>
-          <div class="result-answer" id="readingcloze-result-answer"></div>
-          <div class="result-note" id="readingcloze-result-note"></div>
-          <div class="controls-row">
-            <button class="audio-btn" onclick="playCurrentPassage()">🔊 聽全文</button>
-            <button class="action-btn next-btn-large" onclick="goNextReadingCloze()">下一題</button>
-          </div>
-        </div>
-      </div>
-    </section>
+        <div class="result-box" id="readingcloze-result-box">
+          <div class="result-title" id="readingcloze-result-title"></div>
+          <div class="result-answer" id="readingcloze-result-answer"></div>
+          <div class="result-note" id="readingcloze-result-note"></div>
+          <div class="controls-row">
+            <button class="audio-btn" onclick="playCurrentPassage()">🔊 聽全文</button>
+            <button class="action-btn next-btn-large" onclick="goNextReadingCloze()">下一題</button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <section id="readingcloze-complete-screen" class="screen">
-      <div class="completion-card">
-        <div class="trophy">🏆</div>
-        <div class="completion-title">Excellent!</div>
-        <div class="completion-stats">
-          短文填充完成<br />
-          Correct: <span id="readingcloze-final-correct">0</span><br />
-          Incorrect: <span id="readingcloze-final-incorrect">0</span>
-        </div>
-        <div class="controls-row">
-          <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
-          <button class="back-btn" onclick="returnToModeMenu()">返回主頁</button>
-        </div>
-      </div>
-    </section>
-  </div>
+    <section id="readingcloze-complete-screen" class="screen">
+      <div class="completion-card">
+        <div class="trophy">🏆</div>
+        <div class="completion-title">Excellent!</div>
+        <div class="completion-stats">
+          短文填充完成<br />
+          Correct: <span id="readingcloze-final-correct">0</span><br />
+          Incorrect: <span id="readingcloze-final-incorrect">0</span>
+        </div>
+        <div class="controls-row">
+          <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
+          <button class="back-btn" onclick="returnToModeMenu()">返回主頁</button>
+        </div>
+      </div>
+    </section>
+  </div>
 
-  <script>
-// --- Google Sheets 連接與解析修正版 ---
+  <script>
+ // --- Google Sheets 連接代碼開始 ---
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQaMfqjweCgX2tOByTliUyUwg0vW0pOog7lEKwc4ZB64T_RlfIoOYvj9o7XgdFTPe0v0t0lAKgVfbmt/pub?output=csv";
 
 async function fetchGameData() {
-    try {
-        const response = await fetch(SHEET_URL);
-        const csvText = await response.text();
-        window.GAME_DATA = parseCSV(csvText);
-        console.log("數據加載成功！", window.GAME_DATA);
-    } catch (error) {
-        console.error("讀取失敗:", error);
-        alert("無法讀取 Google 表格，請檢查網路或發佈設定！");
-    }
+    try {
+        const response = await fetch(SHEET_URL);
+        const csvText = await response.text();
+        window.GAME_DATA = parseCSV(csvText);
+        console.log("數據加載成功！", window.GAME_DATA);
+        
+        // 保險：如果數據加載太慢，確保 UI 能看到數據
+        if (currentStudentKey) {
+            console.log("重新初始化當前視窗數據");
+        }
+    } catch (error) {
+        console.error("讀取失敗:", error);
+        alert("無法讀取 Google 表格，請檢查網路或發佈設定！");
+    }
 }
 
 function parseCSV(csv) {
-    const lines = csv.split(/\r?\n/);
-    const result = {
-        studentA: { engToChi: [], chiToEng: {}, spelling: [], listening: [], readingCloze: {} },
-        studentB: { engToChi: [], chiToEng: {}, spelling: [], listening: [], readingCloze: {} }
-    };
+    const lines = csv.split(/\r?\n/);
+    const result = {
+        studentA: { engToChi: [], chiToEng: {}, spelling: [], listening: [], readingCloze: {} },
+        studentB: { engToChi: [], chiToEng: {}, spelling: [], listening: [], readingCloze: {} }
+    };
 
-    for (let i = 1; i < lines.length; i++) {
-        if (!lines[i].trim()) continue;
-        const columns = lines[i].split(',').map(c => c.trim());
-        if (columns.length < 4) continue;
-        const [mode, cat, question, answer] = columns;
+    for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const columns = lines[i].split(',');
+        if (columns.length < 4) continue;
+        const [mode, cat, question, answer, extra] = columns.map(c => c.trim());
 
-        const entry = { word: question, answer: answer };
+        if (mode === "engToChi") {
+            const entry = { word: question, answer: answer };
+            result.studentA.engToChi.push(entry);
+            result.studentB.engToChi.push(entry);
+        } 
+        else if (mode === "chiToEng") {
+            const category = cat || 'other';
+            if (!result.studentA.chiToEng[category]) result.studentA.chiToEng[category] = [];
+            const entry = { word: question, answer: answer };
+            result.studentA.chiToEng[category].push(entry);
+            result.studentB.chiToEng[category].push(entry);
+        }
+        else if (mode === "spelling") {
+            const entry = { word: question, answer: answer };
+            result.studentA.spelling.push(entry);
+            result.studentB.spelling.push(entry);
+        }
+        else if (mode === "listening") {
+            const entry = { word: question, answer: answer };
+            result.studentA.listening.push(entry);
+            result.studentB.listening.push(entry);
+        }
+    }
+    return result;
+} 
 
-        if (mode === "engToChi") {
-            result.studentA.engToChi.push(entry);
-            result.studentB.engToChi.push(entry);
-        } 
-        else if (mode === "chiToEng") {
-            const category = cat || 'other';
-            if (!result.studentA.chiToEng[category]) result.studentA.chiToEng[category] = [];
-            if (!result.studentB.chiToEng[category]) result.studentB.chiToEng[category] = [];
-            result.studentA.chiToEng[category].push(entry);
-            result.studentB.chiToEng[category].push(entry);
-        }
-        else if (mode === "spelling") {
-            result.studentA.spelling.push(entry);
-            result.studentB.spelling.push(entry);
-        }
-        else if (mode === "listening") {
-            result.studentA.listening.push(entry);
-            result.studentB.listening.push(entry);
-        }
-    }
-    return result;
-}
-
-// 立即執行抓取
+// 啟動加載
 fetchGameData();
-// --- 連接代碼結束 ---
-     
-    let currentStudentKey = null;
-    let currentStudentLabel = "";
-    let currentMode = "";
-    let currentCategory = "";
-    let currentWordForSpeech = "";
-    let currentPassageForSpeech = "";
-
-    const engToChiState = {
-      queue: [], currentItem: null, correct: 0, incorrect: 0, answeredCount: 0, totalTarget: 0, hasAnsweredCurrent: false
-    };
-
-    const chiToEngState = {
-      queue: [], currentItem: null, correct: 0, incorrect: 0, answeredCount: 0, totalTarget: 0, hasAnsweredCurrent: false
-    };
-
-    const spellingState = {
-      queue: [], currentItem: null, correct: 0, incorrect: 0, answeredCount: 0, totalTarget: 0, hasAnsweredCurrent: false, currentBlankIndex: 0, userLetters: []
-    };
-
-    const listeningState = {
-      queue: [], currentItem: null, correct: 0, incorrect: 0, answeredCount: 0, totalTarget: 0, hasAnsweredCurrent: false, optionsReady: false
-    };
-
-    const readingClozeState = {
-      queue: [],
-      currentItem: null,
-      correct: 0,
-      incorrect: 0,
-      answeredCount: 0,
-      totalTarget: 0,
-      hasAnsweredCurrent: false,
-      currentBlankIndex: 0,
-      userAnswers: []
-    };
-
-    function showScreen(screenId) {
-      document.querySelectorAll('.screen').forEach(screen => {
-        screen.classList.remove('active');
-      });
-      document.getElementById(screenId).classList.add('active');
-    }
-
-    function shuffleArray(arr) {
-      const copy = [...arr];
-      for (let i = copy.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-      }
-      return copy;
-    }
-
-    function buildLimitedOptions(optionArray, correctAnswer) {
-      const unique = [...new Set(optionArray)];
-      let filtered = unique.filter(item => item !== correctAnswer);
-      filtered = shuffleArray(filtered).slice(0, 3);
-      return shuffleArray([correctAnswer, ...filtered]);
-    }
-
-    function titleCaseWord(text) {
-      if (!text) return "";
-      return text.charAt(0).toUpperCase() + text.slice(1);
-    }
-
-    function categoryLabel(categoryKey) {
-      const map = {
-        feeling: "Feeling",
-        sports: "Sports",
-        pastTense: "Past tense",
-        time: "Time",
-        other: "Other",
-        food: "Food"
-      };
-      return map[categoryKey] || categoryKey;
-    }
-
-    function getPreferredVoice() {
-      if (!window.speechSynthesis) return null;
-      const voices = window.speechSynthesis.getVoices();
-
-      const preferred = voices.find(v =>
-        v.lang && v.lang.toLowerCase().startsWith('en') &&
-        /female|samantha|karen|victoria|zira|ava|susan/i.test(v.name)
-      );
-
-      const fallback = voices.find(v =>
-        v.lang && v.lang.toLowerCase().startsWith('en')
-      );
-
-      return preferred || fallback || null;
-    }
-
-    function speakWord(text, onEnd = null) {
-      if (!text || !window.speechSynthesis) {
-        if (onEnd) onEnd();
-        return;
-      }
-
-      window.speechSynthesis.cancel();
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-US';
-      utterance.rate = 0.9;
-      utterance.pitch = 1;
-
-      const selectedVoice = getPreferredVoice();
-      if (selectedVoice) utterance.voice = selectedVoice;
-      if (onEnd) utterance.onend = onEnd;
-
-      window.speechSynthesis.speak(utterance);
-    }
-
-    function speakWordTwice(text, onFinish = null) {
-      speakWord(text, () => {
-        setTimeout(() => {
-          speakWord(text, () => {
-            if (onFinish) onFinish();
-          });
-        }, 280);
-      });
-    }
-
-    function speakPassage(text) {
-      if (!text || !window.speechSynthesis) return;
-
-      window.speechSynthesis.cancel();
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-US';
-      utterance.rate = 0.88;
-      utterance.pitch = 1;
-
-      const selectedVoice = getPreferredVoice();
-      if (selectedVoice) utterance.voice = selectedVoice;
-
-      window.speechSynthesis.speak(utterance);
-    }
-
-    function replayCurrentWord() {
-      if (currentWordForSpeech) speakWord(currentWordForSpeech);
-    }
-
-    function replayListeningWord() {
-      if (currentWordForSpeech) speakWordTwice(currentWordForSpeech);
-    }
-
-    function playCurrentPassage() {
-      if (currentPassageForSpeech) speakPassage(currentPassageForSpeech);
-    }
-
-    function scrollToResult(resultBoxId) {
-      setTimeout(() => {
-        const box = document.getElementById(resultBoxId);
-        if (box) box.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 120);
-    }
-
-    function toggleAnswerArea(prefix, hide) {
-      const options = document.getElementById(prefix + '-options');
-      if (options) options.classList.toggle('hide', hide);
-
-      const audioRow = document.getElementById(prefix + '-audio-row');
-      if (audioRow) {
-        if (prefix === 'listening') {
-          audioRow.classList.remove('hide');
-        } else {
-          audioRow.classList.toggle('hide', hide);
-        }
-      }
-    }
-
-    function selectStudent(studentKey, studentLabel) {
-      currentStudentKey = studentKey;
-      currentStudentLabel = studentLabel;
-      currentMode = "";
-      currentCategory = "";
-      document.getElementById('mode-screen-title').innerText = studentLabel + '練習模式';
-      showScreen('mode-screen');
-    }
-
-    function backToStudentScreen() {
-      currentStudentKey = null;
-      currentStudentLabel = "";
-      currentMode = "";
-      currentCategory = "";
-      showScreen('student-screen');
-    }
-
-    function returnToModeMenu() {
-      currentMode = "";
-      currentCategory = "";
-      showScreen('mode-screen');
-    }
-
-    function returnToCategoryMenu() {
-      currentMode = "中轉英";
-      showScreen('category-screen');
-    }
-
-    function showChiToEngCategory() {
-      currentMode = "中轉英";
-      currentCategory = "";
-      showScreen('category-screen');
-    }
-
-    function enterMode(modeKey) {
-      if (modeKey === "engToChi") {
-        startEngToChiGame();
-        return;
-      }
-
-      if (modeKey === "readingCloze") {
-        startReadingClozeGame();
-        return;
-      }
-    }
-
-    // 英轉中
-    function startEngToChiGame() {
-      currentMode = "英轉中";
-      currentCategory = "";
-
-      const rawList = GAME_DATA[currentStudentKey].engToChi;
-      const shuffled = shuffleArray(rawList);
-      const target = Math.min(30, shuffled.length);
-
-      engToChiState.queue = shuffled.slice(0, target);
-      engToChiState.currentItem = null;
-      engToChiState.correct = 0;
-      engToChiState.incorrect = 0;
-      engToChiState.answeredCount = 0;
-      engToChiState.totalTarget = target;
-      engToChiState.hasAnsweredCurrent = false;
-
-      document.getElementById('engtochi-question-total').innerText = target;
-      document.getElementById('engtochi-correct').innerText = 0;
-      document.getElementById('engtochi-incorrect').innerText = 0;
-
-      showScreen('engtochi-screen');
-      loadNextEngToChiQuestion();
-    }
-
-    function loadNextEngToChiQuestion() {
-      if (engToChiState.queue.length === 0) {
-        finishEngToChiGame();
-        return;
-      }
-
-      engToChiState.currentItem = engToChiState.queue[0];
-      engToChiState.hasAnsweredCurrent = false;
-      currentWordForSpeech = engToChiState.currentItem.word;
-
-      document.getElementById('engtochi-question-no').innerText = engToChiState.answeredCount + 1;
-      document.getElementById('engtochi-word').innerText = engToChiState.currentItem.word;
-      document.getElementById('engtochi-correct').innerText = engToChiState.correct;
-      document.getElementById('engtochi-incorrect').innerText = engToChiState.incorrect;
-
-      buildEngToChiOptions();
-      hideEngToChiResult();
-      toggleAnswerArea('engtochi', false);
-
-      setTimeout(() => speakWord(engToChiState.currentItem.word), 200);
-    }
-
-    function buildEngToChiOptions() {
-      const optionsContainer = document.getElementById('engtochi-options');
-      optionsContainer.innerHTML = "";
-
-      const current = engToChiState.currentItem;
-      const allAnswers = GAME_DATA[currentStudentKey].engToChi
-        .map(item => item.answer)
-        .filter(answer => answer !== current.answer);
-
-      const wrongAnswers = shuffleArray(allAnswers).slice(0, 3);
-      const finalOptions = shuffleArray([current.answer, ...wrongAnswers]);
-
-      finalOptions.forEach(option => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.innerText = option;
-        btn.onclick = () => handleEngToChiAnswer(option, btn);
-        optionsContainer.appendChild(btn);
-      });
-    }
-
-    function handleEngToChiAnswer(selectedAnswer, clickedButton) {
-      if (engToChiState.hasAnsweredCurrent) return;
-      engToChiState.hasAnsweredCurrent = true;
-
-      const current = engToChiState.currentItem;
-      const isCorrect = selectedAnswer === current.answer;
-      const optionButtons = document.querySelectorAll('#engtochi-options .option-btn');
-
-      optionButtons.forEach(btn => {
-        btn.disabled = true;
-        if (btn.innerText === current.answer) btn.classList.add('correct');
-        if (!isCorrect && btn === clickedButton) btn.classList.add('wrong');
-      });
-
-      if (isCorrect) {
-        engToChiState.correct += 1;
-        engToChiState.answeredCount += 1;
-        engToChiState.queue.shift();
-        showEngToChiResult(true, current.word + " = " + current.answer, "");
-      } else {
-        engToChiState.incorrect += 1;
-        const wrongItem = engToChiState.queue.shift();
-        engToChiState.queue.push(wrongItem);
-        showEngToChiResult(false, current.word + " = " + current.answer, "");
-      }
-
-      document.getElementById('engtochi-correct').innerText = engToChiState.correct;
-      document.getElementById('engtochi-incorrect').innerText = engToChiState.incorrect;
-
-      toggleAnswerArea('engtochi', true);
-      scrollToResult('engtochi-result-box');
-    }
-
-    function showEngToChiResult(isSuccess, answerText, noteText) {
-      const box = document.getElementById('engtochi-result-box');
-      document.getElementById('engtochi-result-title').innerText = isSuccess ? "✅ Correct!" : "❌ Incorrect";
-      document.getElementById('engtochi-result-title').className = "result-title " + (isSuccess ? "success" : "error");
-      document.getElementById('engtochi-result-answer').innerText = answerText;
-      document.getElementById('engtochi-result-note').innerText = noteText;
-      box.classList.add('show');
-    }
-
-    function hideEngToChiResult() {
-      document.getElementById('engtochi-result-box').classList.remove('show');
-    }
-
-    function goNextEngToChi() {
-      loadNextEngToChiQuestion();
-    }
-
-    function finishEngToChiGame() {
-      document.getElementById('engtochi-final-correct').innerText = engToChiState.correct;
-      document.getElementById('engtochi-final-incorrect').innerText = engToChiState.incorrect;
-      showScreen('engtochi-complete-screen');
-    }
-
-    // 中轉英
-    function startChiToEngGame(categoryKey) {
-      currentMode = "中轉英";
-      currentCategory = categoryKey;
-
-      const rawList = GAME_DATA[currentStudentKey].chiToEng[categoryKey] || [];
-      const shuffled = shuffleArray(rawList);
-      const target = Math.min(30, shuffled.length);
-
-      chiToEngState.queue = shuffled.slice(0, target);
-      chiToEngState.currentItem = null;
-      chiToEngState.correct = 0;
-      chiToEngState.incorrect = 0;
-      chiToEngState.answeredCount = 0;
-      chiToEngState.totalTarget = target;
-      chiToEngState.hasAnsweredCurrent = false;
-
-      document.getElementById('chitoeng-title').innerText = "中轉英 - " + categoryLabel(categoryKey);
-      document.getElementById('chitoeng-question-total').innerText = target;
-      document.getElementById('chitoeng-correct').innerText = 0;
-      document.getElementById('chitoeng-incorrect').innerText = 0;
-
-      showScreen('chitoeng-screen');
-      loadNextChiToEngQuestion();
-    }
-
-    function loadNextChiToEngQuestion() {
-      if (chiToEngState.queue.length === 0) {
-        finishChiToEngGame();
-        return;
-      }
-
-      chiToEngState.currentItem = chiToEngState.queue[0];
-      chiToEngState.hasAnsweredCurrent = false;
-      currentWordForSpeech = "";
-
-      document.getElementById('chitoeng-question-no').innerText = chiToEngState.answeredCount + 1;
-      document.getElementById('chitoeng-word').innerText = chiToEngState.currentItem.answer;
-      document.getElementById('chitoeng-correct').innerText = chiToEngState.correct;
-      document.getElementById('chitoeng-incorrect').innerText = chiToEngState.incorrect;
-
-      buildChiToEngOptions();
-      hideChiToEngResult();
-      toggleAnswerArea('chitoeng', false);
-    }
-
-    function buildChiToEngOptions() {
-      const optionsContainer = document.getElementById('chitoeng-options');
-      optionsContainer.innerHTML = "";
-
-      const current = chiToEngState.currentItem;
-      const allWords = GAME_DATA[currentStudentKey].chiToEng[currentCategory]
-        .map(item => item.word)
-        .filter(word => word !== current.word);
-
-      const wrongWords = shuffleArray(allWords).slice(0, 3);
-      const finalOptions = shuffleArray([current.word, ...wrongWords]);
-
-      finalOptions.forEach(option => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.innerText = titleCaseWord(option);
-        btn.onclick = () => handleChiToEngAnswer(option, btn);
-        optionsContainer.appendChild(btn);
-      });
-    }
-
-    function handleChiToEngAnswer(selectedWord, clickedButton) {
-      if (chiToEngState.hasAnsweredCurrent) return;
-      chiToEngState.hasAnsweredCurrent = true;
-
-      const current = chiToEngState.currentItem;
-      const isCorrect = selectedWord === current.word;
-      const optionButtons = document.querySelectorAll('#chitoeng-options .option-btn');
-
-      optionButtons.forEach(btn => {
-        btn.disabled = true;
-        if (btn.innerText.toLowerCase() === current.word.toLowerCase()) btn.classList.add('correct');
-        if (!isCorrect && btn === clickedButton) btn.classList.add('wrong');
-      });
-
-      currentWordForSpeech = current.word;
-
-      if (isCorrect) {
-        chiToEngState.correct += 1;
-        chiToEngState.answeredCount += 1;
-        chiToEngState.queue.shift();
-        showChiToEngResult(true, titleCaseWord(current.word), "");
-      } else {
-        chiToEngState.incorrect += 1;
-        const wrongItem = chiToEngState.queue.shift();
-        chiToEngState.queue.push(wrongItem);
-        showChiToEngResult(false, titleCaseWord(current.word), "");
-      }
-
-      document.getElementById('chitoeng-correct').innerText = chiToEngState.correct;
-      document.getElementById('chitoeng-incorrect').innerText = chiToEngState.incorrect;
-
-      toggleAnswerArea('chitoeng', true);
-      setTimeout(() => speakWord(current.word), 150);
-      scrollToResult('chitoeng-result-box');
-    }
-
-    function showChiToEngResult(isSuccess, answerText, noteText) {
-      const box = document.getElementById('chitoeng-result-box');
-      document.getElementById('chitoeng-result-title').innerText = isSuccess ? "✅ Correct!" : "❌ Incorrect";
-      document.getElementById('chitoeng-result-title').className = "result-title " + (isSuccess ? "success" : "error");
-      document.getElementById('chitoeng-result-answer').innerText = answerText;
-      document.getElementById('chitoeng-result-note').innerText = noteText;
-      box.classList.add('show');
-    }
-
-    function hideChiToEngResult() {
-      document.getElementById('chitoeng-result-box').classList.remove('show');
-    }
-
-    function goNextChiToEng() {
-      loadNextChiToEngQuestion();
-    }
-
-    function finishChiToEngGame() {
-      document.getElementById('chitoeng-final-correct').innerText = chiToEngState.correct;
-      document.getElementById('chitoeng-final-incorrect').innerText = chiToEngState.incorrect;
-      showScreen('chitoeng-complete-screen');
-    }
-
-    // 拼字練習
-    function startSpellingGame() {
-      currentMode = "拼字練習";
-      currentCategory = "";
-
-      const rawList = GAME_DATA[currentStudentKey].spelling || [];
-      const shuffled = shuffleArray(rawList);
-      const target = Math.min(30, shuffled.length);
-
-      spellingState.queue = shuffled.slice(0, target);
-      spellingState.currentItem = null;
-      spellingState.correct = 0;
-      spellingState.incorrect = 0;
-      spellingState.answeredCount = 0;
-      spellingState.totalTarget = target;
-      spellingState.hasAnsweredCurrent = false;
-      spellingState.currentBlankIndex = 0;
-      spellingState.userLetters = [];
-
-      document.getElementById('spelling-question-total').innerText = target;
-      document.getElementById('spelling-correct').innerText = 0;
-      document.getElementById('spelling-incorrect').innerText = 0;
-
-      showScreen('spelling-screen');
-      loadNextSpellingQuestion();
-    }
-
-    function loadNextSpellingQuestion() {
-      if (spellingState.queue.length === 0) {
-        finishSpellingGame();
-        return;
-      }
-
-      spellingState.currentItem = spellingState.queue[0];
-      spellingState.hasAnsweredCurrent = false;
-      spellingState.currentBlankIndex = 0;
-      spellingState.userLetters = new Array((spellingState.currentItem.display.match(/_/g) || []).length).fill("");
-
-      currentWordForSpeech = spellingState.currentItem.word;
-
-      document.getElementById('spelling-question-no').innerText = spellingState.answeredCount + 1;
-      document.getElementById('spelling-correct').innerText = spellingState.correct;
-      document.getElementById('spelling-incorrect').innerText = spellingState.incorrect;
-
-      renderSpellingText();
-      renderSpellingOptions();
-      hideSpellingResult();
-      toggleAnswerArea('spelling', false);
-
-      setTimeout(() => speakWord(spellingState.currentItem.word), 200);
-    }
-
-    function renderSpellingText() {
-      const display = spellingState.currentItem.display;
-      let built = "";
-      let blankIndex = 0;
-
-      for (const ch of display) {
-        if (ch === "_") {
-          const userLetter = spellingState.userLetters[blankIndex];
-          built += userLetter || "_";
-          blankIndex += 1;
-        } else {
-          built += ch;
-        }
-      }
-
-      document.getElementById('spelling-text').innerText = built;
-    }
-
-    function renderSpellingOptions() {
-      const optionsContainer = document.getElementById('spelling-options');
-      optionsContainer.innerHTML = "";
-
-      const correctLetter = spellingState.currentItem.missingLetters[spellingState.currentBlankIndex];
-      const sourceOptions = spellingState.currentItem.options[spellingState.currentBlankIndex] || [];
-      const finalOptions = buildLimitedOptions(sourceOptions, correctLetter);
-
-      finalOptions.forEach(option => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.innerText = option;
-        btn.onclick = () => handleSpellingLetter(option);
-        optionsContainer.appendChild(btn);
-      });
-    }
-
-    function handleSpellingLetter(letter) {
-      if (spellingState.hasAnsweredCurrent) return;
-
-      spellingState.userLetters[spellingState.currentBlankIndex] = letter;
-
-      if (spellingState.currentBlankIndex < spellingState.userLetters.length - 1) {
-        spellingState.currentBlankIndex += 1;
-        renderSpellingText();
-        renderSpellingOptions();
-      } else {
-        renderSpellingText();
-        checkSpellingAnswer();
-      }
-    }
-
-    function checkSpellingAnswer() {
-      spellingState.hasAnsweredCurrent = true;
-
-      const current = spellingState.currentItem;
-      const isCorrect = current.missingLetters.every((ans, i) => ans.toLowerCase() === spellingState.userLetters[i].toLowerCase());
-
-      const optionButtons = document.querySelectorAll('#spelling-options .option-btn');
-      optionButtons.forEach(btn => btn.disabled = true);
-
-      if (isCorrect) {
-        spellingState.correct += 1;
-        spellingState.answeredCount += 1;
-        spellingState.queue.shift();
-        showSpellingResult(true, current.word, "");
-      } else {
-        spellingState.incorrect += 1;
-        const wrongItem = spellingState.queue.shift();
-        spellingState.queue.push(wrongItem);
-        showSpellingResult(false, current.word, "");
-      }
-
-      document.getElementById('spelling-correct').innerText = spellingState.correct;
-      document.getElementById('spelling-incorrect').innerText = spellingState.incorrect;
-
-      toggleAnswerArea('spelling', true);
-      scrollToResult('spelling-result-box');
-    }
-
-    function showSpellingResult(isSuccess, answerText, noteText) {
-      const box = document.getElementById('spelling-result-box');
-      document.getElementById('spelling-result-title').innerText = isSuccess ? "✅ Correct!" : "❌ Incorrect";
-      document.getElementById('spelling-result-title').className = "result-title " + (isSuccess ? "success" : "error");
-      document.getElementById('spelling-result-answer').innerText = answerText;
-      document.getElementById('spelling-result-note').innerText = noteText;
-      box.classList.add('show');
-    }
-
-    function hideSpellingResult() {
-      document.getElementById('spelling-result-box').classList.remove('show');
-    }
-
-    function goNextSpelling() {
-      loadNextSpellingQuestion();
-    }
-
-    function finishSpellingGame() {
-      document.getElementById('spelling-final-correct').innerText = spellingState.correct;
-      document.getElementById('spelling-final-incorrect').innerText = spellingState.incorrect;
-      showScreen('spelling-complete-screen');
-    }
-
-    // 聽音選字
-    function startListeningGame() {
-      currentMode = "聽音選字";
-      currentCategory = "";
-
-      const rawList = GAME_DATA[currentStudentKey].listening || [];
-      const shuffled = shuffleArray(rawList);
-      const target = Math.min(30, shuffled.length);
-
-      listeningState.queue = shuffled.slice(0, target);
-      listeningState.currentItem = null;
-      listeningState.correct = 0;
-      listeningState.incorrect = 0;
-      listeningState.answeredCount = 0;
-      listeningState.totalTarget = target;
-      listeningState.hasAnsweredCurrent = false;
-      listeningState.optionsReady = false;
-
-      document.getElementById('listening-question-total').innerText = target;
-      document.getElementById('listening-correct').innerText = 0;
-      document.getElementById('listening-incorrect').innerText = 0;
-
-      showScreen('listening-screen');
-      loadNextListeningQuestion();
-    }
-
-    function loadNextListeningQuestion() {
-      if (listeningState.queue.length === 0) {
-        finishListeningGame();
-        return;
-      }
-
-      listeningState.currentItem = listeningState.queue[0];
-      listeningState.hasAnsweredCurrent = false;
-      listeningState.optionsReady = false;
-      currentWordForSpeech = listeningState.currentItem.word;
-
-      document.getElementById('listening-question-no').innerText = listeningState.answeredCount + 1;
-      document.getElementById('listening-correct').innerText = listeningState.correct;
-      document.getElementById('listening-incorrect').innerText = listeningState.incorrect;
-      document.getElementById('listening-prompt').innerText = "Listen carefully";
-
-      hideListeningResult();
-      toggleAnswerArea('listening', false);
-      document.getElementById('listening-options').innerHTML = "";
-
-      setTimeout(() => {
-        speakWordTwice(currentWordForSpeech, () => {
-          buildListeningOptions();
-          listeningState.optionsReady = true;
-          document.getElementById('listening-prompt').innerText = "Choose the correct word";
-        });
-      }, 180);
-    }
-
-    function buildListeningOptions() {
-      const optionsContainer = document.getElementById('listening-options');
-      optionsContainer.innerHTML = "";
-
-      const current = listeningState.currentItem;
-      const allWords = GAME_DATA[currentStudentKey].listening
-        .map(item => item.word)
-        .filter(word => word !== current.word);
-
-      const wrongWords = shuffleArray(allWords).slice(0, 3);
-      const finalOptions = shuffleArray([current.word, ...wrongWords]);
-
-      finalOptions.forEach(option => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.innerText = titleCaseWord(option);
-        btn.onclick = () => handleListeningAnswer(option, btn);
-        optionsContainer.appendChild(btn);
-      });
-    }
-
-    function handleListeningAnswer(selectedWord, clickedButton) {
-      if (!listeningState.optionsReady || listeningState.hasAnsweredCurrent) return;
-      listeningState.hasAnsweredCurrent = true;
-
-      const current = listeningState.currentItem;
-      const isCorrect = selectedWord === current.word;
-      const optionButtons = document.querySelectorAll('#listening-options .option-btn');
-
-      optionButtons.forEach(btn => {
-        btn.disabled = true;
-        if (btn.innerText.toLowerCase() === current.word.toLowerCase()) btn.classList.add('correct');
-        if (!isCorrect && btn === clickedButton) btn.classList.add('wrong');
-      });
-
-      currentWordForSpeech = current.word;
-
-      if (isCorrect) {
-        listeningState.correct += 1;
-        listeningState.answeredCount += 1;
-        listeningState.queue.shift();
-        showListeningResult(true, titleCaseWord(current.word), "");
-      } else {
-        listeningState.incorrect += 1;
-        const wrongItem = listeningState.queue.shift();
-        listeningState.queue.push(wrongItem);
-        showListeningResult(false, titleCaseWord(current.word), "");
-      }
-
-      document.getElementById('listening-correct').innerText = listeningState.correct;
-      document.getElementById('listening-incorrect').innerText = listeningState.incorrect;
-
-      toggleAnswerArea('listening', true);
-      scrollToResult('listening-result-box');
-    }
-
-    function showListeningResult(isSuccess, answerText, noteText) {
-      const box = document.getElementById('listening-result-box');
-      document.getElementById('listening-result-title').innerText = isSuccess ? "✅ Correct!" : "❌ Incorrect";
-      document.getElementById('listening-result-title').className = "result-title " + (isSuccess ? "success" : "error");
-      document.getElementById('listening-result-answer').innerText = answerText;
-      document.getElementById('listening-result-note').innerText = noteText;
-      box.classList.add('show');
-    }
-
-    function hideListeningResult() {
-      document.getElementById('listening-result-box').classList.remove('show');
-    }
-
-    function goNextListening() {
-      loadNextListeningQuestion();
-    }
-
-    function finishListeningGame() {
-      document.getElementById('listening-final-correct').innerText = listeningState.correct;
-      document.getElementById('listening-final-incorrect').innerText = listeningState.incorrect;
-      showScreen('listening-complete-screen');
-    }
-
-    // 短文填充
-    function startReadingClozeGame() {
-      currentMode = "短文填充";
-      currentCategory = "";
-
-      const rawList = getReadingClozeQueueForStudent(currentStudentKey);
-      const shuffled = shuffleArray(rawList);
-      const target = Math.min(15, shuffled.length);
-
-      readingClozeState.queue = shuffled.slice(0, target);
-      readingClozeState.currentItem = null;
-      readingClozeState.correct = 0;
-      readingClozeState.incorrect = 0;
-      readingClozeState.answeredCount = 0;
-      readingClozeState.totalTarget = target;
-      readingClozeState.hasAnsweredCurrent = false;
-      readingClozeState.currentBlankIndex = 0;
-      readingClozeState.userAnswers = [];
-
-      document.getElementById('readingcloze-question-total').innerText = target;
-      document.getElementById('readingcloze-correct').innerText = 0;
-      document.getElementById('readingcloze-incorrect').innerText = 0;
-
-      showScreen('readingcloze-screen');
-      loadNextReadingClozeQuestion();
-    }
-
-    function getReadingClozeQueueForStudent(studentKey) {
-      const bank = GAME_DATA[studentKey].readingCloze || {};
-      const one = shuffleArray(bank.oneBlank || []).slice(0, 5);
-      const two = shuffleArray(bank.twoBlanks || []).slice(0, 5);
-      const three = shuffleArray(bank.threeBlanks || []).slice(0, 5);
-      return [...one, ...two, ...three];
-    }
-
-    function loadNextReadingClozeQuestion() {
-      if (readingClozeState.queue.length === 0) {
-        finishReadingClozeGame();
-        return;
-      }
-
-      readingClozeState.currentItem = readingClozeState.queue[0];
-      readingClozeState.hasAnsweredCurrent = false;
-      readingClozeState.currentBlankIndex = 0;
-      readingClozeState.userAnswers = new Array(readingClozeState.currentItem.blanks.length).fill("");
-
-      document.getElementById('readingcloze-question-no').innerText = readingClozeState.answeredCount + 1;
-      document.getElementById('readingcloze-correct').innerText = readingClozeState.correct;
-      document.getElementById('readingcloze-incorrect').innerText = readingClozeState.incorrect;
-
-      renderReadingClozePassage();
-      renderReadingClozeOptions();
-      hideReadingClozeResult();
-      toggleAnswerArea('readingcloze', false);
-      currentPassageForSpeech = "";
-    }
-
-    function renderReadingClozePassage() {
-      const passageEl = document.getElementById('readingcloze-passage');
-      const parts = readingClozeState.currentItem.passage.split('___');
-
-      let html = '';
-      for (let i = 0; i < parts.length; i++) {
-        html += escapeHtml(parts[i]);
-
-        if (i < readingClozeState.currentItem.blanks.length) {
-          const answer = readingClozeState.userAnswers[i];
-          let cls = 'blank-pill ';
-          if (answer) {
-            cls += 'filled';
-          } else if (i === readingClozeState.currentBlankIndex && !readingClozeState.hasAnsweredCurrent) {
-            cls += 'active empty';
-          } else {
-            cls += 'empty';
-          }
-
-          html += `<span class="${cls}">${answer ? escapeHtml(answer) : '____'}</span>`;
-        }
-      }
-
-      passageEl.innerHTML = html;
-    }
-
-    function renderReadingClozeOptions() {
-      const optionsContainer = document.getElementById('readingcloze-options');
-      optionsContainer.innerHTML = "";
-
-      const currentBlank = readingClozeState.currentItem.blanks[readingClozeState.currentBlankIndex];
-      const finalOptions = buildLimitedOptions(currentBlank.options || [], currentBlank.answer);
-
-      finalOptions.forEach(option => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.innerText = option;
-        btn.onclick = () => handleReadingClozeChoice(option);
-        optionsContainer.appendChild(btn);
-      });
-    }
-
-    function handleReadingClozeChoice(choice) {
-      if (readingClozeState.hasAnsweredCurrent) return;
-
-      readingClozeState.userAnswers[readingClozeState.currentBlankIndex] = choice;
-
-      if (readingClozeState.currentBlankIndex < readingClozeState.userAnswers.length - 1) {
-        readingClozeState.currentBlankIndex += 1;
-        renderReadingClozePassage();
-        renderReadingClozeOptions();
-      } else {
-        renderReadingClozePassage();
-        checkReadingClozeAnswer();
-      }
-    }
-
-    function checkReadingClozeAnswer() {
-      readingClozeState.hasAnsweredCurrent = true;
-
-      const current = readingClozeState.currentItem;
-      const isCorrect = current.blanks.every((blank, i) => {
-        return (readingClozeState.userAnswers[i] || "").trim().toLowerCase() === blank.answer.trim().toLowerCase();
-      });
-
-      const optionButtons = document.querySelectorAll('#readingcloze-options .option-btn');
-      optionButtons.forEach(btn => btn.disabled = true);
-
-      currentPassageForSpeech = buildReadingClozeFullPassage(current, current.blanks.map(b => b.answer));
-
-      if (isCorrect) {
-        readingClozeState.correct += 1;
-        readingClozeState.answeredCount += 1;
-        readingClozeState.queue.shift();
-        showReadingClozeResult(true, currentPassageForSpeech, "");
-      } else {
-        readingClozeState.incorrect += 1;
-        const wrongItem = readingClozeState.queue.shift();
-        readingClozeState.queue.push(wrongItem);
-        showReadingClozeResult(false, currentPassageForSpeech, "");
-      }
-
-      document.getElementById('readingcloze-correct').innerText = readingClozeState.correct;
-      document.getElementById('readingcloze-incorrect').innerText = readingClozeState.incorrect;
-
-      toggleAnswerArea('readingcloze', true);
-      scrollToResult('readingcloze-result-box');
-    }
-
-    function buildReadingClozeFullPassage(item, answers) {
-      const parts = item.passage.split('___');
-      let text = '';
-
-      for (let i = 0; i < parts.length; i++) {
-        text += parts[i];
-        if (i < answers.length) {
-          text += answers[i];
-        }
-      }
-      return text.trim();
-    }
-
-    function showReadingClozeResult(isSuccess, answerText, noteText) {
-      const box = document.getElementById('readingcloze-result-box');
-      document.getElementById('readingcloze-result-title').innerText = isSuccess ? "✅ Correct!" : "❌ Incorrect";
-      document.getElementById('readingcloze-result-title').className = "result-title " + (isSuccess ? "success" : "error");
-      document.getElementById('readingcloze-result-answer').innerText = answerText;
-      document.getElementById('readingcloze-result-note').innerText = noteText;
-      box.classList.add('show');
-    }
-
-    function hideReadingClozeResult() {
-      document.getElementById('readingcloze-result-box').classList.remove('show');
-    }
-
-    function goNextReadingCloze() {
-      loadNextReadingClozeQuestion();
-    }
-
-    function finishReadingClozeGame() {
-      document.getElementById('readingcloze-final-correct').innerText = readingClozeState.correct;
-      document.getElementById('readingcloze-final-incorrect').innerText = readingClozeState.incorrect;
-      showScreen('readingcloze-complete-screen');
-    }
-
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#39;');
-    }
-
-    function restartCurrentGame() {
-      if (currentMode === "英轉中") {
-        startEngToChiGame();
-      } else if (currentMode === "中轉英" && currentCategory) {
-        startChiToEngGame(currentCategory);
-      } else if (currentMode === "拼字練習") {
-        startSpellingGame();
-      } else if (currentMode === "聽音選字") {
-        startListeningGame();
-      } else if (currentMode === "短文填充") {
-        startReadingClozeGame();
-      }
-    }
-
-    if (window.speechSynthesis) {
-      window.speechSynthesis.onvoiceschanged = function () {};
-    }
-  </script>
-</body>
-</html>
+// --- Google Sheets 連接代碼結束 ---   
+    
+    let currentStudentKey = null;
+    let currentStudentLabel = "";
+    let currentMode = "";
+    let currentCategory = "";
+    let currentWordForSpeech = "";
+    let currentPassageForSpeech = "";
+
+    const engToChiState = {
+      queue: [], currentItem: null, correct: 0, incorrect: 0, answeredCount: 0, totalTarget: 0, hasAnsweredCurrent: false
+    };
+
+    const chiToEngState = {
+      queue: [], currentItem: null, correct: 0, incorrect: 0, answeredCount: 0, totalTarget: 0, hasAnsweredCurrent: false
+    };
+
+    const spellingState = {
+      queue: [], currentItem: null, correct: 0, incorrect: 0, answeredCount: 0, totalTarget: 0, hasAnsweredCurrent: false, currentBlankIndex: 0, userLetters: []
+    };
+
+    const listeningState = {
+      queue: [], currentItem: null, correct: 0, incorrect: 0, answeredCount: 0, totalTarget: 0, hasAnsweredCurrent: false, optionsReady: false
+    };
+
+    const readingClozeState = {
+      queue: [],
+      currentItem: null,
+      correct: 0,
+      incorrect: 0,
+      answeredCount: 0,
+      totalTarget: 0,
+      hasAnsweredCurrent: false,
+      currentBlankIndex: 0,
+      userAnswers: []
+    };
+
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+      });
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function buildLimitedOptions(optionArray, correctAnswer) {
+      const unique = [...new Set(optionArray)];
+      let filtered = unique.filter(item => item !== correctAnswer);
+      filtered = shuffleArray(filtered).slice(0, 3);
+      return shuffleArray([correctAnswer, ...filtered]);
+    }
+
+    function titleCaseWord(text) {
+      if (!text) return "";
+      return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
+    function categoryLabel(categoryKey) {
+      const map = {
+        feeling: "Feeling",
+        sports: "Sports",
+        pastTense: "Past tense",
+        time: "Time",
+        other: "Other",
+        food: "Food"
+      };
+      return map[categoryKey] || categoryKey;
+    }
+
+    function getPreferredVoice() {
+      if (!window.speechSynthesis) return null;
+      const voices = window.speechSynthesis.getVoices();
+
+      const preferred = voices.find(v =>
+        v.lang && v.lang.toLowerCase().startsWith('en') &&
+        /female|samantha|karen|victoria|zira|ava|susan/i.test(v.name)
+      );
+
+      const fallback = voices.find(v =>
+        v.lang && v.lang.toLowerCase().startsWith('en')
+      );
+
+      return preferred || fallback || null;
+    }
+
+    function speakWord(text, onEnd = null) {
+      if (!text || !window.speechSynthesis) {
+        if (onEnd) onEnd();
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+
+      const selectedVoice = getPreferredVoice();
+      if (selectedVoice) utterance.voice = selectedVoice;
+      if (onEnd) utterance.onend = onEnd;
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function speakWordTwice(text, onFinish = null) {
+      speakWord(text, () => {
+        setTimeout(() => {
+          speakWord(text, () => {
+            if (onFinish) onFinish();
+          });
+        }, 280);
+      });
+    }
+
+    function speakPassage(text) {
+      if (!text || !window.speechSynthesis) return;
+
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.88;
+      utterance.pitch = 1;
+
+      const selectedVoice = getPreferredVoice();
+      if (selectedVoice) utterance.voice = selectedVoice;
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function replayCurrentWord() {
+      if (currentWordForSpeech) speakWord(currentWordForSpeech);
+    }
+
+    function replayListeningWord() {
+      if (currentWordForSpeech) speakWordTwice(currentWordForSpeech);
+    }
+
+    function playCurrentPassage() {
+      if (currentPassageForSpeech) speakPassage(currentPassageForSpeech);
+    }
+
+    function scrollToResult(resultBoxId) {
+      setTimeout(() => {
+        const box = document.getElementById(resultBoxId);
+        if (box) box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 120);
+    }
+
+    function toggleAnswerArea(prefix, hide) {
+      const options = document.getElementById(prefix + '-options');
+      if (options) options.classList.toggle('hide', hide);
+
+      const audioRow = document.getElementById(prefix + '-audio-row');
+      if (audioRow) {
+        if (prefix === 'listening') {
+          audioRow.classList.remove('hide');
+        } else {
+          audioRow.classList.toggle('hide', hide);
+        }
+      }
+    }
+
+    function selectStudent(studentKey, studentLabel) {
+      currentStudentKey = studentKey;
+      currentStudentLabel = studentLabel;
+      currentMode = "";
+      currentCategory = "";
+      document.getElementById('mode-screen-title').innerText = studentLabel + '練習模式';
+      showScreen('mode-screen');
+    }
