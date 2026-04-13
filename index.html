@@ -905,8 +905,12 @@ async function fetchGameData() {
   try {
     const response = await fetch(SHEET_URL);
     const csvText = await response.text();
+    console.log("CSV 已下載，長度 =", csvText.length);
+    console.log("準備進入 parseCSV");
+
     window.GAME_DATA = parseCSV(csvText);
 
+    console.log("parseCSV 已完成");
     console.log("數據加載成功！", window.GAME_DATA);
 
     setStudentButtonsDisabled(false);
