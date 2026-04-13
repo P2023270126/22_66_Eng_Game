@@ -1092,19 +1092,25 @@ fetchGameData();
     }
 
   function selectStudent(studentKey, studentLabel) {
-  currentStudentKey = studentKey; // 這裡是 'studentA' 或 'studentB'
-  currentStudentLabel = studentLabel; // 這裡是 '學生 22' 或 '學生 66'
-  
-  // 更新模式選擇畫面的標題
+  // 1. 安全檢查：如果數據還沒下載完，彈出提示並停止執行
+  if (!window.GAME_DATA) {
+    alert("數據還在努力載入中，請稍候幾秒再試一次！");
+    return;
+  }
+
+  // 2. 記錄目前選擇的學生資訊
+  currentStudentKey = studentKey;
+  currentStudentLabel = studentLabel;
+
+  // 3. 更新模式畫面的標題（例如：學生 22 練習模式）
   const titleElem = document.getElementById('mode-screen-title');
   if (titleElem) {
     titleElem.innerText = studentLabel + ' 練習模式';
   }
-  
-  // 切換畫面
-  showScreen('mode-screen');
-  }
 
+  // 4. 跳轉到模式選擇畫面
+  showScreen('mode-screen');
+}
     function backToStudentScreen() {
       currentStudentKey = null;
       currentStudentLabel = "";
