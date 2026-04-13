@@ -507,6 +507,10 @@
         <p>Choose a student</p>
       </div>
 
+<p id="loading-text" style="text-align:center; color:#718096; font-weight:600;">
+  正在載入題庫，請稍候...
+</p>
+      
       <div class="grid-2">
         <button id="student-a-btn" class="card-btn student-a" onclick="selectStudent('studentA', '66 Jasper')">
           <span class="icon">👦</span>
@@ -876,6 +880,24 @@
  // --- Google Sheets 連接代碼開始 ---
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQaMfqjweCgX2tOByTliUyUwg0vW0pOog7lEKwc4ZB64T_RlfIoOYvj9o7XgdFTPe0v0t0lAKgVfbmt/pub?output=csv";
 
+function setStudentButtonsDisabled(disabled) {
+  const btnA = document.getElementById('student-a-btn');
+  const btnB = document.getElementById('student-b-btn');
+
+  if (btnA) btnA.disabled = disabled;
+  if (btnB) btnB.disabled = disabled;
+
+  if (btnA) btnA.style.opacity = disabled ? '0.6' : '1';
+  if (btnB) btnB.style.opacity = disabled ? '0.6' : '1';
+  if (btnA) btnA.style.cursor = disabled ? 'not-allowed' : 'pointer';
+  if (btnB) btnB.style.cursor = disabled ? 'not-allowed' : 'pointer';
+}
+
+function updateLoadingText(text) {
+  const el = document.getElementById('loading-text');
+  if (el) el.innerText = text;
+}
+    
 async function fetchGameData() {
   setStudentButtonsDisabled(true);
   updateLoadingText("正在載入題庫，請稍候...");
@@ -890,13 +912,15 @@ async function fetchGameData() {
     setStudentButtonsDisabled(false);
     updateLoadingText("題庫已準備好，請選擇學生。");
 
+    if (currentStudentKey) {
+      console.log("重新初始化當前視窗數據");
+    }
   } catch (error) {
     console.error("讀取失敗:", error);
     updateLoadingText("題庫載入失敗，請重新整理頁面。");
     alert("無法讀取 Google 表格，請檢查網路或發佈設定！");
   }
 }
-
 function parseCSV(csv) {
     const lines = csv.split(/\r?\n/);
     const result = {
@@ -1124,7 +1148,7 @@ function selectStudent(studentKey, studentLabel) {
 
   showScreen('mode-screen');
 }
-
+    
   // 2. 記錄目前選擇的學生資訊
   currentStudentKey = studentKey;
   currentStudentLabel = studentLabel;
