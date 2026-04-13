@@ -1593,13 +1593,6 @@ function startListeningGame() {
     showScreen('spelling-complete-screen');
     }   
     
-    // 更新正確與錯誤題數
-    document.getElementById('spelling-final-correct').innerText = spellingState.correct;
-    document.getElementById('spelling-final-incorrect').innerText = spellingState.incorrect;
-    
-    // 切換到完成畫面
-    showScreen('spelling-complete-screen');
-}
     // 聽音選字
     function startListeningGame() {
       currentMode = "聽音選字";
