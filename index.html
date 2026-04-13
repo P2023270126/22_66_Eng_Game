@@ -638,9 +638,10 @@
           <div class="stats-item">Incorrect: <span id="engtochi-incorrect">0</span></div>
         </div>
 
-        <div class="question-card">
-          <div class="question-word" id="engtochi-word">---</div>
-        </div>
+<div class="question-card">
+  <div class="question-subtitle large" id="spelling-hint">---</div>
+  <div class="spelling-text" id="spelling-text">---</div>
+</div>
 
         <div class="controls-row hidden-after-answer" id="engtochi-audio-row" style="margin-bottom:12px;">
           <button class="audio-btn" onclick="replayCurrentWord()">🔊 再聽一次</button>
@@ -933,40 +934,53 @@ function parseCSV(csv) {
     };
 
     for (let i = 1; i < lines.length; i++) {
-        if (!lines[i].trim()) continue;
-        const columns = lines[i].split(',').map(c => c.trim());
-        if (columns.length < 4) continue;
+if (!lines[i].trim()) continue;
+const columns = lines[i].split(',').map(c => c.trim());
+if (columns.length < 4) continue;
 
-        const [mode, cat, question, answer] = columns;
-        const entry = { word: question, answer: answer };
+const mode = columns[0];
+const cat = columns[1] || "";
 
         // --- 核心邏輯：根據表格 A 欄 (mode) 分配數據 ---
-        if (mode === "engToChi") {
-            result.studentA.engToChi.push(entry);
-            result.studentB.engToChi.push(entry);
-        } 
-        else if (mode === "chiToEng") {
-            const category = cat || 'other';
-            if (!result.studentA.chiToEng[category]) result.studentA.chiToEng[category] = [];
-            if (!result.studentB.chiToEng[category]) result.studentB.chiToEng[category] = [];
-            // 中轉英通常是把「答案」當題目，「題目」當正確答案
-            result.studentA.chiToEng[category].push({ word: answer, answer: question });
-            result.studentB.chiToEng[category].push({ word: answer, answer: question });
-        } 
+if (mode === "engToChi") {
+  const question = columns[2];
+  const answer = columns[3];
+  const entry = { word: question, answer: answer };
+
+  result.studentA.engToChi.push(entry);
+  result.studentB.engToChi.push(entry);
+}
+
+else if (mode === "chiToEng") {
+  const question = columns[2];
+  const answer = columns[3];
+  const category = cat || "other";
+
+  if (!result.studentA.chiToEng[category]) result.studentA.chiToEng[category] = [];
+  if (!result.studentB.chiToEng[category]) result.studentB.chiToEng[category] = [];
+
+  result.studentA.chiToEng[category].push({ word: answer, answer: question });
+  result.studentB.chiToEng[category].push({ word: answer, answer: question });
+}
+
 else if (mode === "spelling") {
-  const display = question;
-  const fullWord = answer;
+  if (columns.length < 5) continue;
+
+  const hintChinese = columns[2];
+  const display = columns[3];
+  const fullWord = columns[4];
+
+  if (!hintChinese || !display || !fullWord) continue;
 
   const missingLetters = [];
   let answerIndex = 0;
 
   for (let j = 0; j < display.length; j++) {
     if (display[j] === "_") {
-      while (answerIndex < fullWord.length && display[j] === "_") {
+      if (answerIndex < fullWord.length) {
         missingLetters.push(fullWord[answerIndex]);
-        answerIndex++;
-        break;
       }
+      answerIndex++;
     } else {
       answerIndex++;
     }
@@ -976,13 +990,14 @@ else if (mode === "spelling") {
 
   const options = missingLetters.map(correctLetter => {
     const wrongs = shuffleArray(
-      alphabet.filter(ch => ch.toLowerCase() !== correctLetter.toLowerCase())
+      alphabet.filter(ch => ch.toLowerCase() !== String(correctLetter).toLowerCase())
     ).slice(0, 3);
 
     return shuffleArray([correctLetter, ...wrongs]);
   });
 
   const spellingEntry = {
+    hintChinese: hintChinese,
     word: fullWord,
     display: display,
     missingLetters: missingLetters,
@@ -991,17 +1006,17 @@ else if (mode === "spelling") {
 
   result.studentA.spelling.push(spellingEntry);
   result.studentB.spelling.push(spellingEntry);
+}  
+        
+else if (mode === "listening") {
+  const question = columns[2];
+  const answer = columns[3];
+  const entry = { word: question, answer: answer };
+
+  result.studentA.listening.push(entry);
+  result.studentB.listening.push(entry);
 }
-
-
-
-
-          
-        else if (mode === "listening") {
-            result.studentA.listening.push(entry);
-            result.studentB.listening.push(entry);
-        }
-    }
+      
     return result;
 }
 
@@ -1512,31 +1527,35 @@ function enterMode(mode) {
       loadNextSpellingQuestion();
     }
 
-    function loadNextSpellingQuestion() {
-      if (spellingState.queue.length === 0) {
-        finishSpellingGame();
-        return;
-      }
+function loadNextSpellingQuestion() {
+  if (spellingState.queue.length === 0) {
+    finishSpellingGame();
+    return;
+  }
 
-      spellingState.currentItem = spellingState.queue[0];
-      spellingState.hasAnsweredCurrent = false;
-      spellingState.currentBlankIndex = 0;
+  spellingState.currentItem = spellingState.queue[0];
+  spellingState.hasAnsweredCurrent = false;
+  spellingState.currentBlankIndex = 0;
 
-      
+  const displayText = spellingState.currentItem.display || "";
+  spellingState.userLetters = new Array((displayText.match(/_/g) || []).length).fill("");
 
-      currentWordForSpeech = spellingState.currentItem.word;
+  document.getElementById('spelling-hint').innerText =
+    spellingState.currentItem.hintChinese || "";
 
-      document.getElementById('spelling-question-no').innerText = spellingState.answeredCount + 1;
-      document.getElementById('spelling-correct').innerText = spellingState.correct;
-      document.getElementById('spelling-incorrect').innerText = spellingState.incorrect;
+  currentWordForSpeech = spellingState.currentItem.word;
 
-      renderSpellingText();
-      renderSpellingOptions();
-      hideSpellingResult();
-      toggleAnswerArea('spelling', false);
+  document.getElementById('spelling-question-no').innerText = spellingState.answeredCount + 1;
+  document.getElementById('spelling-correct').innerText = spellingState.correct;
+  document.getElementById('spelling-incorrect').innerText = spellingState.incorrect;
 
-      setTimeout(() => speakWord(spellingState.currentItem.word), 200);
-    }
+  renderSpellingText();
+  renderSpellingOptions();
+  hideSpellingResult();
+  toggleAnswerArea('spelling', false);
+
+  setTimeout(() => speakWord(spellingState.currentItem.word), 200);
+}
 
     function renderSpellingText() {
       const display = spellingState.currentItem.display;
