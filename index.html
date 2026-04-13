@@ -1091,14 +1091,19 @@ fetchGameData();
       }
     }
 
-    function selectStudent(studentKey, studentLabel) {
-      currentStudentKey = studentKey;
-      currentStudentLabel = studentLabel;
-      currentMode = "";
-      currentCategory = "";
-      document.getElementById('mode-screen-title').innerText = studentLabel + '練習模式';
-      showScreen('mode-screen');
-    }
+  function selectStudent(studentKey, studentLabel) {
+  currentStudentKey = studentKey; // 這裡是 'studentA' 或 'studentB'
+  currentStudentLabel = studentLabel; // 這裡是 '學生 22' 或 '學生 66'
+  
+  // 更新模式選擇畫面的標題
+  const titleElem = document.getElementById('mode-screen-title');
+  if (titleElem) {
+    titleElem.innerText = studentLabel + ' 練習模式';
+  }
+  
+  // 切換畫面
+  showScreen('mode-screen');
+  }
 
     function backToStudentScreen() {
       currentStudentKey = null;
