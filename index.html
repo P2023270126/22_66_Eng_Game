@@ -1152,38 +1152,6 @@ function enterMode(mode) {
   }
 }
 
-// --- 啟動拼字練習 ---
-function startSpellingGame() {
-    if (!window.GAME_DATA) return alert("數據載入中...");
-    const data = window.GAME_DATA[currentStudentKey].spelling;
-    if (!data || data.length === 0) return alert("表格中沒有 spelling 數據！");
-
-    spellingState.queue = shuffleArray(data).slice(0, 10);
-    spellingState.totalTarget = spellingState.queue.length;
-    spellingState.correct = 0;
-    spellingState.incorrect = 0;
-    spellingState.answeredCount = 0;
-
-    showScreen('spelling-screen');
-    renderNextSpelling(); // 確保你有這個渲染函數
-}
-
-// --- 啟動聽音選字 ---
-function startListeningGame() {
-    if (!window.GAME_DATA) return alert("數據載入中...");
-    const data = window.GAME_DATA[currentStudentKey].listening;
-    if (!data || data.length === 0) return alert("表格中沒有 listening 數據！");
-
-    listeningState.queue = shuffleArray(data).slice(0, 10);
-    listeningState.totalTarget = listeningState.queue.length;
-    listeningState.correct = 0;
-    listeningState.incorrect = 0;
-    listeningState.answeredCount = 0;
-
-    showScreen('listening-screen');
-    renderNextListening(); // 確保你有這個渲染函數
-}
-
     // 英轉中
     function startEngToChiGame() {
       currentMode = "英轉中";
