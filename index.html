@@ -744,8 +744,8 @@
         <div class="completion-title">Excellent!</div>
         <div class="completion-stats">
           拼字練習完成<br />
-          Correct: <span id="spelling-final-correct">0</span><br />
-          Incorrect: <span id="spelling-final-incorrect">0</span>
+          <p>正確題數：<span id="spelling-final-correct">0</span></p>
+          <p>錯誤題數：<span id="spelling-final-incorrect">0</span></p>
         </div>
         <div class="controls-row">
           <button class="action-btn" onclick="restartCurrentGame()">再玩一次</button>
@@ -1579,8 +1579,16 @@ function startListeningGame() {
     }
 
     function finishSpellingGame() {
-    // 確保重玩邏輯能識別目前的模式
+    // 1. 核心修正：將模式設為中文，確保「再玩一次」按鈕能運作
     currentMode = "拼字練習"; 
+
+    // 2. 更新正確與錯誤題數到 HTML 畫面上
+    document.getElementById('spelling-final-correct').innerText = spellingState.correct;
+    document.getElementById('spelling-final-incorrect').innerText = spellingState.incorrect;
+
+    // 3. 切換到結束畫面
+    showScreen('spelling-complete-screen');
+    }   
     
     // 更新正確與錯誤題數
     document.getElementById('spelling-final-correct').innerText = spellingState.correct;
