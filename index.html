@@ -1125,12 +1125,56 @@ fetchGameData();
       showScreen('category-screen');
     }
 
-    function enterMode(modeKey) {
-      if (modeKey === "engToChi") {
-        startEngToChiGame();
-        return;
-      }
+function enterMode(mode) {
+  currentMode = mode;
+  if (mode === 'engToChi') {
+    startEngToChiGame();
+  } else if (mode === 'chiToEng') {
+    // 中轉英需要先顯示分類畫面
+    showChiToEngCategories();
+  } else if (mode === 'spelling') {
+    startSpellingGame();
+  } else if (mode === 'listening') {
+    startListeningGame();
+  } else if (mode === 'readingCloze') {
+    startReadingClozeGame();
+  }
+}
 
+// --- 啟動拼字練習 ---
+function startSpellingGame() {
+    if (!window.GAME_DATA) return alert("數據載入中...");
+    const data = window.GAME_DATA[currentStudentKey].spelling;
+    if (!data || data.length === 0) return alert("表格中沒有 spelling 數據！");
+
+    spellingState.queue = shuffleArray(data).slice(0, 10);
+    spellingState.totalTarget = spellingState.queue.length;
+    spellingState.correct = 0;
+    spellingState.incorrect = 0;
+    spellingState.answeredCount = 0;
+
+    showScreen('spelling-screen');
+    renderNextSpelling(); // 確保你有這個渲染函數
+}
+
+// --- 啟動聽音選字 ---
+function startListeningGame() {
+    if (!window.GAME_DATA) return alert("數據載入中...");
+    const data = window.GAME_DATA[currentStudentKey].listening;
+    if (!data || data.length === 0) return alert("表格中沒有 listening 數據！");
+
+    listeningState.queue = shuffleArray(data).slice(0, 10);
+    listeningState.totalTarget = listeningState.queue.length;
+    listeningState.correct = 0;
+    listeningState.incorrect = 0;
+    listeningState.answeredCount = 0;
+
+    showScreen('listening-screen');
+    renderNextListening(); // 確保你有這個渲染函數
+}
+    
+    
+    
       if (modeKey === "readingCloze") {
         startReadingClozeGame();
         return;
@@ -1535,11 +1579,16 @@ fetchGameData();
     }
 
     function finishSpellingGame() {
-      document.getElementById('spelling-final-correct').innerText = spellingState.correct;
-      document.getElementById('spelling-final-incorrect').innerText = spellingState.incorrect;
-      showScreen('spelling-complete-screen');
-    }
-
+    // 確保重玩邏輯能識別目前的模式
+    currentMode = "拼字練習"; 
+    
+    // 更新正確與錯誤題數
+    document.getElementById('spelling-final-correct').innerText = spellingState.correct;
+    document.getElementById('spelling-final-incorrect').innerText = spellingState.incorrect;
+    
+    // 切換到完成畫面
+    showScreen('spelling-complete-screen');
+}
     // 聽音選字
     function startListeningGame() {
       currentMode = "聽音選字";
