@@ -496,13 +496,13 @@
       </div>
 
       <div class="grid-2">
-        <button class="card-btn student-a" onclick="selectStudent('studentA', '66 Jasper')">
+        <button id="student-a-btn" class="card-btn student-a" onclick="selectStudent('studentA', '66 Jasper')">
           <span class="icon">👦</span>
           <div class="title">66 Jasper</div>
           <div class="desc">進入 66 Jasper 專屬練習模式</div>
         </button>
 
-        <button class="card-btn student-b" onclick="selectStudent('studentB', '22 Jolie')">
+        <button id="student-b-btn" class="card-btn student-b" onclick="selectStudent('studentB', '22 Jolie')">
           <span class="icon">👧</span>
           <div class="title">22 Jolie</div>
           <div class="desc">進入 22 Jolie 專屬練習模式</div>
@@ -861,20 +861,24 @@
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQaMfqjweCgX2tOByTliUyUwg0vW0pOog7lEKwc4ZB64T_RlfIoOYvj9o7XgdFTPe0v0t0lAKgVfbmt/pub?output=csv";
 
 async function fetchGameData() {
-    try {
-        const response = await fetch(SHEET_URL);
-        const csvText = await response.text();
-        window.GAME_DATA = parseCSV(csvText);
-        console.log("數據加載成功！", window.GAME_DATA);
-        
-        // 保險：如果數據加載太慢，確保 UI 能看到數據
-        if (currentStudentKey) {
-            console.log("重新初始化當前視窗數據");
-        }
-    } catch (error) {
-        console.error("讀取失敗:", error);
-        alert("無法讀取 Google 表格，請檢查網路或發佈設定！");
-    }
+  setStudentButtonsDisabled(true);
+  updateLoadingText("正在載入題庫，請稍候...");
+
+  try {
+    const response = await fetch(SHEET_URL);
+    const csvText = await response.text();
+    window.GAME_DATA = parseCSV(csvText);
+
+    console.log("數據加載成功！", window.GAME_DATA);
+
+    setStudentButtonsDisabled(false);
+    updateLoadingText("題庫已準備好，請選擇學生。");
+
+  } catch (error) {
+    console.error("讀取失敗:", error);
+    updateLoadingText("題庫載入失敗，請重新整理頁面。");
+    alert("無法讀取 Google 表格，請檢查網路或發佈設定！");
+  }
 }
 
 function parseCSV(csv) {
