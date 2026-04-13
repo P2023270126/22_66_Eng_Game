@@ -953,10 +953,50 @@ function parseCSV(csv) {
             result.studentA.chiToEng[category].push({ word: answer, answer: question });
             result.studentB.chiToEng[category].push({ word: answer, answer: question });
         } 
-        else if (mode === "spelling") {
-            result.studentA.spelling.push(entry);
-            result.studentB.spelling.push(entry);
-        } 
+else if (mode === "spelling") {
+  const display = question;
+  const fullWord = answer;
+
+  const missingLetters = [];
+  let answerIndex = 0;
+
+  for (let j = 0; j < display.length; j++) {
+    if (display[j] === "_") {
+      while (answerIndex < fullWord.length && display[j] === "_") {
+        missingLetters.push(fullWord[answerIndex]);
+        answerIndex++;
+        break;
+      }
+    } else {
+      answerIndex++;
+    }
+  }
+
+  const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+
+  const options = missingLetters.map(correctLetter => {
+    const wrongs = shuffleArray(
+      alphabet.filter(ch => ch.toLowerCase() !== correctLetter.toLowerCase())
+    ).slice(0, 3);
+
+    return shuffleArray([correctLetter, ...wrongs]);
+  });
+
+  const spellingEntry = {
+    word: fullWord,
+    display: display,
+    missingLetters: missingLetters,
+    options: options
+  };
+
+  result.studentA.spelling.push(spellingEntry);
+  result.studentB.spelling.push(spellingEntry);
+}
+
+
+
+
+          
         else if (mode === "listening") {
             result.studentA.listening.push(entry);
             result.studentB.listening.push(entry);
@@ -1462,7 +1502,8 @@ function enterMode(mode) {
       spellingState.hasAnsweredCurrent = false;
       spellingState.currentBlankIndex = 0;
       spellingState.userLetters = [];
-
+      const displayText = spellingState.currentItem.display || "";
+      spellingState.userLetters = new Array((displayText.match(/_/g) || []).length).fill("");
       document.getElementById('spelling-question-total').innerText = target;
       document.getElementById('spelling-correct').innerText = 0;
       document.getElementById('spelling-incorrect').innerText = 0;
@@ -1480,7 +1521,8 @@ function enterMode(mode) {
       spellingState.currentItem = spellingState.queue[0];
       spellingState.hasAnsweredCurrent = false;
       spellingState.currentBlankIndex = 0;
-      spellingState.userLetters = new Array((spellingState.currentItem.display.match(/_/g) || []).length).fill("");
+
+      
 
       currentWordForSpeech = spellingState.currentItem.word;
 
