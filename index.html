@@ -838,6 +838,12 @@
           <div class="stats-item">Incorrect: <span id="readingcloze-incorrect">0</span></div>
         </div>
 
+        <div class="controls-row" style="margin-bottom:12px;">
+          <select id="readingcloze-category-select" onchange="restartReadingClozeWithCategory()" class="action-btn">
+            <option value="">全部類別</option>
+          </select>
+        </div>
+        
         <div class="question-card">
           <div class="cloze-passage" id="readingcloze-passage">---</div>
         </div>
@@ -959,12 +965,6 @@ if (columns.length < 4) continue;
 
 const mode = columns[0];
 const cat = columns[1] || "";
-
-<div class="controls-row" style="margin-bottom:12px;">
-  <select id="readingcloze-category-select" onchange="restartReadingClozeWithCategory()" class="action-btn">
-    <option value="">全部類別</option>
-  </select>
-</div>
       
         // --- 核心邏輯：根據表格 A 欄 (mode) 分配數據 ---
 if (mode === "engToChi") {
