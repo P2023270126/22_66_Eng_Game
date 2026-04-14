@@ -1350,7 +1350,7 @@ function enterMode(mode) {
 
       const rawList = GAME_DATA[currentStudentKey].engToChi;
       const shuffled = shuffleArray(rawList);
-      const target = Math.min(30, shuffled.length);
+      const target = Math.min(15, shuffled.length);
 
       engToChiState.queue = shuffled.slice(0, target);
       engToChiState.currentItem = null;
@@ -1476,7 +1476,7 @@ function loadNextEngToChiQuestion() {
 
       const rawList = GAME_DATA[currentStudentKey].chiToEng[categoryKey] || [];
       const shuffled = shuffleArray(rawList);
-      const target = Math.min(30, shuffled.length);
+      const target = Math.min(15, shuffled.length);
 
       chiToEngState.queue = shuffled.slice(0, target);
       chiToEngState.currentItem = null;
@@ -1602,7 +1602,7 @@ function loadNextEngToChiQuestion() {
 
       const rawList = GAME_DATA[currentStudentKey].spelling || [];
       const shuffled = shuffleArray(rawList);
-      const target = Math.min(30, shuffled.length);
+      const target = Math.min(15, shuffled.length);
 
       spellingState.queue = shuffled.slice(0, target);
       spellingState.currentItem = null;
@@ -1765,7 +1765,7 @@ function loadNextSpellingQuestion() {
 
       const rawList = GAME_DATA[currentStudentKey].listening || [];
       const shuffled = shuffleArray(rawList);
-      const target = Math.min(30, shuffled.length);
+      const target = Math.min(15, shuffled.length);
 
       listeningState.queue = shuffled.slice(0, target);
       listeningState.currentItem = null;
