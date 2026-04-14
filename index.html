@@ -33,6 +33,10 @@
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(0,0,0,0.08);
   transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+
+  /* 下面兩行係重點：嘗試令展開清單回復白底黑字 */
+  appearance: auto;
+  -webkit-appearance: menulist;
 }
 
 #readingcloze-category-select:hover {
@@ -46,6 +50,14 @@
   background: #93c5fd;
   border-color: #2563eb;
   box-shadow: 0 0 0 4px rgba(59,130,246,0.18);
+}
+
+/* 嘗試控制下拉清單選項樣式 */
+#readingcloze-category-select option {
+  background: #ffffff;
+  color: #000000;
+  font-size: 1.15rem;
+  font-weight: 600;
 }
     
     * { box-sizing: border-box; }
