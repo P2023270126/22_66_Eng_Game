@@ -20,6 +20,34 @@
       --error: #e53e3e;
     }
 
+#readingcloze-category-select {
+  min-width: 300px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  padding: 18px 26px;
+  border-radius: 999px;
+  background: #bfdbfe;
+  border: 2px solid #60a5fa;
+  color: #1e3a8a;
+  outline: none;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+#readingcloze-category-select:hover {
+  background: #93c5fd;
+  border-color: #3b82f6;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+#readingcloze-category-select:focus {
+  background: #93c5fd;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(59,130,246,0.18);
+}
+    
     * { box-sizing: border-box; }
 
     body {
@@ -843,13 +871,7 @@
             <option value="">全部類別</option>
           </select>
         </div>
-        
-        <div class="controls-row" style="margin-bottom:12px;">
-          <select id="readingcloze-category-select" onchange="restartReadingClozeWithCategory()" class="action-btn">
-            <option value="">全部類別</option>
-          </select>
-        </div>
-        
+                
         <div class="question-card">
           <div class="cloze-passage" id="readingcloze-passage">---</div>
         </div>
