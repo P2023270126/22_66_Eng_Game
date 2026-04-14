@@ -1005,9 +1005,13 @@ else if (mode === "spelling") {
 }  
         
 else if (mode === "listening") {
-  const question = columns[2];
-  const answer = columns[3];
-  const entry = { word: question, answer: answer };
+  const question = columns[2]; // 中文
+  const answer = columns[3];   // 英文
+
+  const entry = {
+    word: answer,     // 播音、選項顯示都用英文
+    answer: question  // 如之後想顯示中文可備用
+  };
 
   result.studentA.listening.push(entry);
   result.studentB.listening.push(entry);
