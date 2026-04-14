@@ -1514,8 +1514,6 @@ function loadNextEngToChiQuestion() {
       spellingState.hasAnsweredCurrent = false;
       spellingState.currentBlankIndex = 0;
       spellingState.userLetters = [];
-      const displayText = spellingState.currentItem.display || "";
-      spellingState.userLetters = new Array((displayText.match(/_/g) || []).length).fill("");
       document.getElementById('spelling-question-total').innerText = target;
       document.getElementById('spelling-correct').innerText = 0;
       document.getElementById('spelling-incorrect').innerText = 0;
