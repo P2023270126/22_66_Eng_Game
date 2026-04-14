@@ -639,8 +639,7 @@
         </div>
 
 <div class="question-card">
-  <div class="question-subtitle large" id="spelling-hint">---</div>
-  <div class="spelling-text" id="spelling-text">---</div>
+  <div class="question-word" id="engtochi-word">---</div>
 </div>
 
         <div class="controls-row hidden-after-answer" id="engtochi-audio-row" style="margin-bottom:12px;">
@@ -1274,27 +1273,29 @@ function enterMode(mode) {
       loadNextEngToChiQuestion();
     }
 
-    function loadNextEngToChiQuestion() {
-      if (engToChiState.queue.length === 0) {
-        finishEngToChiGame();
-        return;
-      }
+function loadNextEngToChiQuestion() {
+  if (engToChiState.queue.length === 0) {
+    finishEngToChiGame();
+    return;
+  }
 
-      engToChiState.currentItem = engToChiState.queue[0];
-      engToChiState.hasAnsweredCurrent = false;
-      currentWordForSpeech = engToChiState.currentItem.word;
+  engToChiState.currentItem = engToChiState.queue[0];
+  engToChiState.hasAnsweredCurrent = false;
+  currentWordForSpeech = engToChiState.currentItem.word || "";
 
-      document.getElementById('engtochi-question-no').innerText = engToChiState.answeredCount + 1;
-      document.getElementById('engtochi-word').innerText = engToChiState.currentItem.word;
-      document.getElementById('engtochi-correct').innerText = engToChiState.correct;
-      document.getElementById('engtochi-incorrect').innerText = engToChiState.incorrect;
+  document.getElementById('engtochi-question-no').innerText = engToChiState.answeredCount + 1;
+  document.getElementById('engtochi-word').innerText = engToChiState.currentItem.word || "";
+  document.getElementById('engtochi-correct').innerText = engToChiState.correct;
+  document.getElementById('engtochi-incorrect').innerText = engToChiState.incorrect;
 
-      buildEngToChiOptions();
-      hideEngToChiResult();
-      toggleAnswerArea('engtochi', false);
+  buildEngToChiOptions();
+  hideEngToChiResult();
+  toggleAnswerArea('engtochi', false);
 
-      setTimeout(() => speakWord(engToChiState.currentItem.word), 200);
-    }
+  if (currentWordForSpeech) {
+    setTimeout(() => speakWord(currentWordForSpeech), 200);
+  }
+}
 
     function buildEngToChiOptions() {
       const optionsContainer = document.getElementById('engtochi-options');
