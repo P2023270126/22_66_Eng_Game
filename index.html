@@ -925,8 +925,8 @@ async function fetchGameData() {
 function parseCSV(csv) {
     const lines = csv.split(/\r?\n/);
     const result = {
-        studentA: { engToChi: [], chiToEng: {}, spelling: [], listening: [], readingCloze: {} },
-        studentB: { engToChi: [], chiToEng: {}, spelling: [], listening: [], readingCloze: {} }
+        studentA: { engToChi: [], chiToEng: {}, spelling: [], listening: [], readingCloze: [] },
+        studentB: { engToChi: [], chiToEng: {}, spelling: [], listening: [], readingCloze: [] }
     };
 
     for (let i = 1; i < lines.length; i++) {
@@ -1016,6 +1016,33 @@ else if (mode === "listening") {
   result.studentA.listening.push(entry);
   result.studentB.listening.push(entry);
 }
+
+else if (mode === "readingCloze") {
+  if (columns.length < 7) continue;
+
+  const category = columns[1] || "";
+  const target = columns[2] || "";
+  const passage = columns[3] || "";
+  const answer = columns[4] || "";
+  const options = (columns[5] || "").split("|").map(x => x.trim()).filter(Boolean);
+  const level = columns[6] || "";
+
+  if (!passage || !answer || options.length === 0) continue;
+
+  const clozeEntry = {
+    mode: "readingCloze",
+    category: category,
+    target: target,
+    passage: passage,
+    answer: answer,
+    options: options,
+    level: level
+  };
+
+  result.studentA.readingCloze.push(clozeEntry);
+  result.studentB.readingCloze.push(clozeEntry);
+}
+      
     }   
     return result;
 }
@@ -1047,17 +1074,15 @@ fetchGameData();
       queue: [], currentItem: null, correct: 0, incorrect: 0, answeredCount: 0, totalTarget: 0, hasAnsweredCurrent: false, optionsReady: false
     };
 
-    const readingClozeState = {
-      queue: [],
-      currentItem: null,
-      correct: 0,
-      incorrect: 0,
-      answeredCount: 0,
-      totalTarget: 0,
-      hasAnsweredCurrent: false,
-      currentBlankIndex: 0,
-      userAnswers: []
-    };
+const readingClozeState = {
+  queue: [],
+  currentItem: null,
+  correct: 0,
+  incorrect: 0,
+  answeredCount: 0,
+  totalTarget: 0,
+  hasAnsweredCurrent: false
+};
 
     function showScreen(screenId) {
       document.querySelectorAll('.screen').forEach(screen => {
@@ -1799,31 +1824,43 @@ function loadNextSpellingQuestion() {
     }
 
     // 短文填充
-    function startReadingClozeGame() {
-      currentMode = "短文填充";
-      currentCategory = "";
+    function startReadingClozeGame(selectedCategory = "", selectedLevel = "") {
+  currentMode = "短文填充";
+  currentCategory = selectedCategory || "";
 
-      const rawList = getReadingClozeQueueForStudent(currentStudentKey);
-      const shuffled = shuffleArray(rawList);
-      const target = Math.min(15, shuffled.length);
+  let rawList = GAME_DATA[currentStudentKey]?.readingCloze || [];
 
-      readingClozeState.queue = shuffled.slice(0, target);
-      readingClozeState.currentItem = null;
-      readingClozeState.correct = 0;
-      readingClozeState.incorrect = 0;
-      readingClozeState.answeredCount = 0;
-      readingClozeState.totalTarget = target;
-      readingClozeState.hasAnsweredCurrent = false;
-      readingClozeState.currentBlankIndex = 0;
-      readingClozeState.userAnswers = [];
+  if (selectedCategory) {
+    rawList = rawList.filter(item => item.category === selectedCategory);
+  }
 
-      document.getElementById('readingcloze-question-total').innerText = target;
-      document.getElementById('readingcloze-correct').innerText = 0;
-      document.getElementById('readingcloze-incorrect').innerText = 0;
+  if (selectedLevel) {
+    rawList = rawList.filter(item => item.level === selectedLevel);
+  }
 
-      showScreen('readingcloze-screen');
-      loadNextReadingClozeQuestion();
-    }
+  const shuffled = shuffleArray(rawList);
+  const target = Math.min(15, shuffled.length);
+
+  if (target === 0) {
+    alert("短文填充題目未載入，或沒有符合條件的 readingCloze 題目！");
+    return;
+  }
+
+  readingClozeState.queue = shuffled.slice(0, target);
+  readingClozeState.currentItem = null;
+  readingClozeState.correct = 0;
+  readingClozeState.incorrect = 0;
+  readingClozeState.answeredCount = 0;
+  readingClozeState.totalTarget = target;
+  readingClozeState.hasAnsweredCurrent = false;
+
+  document.getElementById('readingcloze-question-total').innerText = target;
+  document.getElementById('readingcloze-correct').innerText = 0;
+  document.getElementById('readingcloze-incorrect').innerText = 0;
+
+  showScreen('readingcloze-screen');
+  loadNextReadingClozeQuestion();
+}
 
     function getReadingClozeQueueForStudent(studentKey) {
       const bank = GAME_DATA[studentKey].readingCloze || {};
@@ -1834,83 +1871,85 @@ function loadNextSpellingQuestion() {
     }
 
     function loadNextReadingClozeQuestion() {
-      if (readingClozeState.queue.length === 0) {
-        finishReadingClozeGame();
-        return;
-      }
+  if (!readingClozeState.queue || readingClozeState.queue.length === 0) {
+    finishReadingClozeGame();
+    return;
+  }
 
-      readingClozeState.currentItem = readingClozeState.queue[0];
-      readingClozeState.hasAnsweredCurrent = false;
-      readingClozeState.currentBlankIndex = 0;
-      readingClozeState.userAnswers = new Array(readingClozeState.currentItem.blanks.length).fill("");
+  readingClozeState.currentItem = readingClozeState.queue[0];
+  readingClozeState.hasAnsweredCurrent = false;
 
-      document.getElementById('readingcloze-question-no').innerText = readingClozeState.answeredCount + 1;
-      document.getElementById('readingcloze-correct').innerText = readingClozeState.correct;
-      document.getElementById('readingcloze-incorrect').innerText = readingClozeState.incorrect;
+  document.getElementById('readingcloze-question-no').innerText = readingClozeState.answeredCount + 1;
+  document.getElementById('readingcloze-correct').innerText = readingClozeState.correct;
+  document.getElementById('readingcloze-incorrect').innerText = readingClozeState.incorrect;
 
-      renderReadingClozePassage();
-      renderReadingClozeOptions();
-      hideReadingClozeResult();
-      toggleAnswerArea('readingcloze', false);
-      currentPassageForSpeech = "";
-    }
+  renderReadingClozePassage();
+  renderReadingClozeOptions();
+  hideReadingClozeResult();
+  toggleAnswerArea('readingcloze', false);
+  currentPassageForSpeech = "";
+}
 
-    function renderReadingClozePassage() {
-      const passageEl = document.getElementById('readingcloze-passage');
-      const parts = readingClozeState.currentItem.passage.split('___');
-
-      let html = '';
-      for (let i = 0; i < parts.length; i++) {
-        html += escapeHtml(parts[i]);
-
-        if (i < readingClozeState.currentItem.blanks.length) {
-          const answer = readingClozeState.userAnswers[i];
-          let cls = 'blank-pill ';
-          if (answer) {
-            cls += 'filled';
-          } else if (i === readingClozeState.currentBlankIndex && !readingClozeState.hasAnsweredCurrent) {
-            cls += 'active empty';
-          } else {
-            cls += 'empty';
-          }
-
-          html += `<span class="${cls}">${answer ? escapeHtml(answer) : '____'}</span>`;
-        }
-      }
-
-      passageEl.innerHTML = html;
-    }
+function renderReadingClozePassage() {
+  const passageEl = document.getElementById('readingcloze-passage');
+  passageEl.innerText = readingClozeState.currentItem.passage || "";
+}
 
     function renderReadingClozeOptions() {
-      const optionsContainer = document.getElementById('readingcloze-options');
-      optionsContainer.innerHTML = "";
+  const optionsContainer = document.getElementById('readingcloze-options');
+  optionsContainer.innerHTML = "";
 
-      const currentBlank = readingClozeState.currentItem.blanks[readingClozeState.currentBlankIndex];
-      const finalOptions = buildLimitedOptions(currentBlank.options || [], currentBlank.answer);
+  const current = readingClozeState.currentItem;
+  const finalOptions = shuffleArray(current.options || []);
 
-      finalOptions.forEach(option => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.innerText = option;
-        btn.onclick = () => handleReadingClozeChoice(option);
-        optionsContainer.appendChild(btn);
-      });
+  finalOptions.forEach(option => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerText = option;
+    btn.onclick = () => handleReadingClozeChoice(option, btn);
+    optionsContainer.appendChild(btn);
+  });
+}
+
+    function handleReadingClozeChoice(choice, clickedButton) {
+  if (readingClozeState.hasAnsweredCurrent) return;
+
+  readingClozeState.hasAnsweredCurrent = true;
+
+  const current = readingClozeState.currentItem;
+  const isCorrect = choice.trim().toLowerCase() === current.answer.trim().toLowerCase();
+
+  const optionButtons = document.querySelectorAll('#readingcloze-options .option-btn');
+  optionButtons.forEach(btn => {
+    btn.disabled = true;
+    if (btn.innerText.trim().toLowerCase() === current.answer.trim().toLowerCase()) {
+      btn.classList.add('correct');
     }
-
-    function handleReadingClozeChoice(choice) {
-      if (readingClozeState.hasAnsweredCurrent) return;
-
-      readingClozeState.userAnswers[readingClozeState.currentBlankIndex] = choice;
-
-      if (readingClozeState.currentBlankIndex < readingClozeState.userAnswers.length - 1) {
-        readingClozeState.currentBlankIndex += 1;
-        renderReadingClozePassage();
-        renderReadingClozeOptions();
-      } else {
-        renderReadingClozePassage();
-        checkReadingClozeAnswer();
-      }
+    if (!isCorrect && btn === clickedButton) {
+      btn.classList.add('wrong');
     }
+  });
+
+  currentPassageForSpeech = current.passage.replace('___', current.answer);
+
+  if (isCorrect) {
+    readingClozeState.correct += 1;
+    readingClozeState.answeredCount += 1;
+    readingClozeState.queue.shift();
+    showReadingClozeResult(true, currentPassageForSpeech, "");
+  } else {
+    readingClozeState.incorrect += 1;
+    const wrongItem = readingClozeState.queue.shift();
+    readingClozeState.queue.push(wrongItem);
+    showReadingClozeResult(false, currentPassageForSpeech, "");
+  }
+
+  document.getElementById('readingcloze-correct').innerText = readingClozeState.correct;
+  document.getElementById('readingcloze-incorrect').innerText = readingClozeState.incorrect;
+
+  toggleAnswerArea('readingcloze', true);
+  scrollToResult('readingcloze-result-box');
+}
 
     function checkReadingClozeAnswer() {
       readingClozeState.hasAnsweredCurrent = true;
