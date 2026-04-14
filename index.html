@@ -877,6 +877,29 @@
  // --- Google Sheets 連接代碼開始 ---
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQaMfqjweCgX2tOByTliUyUwg0vW0pOog7lEKwc4ZB64T_RlfIoOYvj9o7XgdFTPe0v0t0lAKgVfbmt/pub?output=csv";
 
+function populateReadingClozeCategories() {
+  const select = document.getElementById('readingcloze-category-select');
+  if (!select) return;
+
+  const rawList = GAME_DATA[currentStudentKey]?.readingCloze || [];
+  const categories = [...new Set(rawList.map(item => item.category).filter(Boolean))];
+
+  select.innerHTML = '<option value="">全部類別</option>';
+
+  categories.forEach(cat => {
+    const option = document.createElement('option');
+    option.value = cat;
+    option.innerText = cat;
+    select.appendChild(option);
+  });
+}
+
+function restartReadingClozeWithCategory() {
+  const select = document.getElementById('readingcloze-category-select');
+  const selectedCategory = select ? select.value : "";
+  startReadingClozeGame(selectedCategory);
+}
+    
 function setStudentButtonsDisabled(disabled) {
   const btnA = document.getElementById('student-a-btn');
   const btnB = document.getElementById('student-b-btn');
@@ -937,6 +960,12 @@ if (columns.length < 4) continue;
 const mode = columns[0];
 const cat = columns[1] || "";
 
+<div class="controls-row" style="margin-bottom:12px;">
+  <select id="readingcloze-category-select" onchange="restartReadingClozeWithCategory()" class="action-btn">
+    <option value="">全部類別</option>
+  </select>
+</div>
+      
         // --- 核心邏輯：根據表格 A 欄 (mode) 分配數據 ---
 if (mode === "engToChi") {
   const question = columns[2];
@@ -1859,8 +1888,13 @@ function loadNextSpellingQuestion() {
   document.getElementById('readingcloze-incorrect').innerText = 0;
 
   showScreen('readingcloze-screen');
+  populateReadingClozeCategories();
+
+  const select = document.getElementById('readingcloze-category-select');
+  if (select) select.value = selectedCategory || "";
+
   loadNextReadingClozeQuestion();
-}
+  }
 
     function getReadingClozeQueueForStudent(studentKey) {
       const bank = GAME_DATA[studentKey].readingCloze || {};
