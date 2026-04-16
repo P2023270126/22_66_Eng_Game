@@ -1885,7 +1885,31 @@ function renderSpellingOptions() {
     }
 
     // 短文填充
-    function startReadingClozeGame(selectedCategory = "", selectedLevel = "") {
+
+  function populateReadingClozeCategories() {
+  const select = document.getElementById('readingcloze-category-select');
+  if (!select) return;
+
+  const rawList = GAME_DATA?.readingCloze || [];
+  const categories = [...new Set(rawList.map(item => item.category).filter(Boolean))];
+
+  select.innerHTML = '<option value="">全部類別</option>';
+
+  categories.forEach(cat => {
+    const option = document.createElement('option');
+    option.value = cat;
+    option.innerText = cat;
+    select.appendChild(option);
+  });
+}
+
+function restartReadingClozeByCategory() {
+  const select = document.getElementById('readingcloze-category-select');
+  const selectedCategory = select ? select.value : "";
+  startReadingClozeGame(selectedCategory);
+}
+
+  function startReadingClozeGame(selectedCategory = "", selectedLevel = "") {
   currentMode = "短文填充";
   currentCategory = selectedCategory || "";
 
