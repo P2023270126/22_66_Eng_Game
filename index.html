@@ -1657,22 +1657,26 @@ function loadNextSpellingQuestion() {
       document.getElementById('spelling-text').innerText = built;
     }
 
-    function renderSpellingOptions() {
-      const optionsContainer = document.getElementById('spelling-options');
-      optionsContainer.innerHTML = "";
+function renderSpellingOptions() {
+  const optionsContainer = document.getElementById('spelling-options');
+  optionsContainer.innerHTML = "";
 
-      const correctLetter = spellingState.currentItem.missingLetters[spellingState.currentBlankIndex];
-      const sourceOptions = spellingState.currentItem.options || [];
-      const finalOptions = buildLimitedOptions(sourceOptions, correctLetter);
+  const correctLetter = spellingState.currentItem.missingLetters[spellingState.currentBlankIndex];
+  const sourceOptions = spellingState.currentItem.options || [];
+  const finalOptions = buildLimitedOptions(sourceOptions, correctLetter);
 
-      finalOptions.forEach(option => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.innerText = option;
-        btn.onclick = () => handleSpellingLetter(option);
-        optionsContainer.appendChild(btn);
-      });
-    }
+  console.log("correctLetter =", correctLetter);
+  console.log("sourceOptions =", sourceOptions);
+  console.log("finalOptions =", finalOptions);
+
+  finalOptions.forEach(option => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerText = option;
+    btn.onclick = () => handleSpellingLetter(option);
+    optionsContainer.appendChild(btn);
+  });
+}
 
     function handleSpellingLetter(letter) {
       if (spellingState.hasAnsweredCurrent) return;
