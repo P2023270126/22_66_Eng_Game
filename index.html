@@ -1364,10 +1364,10 @@ function loadNextEngToChiQuestion() {
 
   engToChiState.currentItem = engToChiState.queue[0];
   engToChiState.hasAnsweredCurrent = false;
-  currentWordForSpeech = engToChiState.currentItem.word || "";
+  currentWordForSpeech = engToChiState.fullWord || "";
 
   document.getElementById('engtochi-question-no').innerText = engToChiState.answeredCount + 1;
-  document.getElementById('engtochi-word').innerText = engToChiState.currentItem.word || "";
+  document.getElementById('engtochi-word').innerText = engToChiState.fullWord || "";
   document.getElementById('engtochi-correct').innerText = engToChiState.correct;
   document.getElementById('engtochi-incorrect').innerText = engToChiState.incorrect;
 
@@ -1419,12 +1419,12 @@ function loadNextEngToChiQuestion() {
         engToChiState.correct += 1;
         engToChiState.answeredCount += 1;
         engToChiState.queue.shift();
-        showEngToChiResult(true, current.word + " = " + current.answer, "");
+        showEngToChiResult(true, fullWord + " = " + current.answer, "");
       } else {
         engToChiState.incorrect += 1;
         const wrongItem = engToChiState.queue.shift();
         engToChiState.queue.push(wrongItem);
-        showEngToChiResult(false, current.word + " = " + current.answer, "");
+        showEngToChiResult(false, fullWord + " = " + current.answer, "");
       }
 
       document.getElementById('engtochi-correct').innerText = engToChiState.correct;
@@ -1510,10 +1510,10 @@ function loadNextEngToChiQuestion() {
       const current = chiToEngState.currentItem;
       const allWords = GAME_DATA.chiToEng[currentCategory]
         .map(item => item.word)
-        .filter(word => word !== current.word);
+        .filter(word => word !== fullWord);
 
       const wrongWords = shuffleArray(allWords).slice(0, 3);
-      const finalOptions = shuffleArray([current.word, ...wrongWords]);
+      const finalOptions = shuffleArray([fullWord, ...wrongWords]);
 
       finalOptions.forEach(option => {
         const btn = document.createElement('button');
@@ -1529,34 +1529,34 @@ function loadNextEngToChiQuestion() {
       chiToEngState.hasAnsweredCurrent = true;
 
       const current = chiToEngState.currentItem;
-      const isCorrect = selectedWord === current.word;
+      const isCorrect = selectedWord === fullWord;
       const optionButtons = document.querySelectorAll('#chitoeng-options .option-btn');
 
       optionButtons.forEach(btn => {
         btn.disabled = true;
-        if (btn.innerText.toLowerCase() === current.word.toLowerCase()) btn.classList.add('correct');
+        if (btn.innerText.toLowerCase() === fullWord.toLowerCase()) btn.classList.add('correct');
         if (!isCorrect && btn === clickedButton) btn.classList.add('wrong');
       });
 
-      currentWordForSpeech = current.word;
+      currentWordForSpeech = fullWord;
 
       if (isCorrect) {
         chiToEngState.correct += 1;
         chiToEngState.answeredCount += 1;
         chiToEngState.queue.shift();
-        showChiToEngResult(true, titleCaseWord(current.word), "");
+        showChiToEngResult(true, titleCaseWord(fullWord), "");
       } else {
         chiToEngState.incorrect += 1;
         const wrongItem = chiToEngState.queue.shift();
         chiToEngState.queue.push(wrongItem);
-        showChiToEngResult(false, titleCaseWord(current.word), "");
+        showChiToEngResult(false, titleCaseWord(fullWord), "");
       }
 
       document.getElementById('chitoeng-correct').innerText = chiToEngState.correct;
       document.getElementById('chitoeng-incorrect').innerText = chiToEngState.incorrect;
 
       toggleAnswerArea('chitoeng', true);
-      setTimeout(() => speakWord(current.word), 150);
+      setTimeout(() => speakWord(fullWord), 150);
       scrollToResult('chitoeng-result-box');
     }
 
@@ -1636,7 +1636,7 @@ function loadNextSpellingQuestion() {
   hideSpellingResult();
   toggleAnswerArea('spelling', false);
 
-  setTimeout(() => speakWord(spellingState.currentItem.word), 200);
+  setTimeout(() => speakWord(spellingState.currentItem.fullWord), 200);
 }
 
     function renderSpellingText() {
@@ -1706,12 +1706,12 @@ function renderSpellingOptions() {
         spellingState.correct += 1;
         spellingState.answeredCount += 1;
         spellingState.queue.shift();
-        showSpellingResult(true, current.word, "");
+        showSpellingResult(true, current.fullWord, "");
       } else {
         spellingState.incorrect += 1;
         const wrongItem = spellingState.queue.shift();
         spellingState.queue.push(wrongItem);
-        showSpellingResult(false, current.word, "");
+        showSpellingResult(false, current.fullWord, "");
       }
 
       document.getElementById('spelling-correct').innerText = spellingState.correct;
@@ -1785,7 +1785,7 @@ function renderSpellingOptions() {
       listeningState.currentItem = listeningState.queue[0];
       listeningState.hasAnsweredCurrent = false;
       listeningState.optionsReady = false;
-      currentWordForSpeech = listeningState.currentItem.word;
+      currentWordForSpeech = listeningState.fullWord;
 
       document.getElementById('listening-question-no').innerText = listeningState.answeredCount + 1;
       document.getElementById('listening-correct').innerText = listeningState.correct;
@@ -1812,10 +1812,10 @@ function renderSpellingOptions() {
       const current = listeningState.currentItem;
       const allWords = GAME_DATA.listening
         .map(item => item.word)
-        .filter(word => word !== current.word);
+        .filter(word => word !== fullWord);
 
       const wrongWords = shuffleArray(allWords).slice(0, 3);
-      const finalOptions = shuffleArray([current.word, ...wrongWords]);
+      const finalOptions = shuffleArray([fullWord, ...wrongWords]);
 
       finalOptions.forEach(option => {
         const btn = document.createElement('button');
@@ -1831,27 +1831,27 @@ function renderSpellingOptions() {
       listeningState.hasAnsweredCurrent = true;
 
       const current = listeningState.currentItem;
-      const isCorrect = selectedWord === current.word;
+      const isCorrect = selectedWord === fullWord;
       const optionButtons = document.querySelectorAll('#listening-options .option-btn');
 
       optionButtons.forEach(btn => {
         btn.disabled = true;
-        if (btn.innerText.toLowerCase() === current.word.toLowerCase()) btn.classList.add('correct');
+        if (btn.innerText.toLowerCase() === fullWord.toLowerCase()) btn.classList.add('correct');
         if (!isCorrect && btn === clickedButton) btn.classList.add('wrong');
       });
 
-      currentWordForSpeech = current.word;
+      currentWordForSpeech = fullWord;
 
       if (isCorrect) {
         listeningState.correct += 1;
         listeningState.answeredCount += 1;
         listeningState.queue.shift();
-        showListeningResult(true, titleCaseWord(current.word), "");
+        showListeningResult(true, titleCaseWord(fullWord), "");
       } else {
         listeningState.incorrect += 1;
         const wrongItem = listeningState.queue.shift();
         listeningState.queue.push(wrongItem);
-        showListeningResult(false, titleCaseWord(current.word), "");
+        showListeningResult(false, titleCaseWord(fullWord), "");
       }
 
       document.getElementById('listening-correct').innerText = listeningState.correct;
