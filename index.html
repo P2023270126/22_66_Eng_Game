@@ -102,11 +102,12 @@
       gap: 16px;
     }
 
-    .grid-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      max-width: 700px;
-      margin: 0 auto;
-    }
+.grid-2 {
+  grid-template-columns: repeat(2, minmax(320px, 320px));
+  justify-content: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
 
     .grid-5 {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -933,9 +934,25 @@ function getCurrentSheetUrl() {
   return SHEET_URLS[currentStudentKey];
 }
 
+function setStudentButtonsDisabled(disabled) {
+  const btnA = document.getElementById('student-a-btn');
+  const btnB = document.getElementById('student-b-btn');
+
+  if (btnA) btnA.disabled = disabled;
+  if (btnB) btnB.disabled = disabled;
+}
+
+function updateLoadingText(text) {
+  const loadingEl = document.getElementById('loading-text');
+  if (loadingEl) {
+    loadingEl.innerText = text;
+  }
+}
+    
 async function fetchGameData() {
   setStudentButtonsDisabled(true);
   updateLoadingText("正在載入題庫，請稍候...");
+  
 
   try {
     const response = await fetch(getCurrentSheetUrl());
