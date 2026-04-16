@@ -952,9 +952,11 @@ function updateLoadingText(text) {
 async function fetchGameData() {
   setStudentButtonsDisabled(true);
   updateLoadingText("正在載入題庫，請稍候...");
-  
 
   try {
+    console.log("正在讀取學生:", currentStudentKey);
+    console.log("sheet url =", getCurrentSheetUrl());
+
     const response = await fetch(getCurrentSheetUrl());
     const csvText = await response.text();
 
