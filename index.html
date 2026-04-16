@@ -551,18 +551,17 @@
   正在載入題庫，請稍候...
 </p>
       
-      <div class="grid-2">
-        <button id="student-a-btn" class="card-btn student-a" onclick="selectStudent('studentA', '66 Jasper')">
-          <span class="icon">👦</span>
-          <div class="title">66 Jasper</div>
-          <div class="desc">進入 66 Jasper 專屬練習模式</div>
-        </button>
+      <button id="student-a-btn" class="card-btn student-a" onclick="selectStudent('A', '66 Jasper')">
+  <span class="icon">🧒</span>
+  <div class="title">66 Jasper</div>
+  <div class="desc">進入 66 Jasper 專屬練習模式</div>
+</button>
 
-        <button id="student-b-btn" class="card-btn student-b" onclick="selectStudent('studentB', '22 Jolie')">
-          <span class="icon">👧</span>
-          <div class="title">22 Jolie</div>
-          <div class="desc">進入 22 Jolie 專屬練習模式</div>
-        </button>
+<button id="student-b-btn" class="card-btn student-b" onclick="selectStudent('B', '22 Jolie')">
+  <span class="icon">👧</span>
+  <div class="title">22 Jolie</div>
+  <div class="desc">進入 22 Jolie 專屬練習模式</div>
+</button>
       </div>
     </section>
 
@@ -920,204 +919,163 @@
   </div>
 
   <script>
- // --- Google Sheets 連接代碼開始 ---
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQaMfqjweCgX2tOByTliUyUwg0vW0pOog7lEKwc4ZB64T_RlfIoOYvj9o7XgdFTPe0v0t0lAKgVfbmt/pub?output=csv";
+// --- Google Sheets 連接代碼開始 ---
+const SHEET_URLS = {
+  A: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQaMfqjweCgX2tOByTliUyUwg0vW0pOog7lEKwc4ZB64T_RlfIoOYvj9o7XgdFTPe0v0t0lAKgVfbmt/pub?output=csv",
+  B: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTGgx7SbwXbFkwHaQwdaBK5gobw91Z55t-1Qrwbh_r9njx8p5-wZqLspSo6Focy/pub?output=csv"
+};
 
-function populateReadingClozeCategories() {
-  const select = document.getElementById('readingcloze-category-select');
-  if (!select) return;
-
-  const rawList = GAME_DATA[currentStudentKey]?.readingCloze || [];
-  const categories = [...new Set(rawList.map(item => item.category).filter(Boolean))];
-
-  select.innerHTML = '<option value="">全部類別</option>';
-
-  categories.forEach(cat => {
-    const option = document.createElement('option');
-    option.value = cat;
-    option.innerText = cat;
-    select.appendChild(option);
-  });
+function getCurrentSheetUrl() {
+  if (!currentStudentKey) {
+    alert("請先選擇學生");
+    throw new Error("currentStudentKey 未設定");
+  }
+  return SHEET_URLS[currentStudentKey];
 }
 
-function restartReadingClozeWithCategory() {
-  const select = document.getElementById('readingcloze-category-select');
-  const selectedCategory = select ? select.value : "";
-  startReadingClozeGame(selectedCategory);
-}
-    
-function setStudentButtonsDisabled(disabled) {
-  const btnA = document.getElementById('student-a-btn');
-  const btnB = document.getElementById('student-b-btn');
-
-  if (btnA) btnA.disabled = disabled;
-  if (btnB) btnB.disabled = disabled;
-
-  if (btnA) btnA.style.opacity = disabled ? '0.6' : '1';
-  if (btnB) btnB.style.opacity = disabled ? '0.6' : '1';
-  if (btnA) btnA.style.cursor = disabled ? 'not-allowed' : 'pointer';
-  if (btnB) btnB.style.cursor = disabled ? 'not-allowed' : 'pointer';
-}
-
-function updateLoadingText(text) {
-  const el = document.getElementById('loading-text');
-  if (el) el.innerText = text;
-}
-    
 async function fetchGameData() {
   setStudentButtonsDisabled(true);
   updateLoadingText("正在載入題庫，請稍候...");
 
   try {
-    const response = await fetch(SHEET_URL);
+    const response = await fetch(getCurrentSheetUrl());
     const csvText = await response.text();
+
     console.log("CSV 已下載，長度 =", csvText.length);
     console.log("準備進入 parseCSV");
 
     window.GAME_DATA = parseCSV(csvText);
 
     console.log("parseCSV 已完成");
-    console.log("數據加載成功！", window.GAME_DATA);
+    console.log("數據加載成功!", window.GAME_DATA);
 
     setStudentButtonsDisabled(false);
     updateLoadingText("題庫已準備好，請選擇學生。");
 
-    if (currentStudentKey) {
-      console.log("重新初始化當前視窗數據");
-    }
   } catch (error) {
     console.error("讀取失敗:", error);
     updateLoadingText("題庫載入失敗，請重新整理頁面。");
     alert("無法讀取 Google 表格，請檢查網路或發佈設定！");
+    setStudentButtonsDisabled(false);
   }
 }
+
 function parseCSV(csv) {
-    const lines = csv.split(/\r?\n/);
-    const result = {
-        studentA: { engToChi: [], chiToEng: {}, spelling: [], listening: [], readingCloze: [] },
-        studentB: { engToChi: [], chiToEng: {}, spelling: [], listening: [], readingCloze: [] }
-    };
+  const lines = csv.split(/\r?\n/);
+  const result = {
+    engToChi: [],
+    chiToEng: {},
+    spelling: [],
+    listening: [],
+    readingCloze: []
+  };
 
-    for (let i = 1; i < lines.length; i++) {
-if (!lines[i].trim()) continue;
-const columns = lines[i].split(',').map(c => c.trim());
-if (columns.length < 4) continue;
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
 
-const mode = columns[0];
-const cat = columns[1] || "";
-      
-        // --- 核心邏輯：根據表格 A 欄 (mode) 分配數據 ---
-if (mode === "engToChi") {
-  const question = columns[2];
-  const answer = columns[3];
-  const entry = { word: question, answer: answer };
+    const columns = lines[i].split(',').map(c => c.trim());
+    if (columns.length < 4) continue;
 
-  result.studentA.engToChi.push(entry);
-  result.studentB.engToChi.push(entry);
-}
+    const mode = columns[0];
+    const cat = columns[1] || "";
 
-else if (mode === "chiToEng") {
-  const question = columns[2];
-  const answer = columns[3];
-  const category = cat || "other";
+    if (mode === "engToChi") {
+      const question = columns[2];
+      const answer = columns[3];
+      const entry = { word: question, answer: answer };
+      result.engToChi.push(entry);
+    }
 
-  if (!result.studentA.chiToEng[category]) result.studentA.chiToEng[category] = [];
-  if (!result.studentB.chiToEng[category]) result.studentB.chiToEng[category] = [];
+    else if (mode === "chiToEng") {
+      const question = columns[2];
+      const answer = columns[3];
+      const category = cat || "other";
 
-  result.studentA.chiToEng[category].push({ word: answer, answer: question });
-  result.studentB.chiToEng[category].push({ word: answer, answer: question });
-}
+      if (!result.chiToEng[category]) result.chiToEng[category] = [];
+      result.chiToEng[category].push({ word: answer, answer: question });
+    }
 
-else if (mode === "spelling") {
-  if (columns.length < 5) continue;
+    else if (mode === "spelling") {
+      if (columns.length < 5) continue;
 
-  const hintChinese = columns[2];
-  const display = columns[3];
-  const fullWord = columns[4];
+      const hintChinese = columns[2];
+      const display = columns[3];
+      const fullWord = columns[4];
 
-  if (!hintChinese || !display || !fullWord) continue;
+      if (!hintChinese || !display || !fullWord) continue;
 
-  const missingLetters = [];
-  let answerIndex = 0;
+      const missingLetters = [];
+      let answerIndex = 0;
 
-  for (let j = 0; j < display.length; j++) {
-    if (display[j] === "_") {
-      if (answerIndex < fullWord.length) {
-        missingLetters.push(fullWord[answerIndex]);
+      for (let j = 0; j < display.length; j++) {
+        if (display[j] === "_") {
+          if (answerIndex < fullWord.length) {
+            missingLetters.push(fullWord[answerIndex]);
+          }
+          answerIndex++;
+        } else {
+          answerIndex++;
+        }
       }
-      answerIndex++;
-    } else {
-      answerIndex++;
+
+      const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+      const wrongLetters = shuffleArray(
+        alphabet.filter(letter => !missingLetters.includes(letter.toLowerCase()))
+      ).slice(0, Math.max(0, 6 - missingLetters.length));
+
+      const options = shuffleArray([...missingLetters, ...wrongLetters]);
+
+      const spellingEntry = {
+        hintChinese,
+        display,
+        fullWord,
+        missingLetters,
+        options
+      };
+
+      result.spelling.push(spellingEntry);
+    }
+
+    else if (mode === "listening") {
+      const question = columns[2]; // 中文
+      const answer = columns[3];   // 英文
+
+      const entry = {
+        word: answer,
+        answer: question
+      };
+
+      result.listening.push(entry);
+    }
+
+    else if (mode === "readingCloze") {
+      if (columns.length < 7) continue;
+
+      const category = columns[1] || "";
+      const target = columns[2] || "";
+      const passage = columns[3] || "";
+      const answer = columns[4] || "";
+      const options = (columns[5] || "").split("|").map(x => x.trim()).filter(Boolean);
+      const level = columns[6] || "";
+
+      const blankCount = (passage.match(/___/g) || []).length;
+
+      const clozeEntry = {
+        category,
+        target,
+        passage,
+        answer,
+        options,
+        level,
+        blankCount
+      };
+
+      result.readingCloze.push(clozeEntry);
     }
   }
 
-  const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
-
-  const options = missingLetters.map(correctLetter => {
-    const wrongs = shuffleArray(
-      alphabet.filter(ch => ch.toLowerCase() !== String(correctLetter).toLowerCase())
-    ).slice(0, 3);
-
-    return shuffleArray([correctLetter, ...wrongs]);
-  });
-
-  const spellingEntry = {
-    hintChinese: hintChinese,
-    word: fullWord,
-    display: display,
-    missingLetters: missingLetters,
-    options: options
-  };
-
-  result.studentA.spelling.push(spellingEntry);
-  result.studentB.spelling.push(spellingEntry);
-}  
-        
-else if (mode === "listening") {
-  const question = columns[2]; // 中文
-  const answer = columns[3];   // 英文
-
-  const entry = {
-    word: answer,     // 播音、選項顯示都用英文
-    answer: question  // 如之後想顯示中文可備用
-  };
-
-  result.studentA.listening.push(entry);
-  result.studentB.listening.push(entry);
+  return result;
 }
-
-else if (mode === "readingCloze") {
-  if (columns.length < 7) continue;
-
-  const category = columns[1] || "";
-  const target = columns[2] || "";
-  const passage = columns[3] || "";
-  const answer = columns[4] || "";
-  const options = (columns[5] || "").split("|").map(x => x.trim()).filter(Boolean);
-  const level = columns[6] || "";
-
-  if (!passage || !answer || options.length === 0) continue;
-
-  const clozeEntry = {
-    mode: "readingCloze",
-    category: category,
-    target: target,
-    passage: passage,
-    answer: answer,
-    options: options,
-    level: level
-  };
-
-  result.studentA.readingCloze.push(clozeEntry);
-  result.studentB.readingCloze.push(clozeEntry);
-}
-      
-    }   
-    return result;
-}
-
-// 啟動加載
-fetchGameData();
 // --- Google Sheets 連接代碼結束 ---   
     
     let currentStudentKey = null;
@@ -1288,9 +1246,7 @@ const readingClozeState = {
       }
     }
 
-function selectStudent(studentKey, studentLabel) {
-  if (!window.GAME_DATA) return;
-
+async function selectStudent(studentKey, studentLabel) {
   currentStudentKey = studentKey;
   currentStudentLabel = studentLabel;
 
@@ -1299,16 +1255,28 @@ function selectStudent(studentKey, studentLabel) {
     titleElem.innerText = studentLabel + ' 練習模式';
   }
 
-  showScreen('mode-screen');
+  try {
+    await fetchGameData();
+
+    // 如有需要，可在載入後更新 reading cloze 類別
+    if (typeof populateReadingClozeCategories === "function") {
+      populateReadingClozeCategories();
+    }
+
+    showScreen('mode-screen');
+  } catch (error) {
+    console.error("選擇學生後載入題庫失敗:", error);
+  }
 }
     
-    function backToStudentScreen() {
-      currentStudentKey = null;
-      currentStudentLabel = "";
-      currentMode = "";
-      currentCategory = "";
-      showScreen('student-screen');
-    }
+function backToStudentScreen() {
+  currentStudentKey = null;
+  currentStudentLabel = "";
+  currentMode = "";
+  currentCategory = "";
+
+  showScreen('student-screen');
+}
 
     function returnToModeMenu() {
       currentMode = "";
@@ -1348,7 +1316,7 @@ function enterMode(mode) {
       currentMode = "英轉中";
       currentCategory = "";
 
-      const rawList = GAME_DATA[currentStudentKey].engToChi;
+      const rawList = GAME_DATA.engToChi;
       const shuffled = shuffleArray(rawList);
       const target = Math.min(15, shuffled.length);
 
@@ -1397,7 +1365,7 @@ function loadNextEngToChiQuestion() {
       optionsContainer.innerHTML = "";
 
       const current = engToChiState.currentItem;
-      const allAnswers = GAME_DATA[currentStudentKey].engToChi
+      const allAnswers = GAME_DATA.engToChi
         .map(item => item.answer)
         .filter(answer => answer !== current.answer);
 
@@ -1474,7 +1442,7 @@ function loadNextEngToChiQuestion() {
       currentMode = "中轉英";
       currentCategory = categoryKey;
 
-      const rawList = GAME_DATA[currentStudentKey].chiToEng[categoryKey] || [];
+      const rawList = GAME_DATA.chiToEng[categoryKey] || [];
       const shuffled = shuffleArray(rawList);
       const target = Math.min(15, shuffled.length);
 
@@ -1520,7 +1488,7 @@ function loadNextEngToChiQuestion() {
       optionsContainer.innerHTML = "";
 
       const current = chiToEngState.currentItem;
-      const allWords = GAME_DATA[currentStudentKey].chiToEng[currentCategory]
+      const allWords = GAME_DATA.chiToEng[currentCategory]
         .map(item => item.word)
         .filter(word => word !== current.word);
 
@@ -1600,7 +1568,7 @@ function loadNextEngToChiQuestion() {
       currentMode = "拼字練習";
       currentCategory = "";
 
-      const rawList = GAME_DATA[currentStudentKey].spelling || [];
+      const rawList = GAME_DATA.spelling || [];
       const shuffled = shuffleArray(rawList);
       const target = Math.min(15, shuffled.length);
 
@@ -1763,7 +1731,7 @@ function loadNextSpellingQuestion() {
       currentMode = "聽音選字";
       currentCategory = "";
 
-      const rawList = GAME_DATA[currentStudentKey].listening || [];
+      const rawList = GAME_DATA.listening || [];
       const shuffled = shuffleArray(rawList);
       const target = Math.min(15, shuffled.length);
 
@@ -1818,7 +1786,7 @@ function loadNextSpellingQuestion() {
       optionsContainer.innerHTML = "";
 
       const current = listeningState.currentItem;
-      const allWords = GAME_DATA[currentStudentKey].listening
+      const allWords = GAME_DATA.listening
         .map(item => item.word)
         .filter(word => word !== current.word);
 
@@ -1897,7 +1865,7 @@ function loadNextSpellingQuestion() {
   currentMode = "短文填充";
   currentCategory = selectedCategory || "";
 
-  let rawList = GAME_DATA[currentStudentKey]?.readingCloze || [];
+  let rawList = GAME_DATA?.readingCloze || [];
 
   if (selectedCategory) {
     rawList = rawList.filter(item => item.category === selectedCategory);
@@ -1936,13 +1904,10 @@ function loadNextSpellingQuestion() {
   loadNextReadingClozeQuestion();
   }
 
-    function getReadingClozeQueueForStudent(studentKey) {
-      const bank = GAME_DATA[studentKey].readingCloze || {};
-      const one = shuffleArray(bank.oneBlank || []).slice(0, 5);
-      const two = shuffleArray(bank.twoBlanks || []).slice(0, 5);
-      const three = shuffleArray(bank.threeBlanks || []).slice(0, 5);
-      return [...one, ...two, ...three];
-    }
+function getReadingClozeQueue() {
+  const bank = GAME_DATA.readingCloze || [];
+  return shuffleArray(bank).slice(0, 15);
+}
 
     function loadNextReadingClozeQuestion() {
   if (!readingClozeState.queue || readingClozeState.queue.length === 0) {
