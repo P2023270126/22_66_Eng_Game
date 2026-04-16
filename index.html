@@ -1662,7 +1662,7 @@ function loadNextSpellingQuestion() {
       optionsContainer.innerHTML = "";
 
       const correctLetter = spellingState.currentItem.missingLetters[spellingState.currentBlankIndex];
-      const sourceOptions = spellingState.currentItem.options[spellingState.currentBlankIndex] || [];
+      const sourceOptions = spellingState.currentItem.options || [];
       const finalOptions = buildLimitedOptions(sourceOptions, correctLetter);
 
       finalOptions.forEach(option => {
