@@ -1625,7 +1625,7 @@ function loadNextSpellingQuestion() {
   document.getElementById('spelling-hint').innerText =
     spellingState.currentItem.hintChinese || "";
 
-  currentWordForSpeech = spellingState.currentItem.word;
+  currentWordForSpeech = spellingState.currentItem.fullWord;
 
   document.getElementById('spelling-question-no').innerText = spellingState.answeredCount + 1;
   document.getElementById('spelling-correct').innerText = spellingState.correct;
