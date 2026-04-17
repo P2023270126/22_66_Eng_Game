@@ -1776,41 +1776,43 @@ function buildChiToEngOptions() {
   });
 }
 
-    function handleChiToEngAnswer(selectedWord, clickedButton) {
-      if (chiToEngState.hasAnsweredCurrent) return;
-      chiToEngState.hasAnsweredCurrent = true;
+function handleChiToEngAnswer(choice, clickedButton) {
+  if (chiToEngState.hasAnsweredCurrent) return;
 
-      const current = chiToEngState.currentItem;
-      const isCorrect = selectedWord === fullWord;
-      const optionButtons = document.querySelectorAll('#chitoeng-options .option-btn');
+  chiToEngState.hasAnsweredCurrent = true;
 
-      optionButtons.forEach(btn => {
-        btn.disabled = true;
-        if (btn.innerText.toLowerCase() === fullWord.toLowerCase()) btn.classList.add('correct');
-        if (!isCorrect && btn === clickedButton) btn.classList.add('wrong');
-      });
+  const current = chiToEngState.currentItem;
+  const isCorrect = choice === current.word;
 
-      currentWordForSpeech = fullWord;
-
-      if (isCorrect) {
-        chiToEngState.correct += 1;
-        chiToEngState.answeredCount += 1;
-        chiToEngState.queue.shift();
-        showChiToEngResult(true, titleCaseWord(fullWord), "");
-      } else {
-        chiToEngState.incorrect += 1;
-        const wrongItem = chiToEngState.queue.shift();
-        chiToEngState.queue.push(wrongItem);
-        showChiToEngResult(false, titleCaseWord(fullWord), "");
-      }
-
-      document.getElementById('chitoeng-correct').innerText = chiToEngState.correct;
-      document.getElementById('chitoeng-incorrect').innerText = chiToEngState.incorrect;
-
-      toggleAnswerArea('chitoeng', true);
-      setTimeout(() => speakWord(fullWord), 150);
-      scrollToResult('chitoeng-result-box');
+  const optionButtons = document.querySelectorAll('#chitoeng-options .option-btn');
+  optionButtons.forEach(btn => {
+    btn.disabled = true;
+    if (btn.innerText === titleCaseWord(current.word)) {
+      btn.classList.add('correct');
     }
+    if (!isCorrect && btn === clickedButton) {
+      btn.classList.add('wrong');
+    }
+  });
+
+  if (isCorrect) {
+    chiToEngState.correct += 1;
+    chiToEngState.answeredCount += 1;
+    chiToEngState.queue.shift();
+    showChiToEngResult(true, current.word, "");
+  } else {
+    chiToEngState.incorrect += 1;
+    const wrongItem = chiToEngState.queue.shift();
+    chiToEngState.queue.push(wrongItem);
+    showChiToEngResult(false, current.word, "");
+  }
+
+  document.getElementById('chitoeng-correct').innerText = chiToEngState.correct;
+  document.getElementById('chitoeng-incorrect').innerText = chiToEngState.incorrect;
+
+  toggleAnswerArea('chitoeng', true);
+  scrollToResult('chitoeng-result-box');
+}
 
     function showChiToEngResult(isSuccess, answerText, noteText) {
       const box = document.getElementById('chitoeng-result-box');
