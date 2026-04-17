@@ -979,6 +979,34 @@ async function fetchGameData() {
   }
 }
 
+function splitCSVLine(line) {
+  const result = [];
+  let current = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    const nextChar = line[i + 1];
+
+    if (char === '"') {
+      if (inQuotes && nextChar === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === ',' && !inQuotes) {
+      result.push(current.trim());
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+
+  result.push(current.trim());
+  return result;
+}
+    
 function parseCSV(csv) {
   const lines = csv.split(/\r?\n/);
   const result = {
@@ -992,7 +1020,7 @@ function parseCSV(csv) {
   for (let i = 1; i < lines.length; i++) {
     if (!lines[i].trim()) continue;
 
-    const columns = lines[i].split(',').map(c => c.trim());
+    const columns = splitCSVLine(lines[i]);
     if (columns.length < 4) continue;
 
     const mode = columns[0];
