@@ -1755,26 +1755,26 @@ function handleEngToChiAnswer(choice, clickedButton) {
       toggleAnswerArea('chitoeng', false);
     }
 
-    function buildChiToEngOptions() {
-      const optionsContainer = document.getElementById('chitoeng-options');
-      optionsContainer.innerHTML = "";
+function buildChiToEngOptions() {
+  const optionsContainer = document.getElementById('chitoeng-options');
+  optionsContainer.innerHTML = "";
 
-      const current = chiToEngState.currentItem;
-      const allWords = GAME_DATA.chiToEng[currentCategory]
-        .map(item => item.word)
-        .filter(word => word !== fullWord);
+  const current = chiToEngState.currentItem;
+  const allWords = (GAME_DATA.chiToEng[currentCategory] || [])
+    .map(item => item.word)
+    .filter(word => word !== current.word);
 
-      const wrongWords = shuffleArray(allWords).slice(0, 3);
-      const finalOptions = shuffleArray([fullWord, ...wrongWords]);
+  const wrongWords = shuffleArray(allWords).slice(0, 3);
+  const finalOptions = shuffleArray([current.word, ...wrongWords]);
 
-      finalOptions.forEach(option => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.innerText = titleCaseWord(option);
-        btn.onclick = () => handleChiToEngAnswer(option, btn);
-        optionsContainer.appendChild(btn);
-      });
-    }
+  finalOptions.forEach(option => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerText = titleCaseWord(option);
+    btn.onclick = () => handleChiToEngAnswer(option, btn);
+    optionsContainer.appendChild(btn);
+  });
+}
 
     function handleChiToEngAnswer(selectedWord, clickedButton) {
       if (chiToEngState.hasAnsweredCurrent) return;
@@ -2057,26 +2057,26 @@ function renderSpellingOptions() {
       }, 180);
     }
 
-    function buildListeningOptions() {
-      const optionsContainer = document.getElementById('listening-options');
-      optionsContainer.innerHTML = "";
+function buildListeningOptions() {
+  const optionsContainer = document.getElementById('listening-options');
+  optionsContainer.innerHTML = "";
 
-      const current = listeningState.currentItem;
-      const allWords = GAME_DATA.listening
-        .map(item => item.word)
-        .filter(word => word !== fullWord);
+  const current = listeningState.currentItem;
+  const allWords = GAME_DATA.listening
+    .map(item => item.word)
+    .filter(word => word !== current.word);
 
-      const wrongWords = shuffleArray(allWords).slice(0, 3);
-      const finalOptions = shuffleArray([fullWord, ...wrongWords]);
+  const wrongWords = shuffleArray(allWords).slice(0, 3);
+  const finalOptions = shuffleArray([current.word, ...wrongWords]);
 
-      finalOptions.forEach(option => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.innerText = titleCaseWord(option);
-        btn.onclick = () => handleListeningAnswer(option, btn);
-        optionsContainer.appendChild(btn);
-      });
-    }
+  finalOptions.forEach(option => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerText = titleCaseWord(option);
+    btn.onclick = () => handleListeningAnswer(option, btn);
+    optionsContainer.appendChild(btn);
+  });
+}
 
     function handleListeningAnswer(selectedWord, clickedButton) {
       if (!listeningState.optionsReady || listeningState.hasAnsweredCurrent) return;
