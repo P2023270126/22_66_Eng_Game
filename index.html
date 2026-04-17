@@ -1735,25 +1735,25 @@ function handleEngToChiAnswer(choice, clickedButton) {
       loadNextChiToEngQuestion();
     }
 
-    function loadNextChiToEngQuestion() {
-      if (chiToEngState.queue.length === 0) {
-        finishChiToEngGame();
-        return;
-      }
+function loadNextChiToEngQuestion() {
+  if (chiToEngState.queue.length === 0) {
+    finishChiToEngGame();
+    return;
+  }
 
-      chiToEngState.currentItem = chiToEngState.queue[0];
-      chiToEngState.hasAnsweredCurrent = false;
-      currentWordForSpeech = "";
+  chiToEngState.currentItem = chiToEngState.queue[0];
+  chiToEngState.hasAnsweredCurrent = false;
+  currentWordForSpeech = chiToEngState.currentItem.word;
 
-      document.getElementById('chitoeng-question-no').innerText = chiToEngState.answeredCount + 1;
-      document.getElementById('chitoeng-word').innerText = chiToEngState.currentItem.answer;
-      document.getElementById('chitoeng-correct').innerText = chiToEngState.correct;
-      document.getElementById('chitoeng-incorrect').innerText = chiToEngState.incorrect;
+  document.getElementById('chitoeng-question-no').innerText = chiToEngState.answeredCount + 1;
+  document.getElementById('chitoeng-word').innerText = chiToEngState.currentItem.answer;
+  document.getElementById('chitoeng-correct').innerText = chiToEngState.correct;
+  document.getElementById('chitoeng-incorrect').innerText = chiToEngState.incorrect;
 
-      buildChiToEngOptions();
-      hideChiToEngResult();
-      toggleAnswerArea('chitoeng', false);
-    }
+  buildChiToEngOptions();
+  hideChiToEngResult();
+  toggleAnswerArea('chitoeng', false);
+}
 
 function buildChiToEngOptions() {
   const optionsContainer = document.getElementById('chitoeng-options');
@@ -1795,17 +1795,19 @@ function handleChiToEngAnswer(choice, clickedButton) {
     }
   });
 
-  if (isCorrect) {
-    chiToEngState.correct += 1;
-    chiToEngState.answeredCount += 1;
-    chiToEngState.queue.shift();
-    showChiToEngResult(true, current.word, "");
-  } else {
-    chiToEngState.incorrect += 1;
-    const wrongItem = chiToEngState.queue.shift();
-    chiToEngState.queue.push(wrongItem);
-    showChiToEngResult(false, current.word, "");
-  }
+if (isCorrect) {
+  chiToEngState.correct += 1;
+  chiToEngState.answeredCount += 1;
+  chiToEngState.queue.shift();
+  currentWordForSpeech = current.word;
+  showChiToEngResult(true, current.word, "");
+} else {
+  chiToEngState.incorrect += 1;
+  const wrongItem = chiToEngState.queue.shift();
+  chiToEngState.queue.push(wrongItem);
+  currentWordForSpeech = current.word;
+  showChiToEngResult(false, current.word, "");
+}
 
   document.getElementById('chitoeng-correct').innerText = chiToEngState.correct;
   document.getElementById('chitoeng-incorrect').innerText = chiToEngState.incorrect;
