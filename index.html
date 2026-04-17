@@ -103,10 +103,13 @@
     }
 
 .grid-2 {
-  grid-template-columns: repeat(2, minmax(320px, 320px));
+  display: grid;
+  grid-template-columns: repeat(2, 320px);
   justify-content: center;
-  max-width: 700px;
-  margin: 0 auto;
+  justify-items: center;
+  gap: 24px;
+  margin: 30px auto 0;
+  width: 100%;
 }
 
     .grid-5 {
@@ -170,11 +173,11 @@
       box-shadow: 0 10px 24px rgba(0,0,0,0.1);
     }
 
-    .card-btn {
-      padding: 22px 18px;
-      text-align: center;
-      min-height: 150px;
-    }
+.card-btn {
+  width: 320px;
+  min-height: 210px;
+  margin: 0;
+}
 
     .card-btn .icon {
       font-size: 2rem;
