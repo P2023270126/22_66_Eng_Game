@@ -94,6 +94,24 @@
       font-size: 1rem;
     }
 
+.student-grid {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 24px;
+  flex-wrap: nowrap;
+  width: 100%;
+  max-width: 640px;
+  margin: 30px auto 0;
+}
+
+.student-grid .card-btn {
+  width: 294px;
+  min-height: 161px;
+  margin: 0;
+  flex: 0 0 294px;
+}
+    
 .grid-2,
 .grid-5,
 .grid-6 {
@@ -571,19 +589,20 @@
 <p id="loading-text" style="text-align:center; color:#48BB78; font-weight:2500; font-size: 1.8rem; margin: 16px 0 22px;">
   正在載入題庫，請稍候...
 </p>
-      
-      <button id="student-a-btn" class="card-btn student-a" onclick="selectStudent('A', '66 Jasper')">
-  <span class="icon">🧒</span>
-  <div class="title">66 Jasper</div>
-  <div class="desc">進入 66 Jasper 專屬練習模式</div>
-</button>
 
-<button id="student-b-btn" class="card-btn student-b" onclick="selectStudent('B', '22 Jolie')">
-  <span class="icon">👧</span>
-  <div class="title">22 Jolie</div>
-  <div class="desc">進入 22 Jolie 專屬練習模式</div>
-</button>
-      </div>
+<div class="student-grid">
+  <button id="student-a-btn" class="card-btn student-a" onclick="selectStudent('A', '66 Jasper')">
+    <span class="icon">👦</span>
+    <div class="title">66 Jasper</div>
+    <div class="desc">進入 66 Jasper 專屬練習模式</div>
+  </button>
+
+  <button id="student-b-btn" class="card-btn student-b" onclick="selectStudent('B', '22 Jolie')">
+    <span class="icon">👧</span>
+    <div class="title">22 Jolie</div>
+    <div class="desc">進入 22 Jolie 專屬練習模式</div>
+  </button>
+</div>
     </section>
 
     <section id="mode-screen" class="screen">
