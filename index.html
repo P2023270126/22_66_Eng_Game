@@ -103,33 +103,42 @@
 .options-grid {
   display: grid;
   gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 900px;
+  margin: 0 auto;
 }
-.grid-2 {
+
+/* 首頁學生選擇 */
+#student-screen .grid-2 {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 24px;
+  flex-wrap: nowrap;
+  width: 100%;
+  max-width: 640px;
+  margin: 30px auto 0;
+}
+
+/* 練習模式頁 */
+#mode-screen .grid-5 {
   display: flex;
   justify-content: center;
   align-items: stretch;
   gap: 24px;
   flex-wrap: wrap;
   width: 100%;
+  max-width: 960px;
   margin: 30px auto 0;
 }
 
-.grid-5 {
+#mode-screen .grid-5 .row-2 {
+  width: 100%;
   display: flex;
   justify-content: center;
-  align-items: stretch;
   gap: 24px;
   flex-wrap: wrap;
-  width: 100%;
-  margin: 30px auto 0;
 }
-
-    .grid-5 .row-2 {
-      grid-column: 1 / -1;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-    }
 
 .grid-6 {
   display: flex;
@@ -140,12 +149,6 @@
   width: 100%;
   margin: 30px auto 0;
 }
-
-    .options-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      max-width: 900px;
-      margin: 0 auto;
-    }
 
     .card-btn,
     .option-btn,
@@ -191,6 +194,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  flex: 0 0 294px;
 }
     .card-btn .icon {
       font-size: 2rem;
