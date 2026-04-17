@@ -2081,42 +2081,45 @@ function buildListeningOptions() {
   });
 }
 
-    function handleListeningAnswer(selectedWord, clickedButton) {
-      if (!listeningState.optionsReady || listeningState.hasAnsweredCurrent) return;
-      listeningState.hasAnsweredCurrent = true;
+function handleListeningAnswer(choice, clickedButton) {
+  if (listeningState.hasAnsweredCurrent || !listeningState.optionsReady) return;
 
-      const current = listeningState.currentItem;
-      const isCorrect = selectedWord === fullWord;
-      const optionButtons = document.querySelectorAll('#listening-options .option-btn');
+  listeningState.hasAnsweredCurrent = true;
 
-      optionButtons.forEach(btn => {
-        btn.disabled = true;
-        if (btn.innerText.toLowerCase() === fullWord.toLowerCase()) btn.classList.add('correct');
-        if (!isCorrect && btn === clickedButton) btn.classList.add('wrong');
-      });
+  const current = listeningState.currentItem;
+  const isCorrect = choice === current.word;
 
-      currentWordForSpeech = fullWord;
-
-     if (isCorrect) {
-  listeningState.correct += 1;
-  listeningState.answeredCount += 1;
-  listeningState.queue.shift();
-  currentWordForSpeech = current.word;
-  showListeningResult(true, current.word, "");
-} else {
-  listeningState.incorrect += 1;
-  const wrongItem = listeningState.queue.shift();
-  listeningState.queue.push(wrongItem);
-  currentWordForSpeech = current.word;
-  showListeningResult(false, current.word, "");
-}
-
-      document.getElementById('listening-correct').innerText = listeningState.correct;
-      document.getElementById('listening-incorrect').innerText = listeningState.incorrect;
-
-      toggleAnswerArea('listening', true);
-      scrollToResult('listening-result-box');
+  const optionButtons = document.querySelectorAll('#listening-options .option-btn');
+  optionButtons.forEach(btn => {
+    btn.disabled = true;
+    if (btn.innerText === titleCaseWord(current.word)) {
+      btn.classList.add('correct');
     }
+    if (!isCorrect && btn === clickedButton) {
+      btn.classList.add('wrong');
+    }
+  });
+
+  if (isCorrect) {
+    listeningState.correct += 1;
+    listeningState.answeredCount += 1;
+    listeningState.queue.shift();
+    currentWordForSpeech = current.word;
+    showListeningResult(true, current.word, "");
+  } else {
+    listeningState.incorrect += 1;
+    const wrongItem = listeningState.queue.shift();
+    listeningState.queue.push(wrongItem);
+    currentWordForSpeech = current.word;
+    showListeningResult(false, current.word, "");
+  }
+
+  document.getElementById('listening-correct').innerText = listeningState.correct;
+  document.getElementById('listening-incorrect').innerText = listeningState.incorrect;
+
+  toggleAnswerArea('listening', true);
+  scrollToResult('listening-result-box');
+}
 
     function showListeningResult(isSuccess, answerText, noteText) {
       const box = document.getElementById('listening-result-box');
