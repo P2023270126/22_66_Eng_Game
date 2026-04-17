@@ -879,7 +879,7 @@
         </div>
 
         <div class="controls-row" style="margin-bottom:14px;">
-          <select id="readingcloze-category-select" onchange="restartReadingClozeWithCategory()" class="action-btn">
+          <select id="readingcloze-category-select" onchange="restartReadingClozeByCategory()" class="action-btn">
             <option value="">全部類別</option>
           </select>
         </div>
@@ -1364,10 +1364,10 @@ function loadNextEngToChiQuestion() {
 
   engToChiState.currentItem = engToChiState.queue[0];
   engToChiState.hasAnsweredCurrent = false;
-  currentWordForSpeech = engToChiState.fullWord || "";
+  currentWordForSpeech = engToChiState.currentItem.word;
 
   document.getElementById('engtochi-question-no').innerText = engToChiState.answeredCount + 1;
-  document.getElementById('engtochi-word').innerText = engToChiState.fullWord || "";
+  document.getElementById('engtochi-word').innerText = engToChiState.currentItem.word;
   document.getElementById('engtochi-correct').innerText = engToChiState.correct;
   document.getElementById('engtochi-incorrect').innerText = engToChiState.incorrect;
 
@@ -1401,38 +1401,43 @@ function loadNextEngToChiQuestion() {
       });
     }
 
-    function handleEngToChiAnswer(selectedAnswer, clickedButton) {
-      if (engToChiState.hasAnsweredCurrent) return;
-      engToChiState.hasAnsweredCurrent = true;
+function handleEngToChiAnswer(choice, clickedButton) {
+  if (engToChiState.hasAnsweredCurrent) return;
 
-      const current = engToChiState.currentItem;
-      const isCorrect = selectedAnswer === current.answer;
-      const optionButtons = document.querySelectorAll('#engtochi-options .option-btn');
+  engToChiState.hasAnsweredCurrent = true;
 
-      optionButtons.forEach(btn => {
-        btn.disabled = true;
-        if (btn.innerText === current.answer) btn.classList.add('correct');
-        if (!isCorrect && btn === clickedButton) btn.classList.add('wrong');
-      });
+  const current = engToChiState.currentItem;
+  const isCorrect = choice === current.answer;
 
-      if (isCorrect) {
-        engToChiState.correct += 1;
-        engToChiState.answeredCount += 1;
-        engToChiState.queue.shift();
-        showEngToChiResult(true, fullWord + " = " + current.answer, "");
-      } else {
-        engToChiState.incorrect += 1;
-        const wrongItem = engToChiState.queue.shift();
-        engToChiState.queue.push(wrongItem);
-        showEngToChiResult(false, fullWord + " = " + current.answer, "");
-      }
-
-      document.getElementById('engtochi-correct').innerText = engToChiState.correct;
-      document.getElementById('engtochi-incorrect').innerText = engToChiState.incorrect;
-
-      toggleAnswerArea('engtochi', true);
-      scrollToResult('engtochi-result-box');
+  const optionButtons = document.querySelectorAll('#engtochi-options .option-btn');
+  optionButtons.forEach(btn => {
+    btn.disabled = true;
+    if (btn.innerText === current.answer) {
+      btn.classList.add('correct');
     }
+    if (!isCorrect && btn === clickedButton) {
+      btn.classList.add('wrong');
+    }
+  });
+
+  if (isCorrect) {
+    engToChiState.correct += 1;
+    engToChiState.answeredCount += 1;
+    engToChiState.queue.shift();
+    showEngToChiResult(true, current.answer, "");
+  } else {
+    engToChiState.incorrect += 1;
+    const wrongItem = engToChiState.queue.shift();
+    engToChiState.queue.push(wrongItem);
+    showEngToChiResult(false, current.answer, "");
+  }
+
+  document.getElementById('engtochi-correct').innerText = engToChiState.correct;
+  document.getElementById('engtochi-incorrect').innerText = engToChiState.incorrect;
+
+  toggleAnswerArea('engtochi', true);
+  scrollToResult('engtochi-result-box');
+}
 
     function showEngToChiResult(isSuccess, answerText, noteText) {
       const box = document.getElementById('engtochi-result-box');
