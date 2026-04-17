@@ -595,8 +595,10 @@
     margin: 14px 0 18px !important;
     line-height: 1.4;
     padding: 0 8px;
+    text-align: center;
   }
 
+  /* 首頁學生選擇 */
   .student-grid {
     display: flex;
     flex-direction: column;
@@ -607,29 +609,53 @@
   }
 
   .student-grid .card-btn {
-    width: min(320px, 92vw);
-    min-height: 150px;
+    width: min(300px, 92vw);
+    min-height: 145px;
     flex: none;
   }
 
-  .grid-5,
-  .grid-6 {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
+  /* 五個模式頁：上排 2 個，下排 3 個，全部縮細 */
+  #mode-screen .grid-5 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: center;
+    gap: 12px;
     width: 100%;
-    margin: 20px auto 0;
+    max-width: 330px;
+    margin: 18px auto 0;
   }
 
-  .grid-5 .row-2 {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
+  #mode-screen .grid-5 .row-2 {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
     width: 100%;
   }
 
+  #mode-screen .card-btn {
+    width: 100%;
+    min-height: 88px;
+    padding: 10px 8px;
+    border-radius: 14px;
+  }
+
+  #mode-screen .card-btn .icon {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+  }
+
+  #mode-screen .card-btn .title {
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+  }
+
+  #mode-screen .card-btn .desc {
+    font-size: 0.72rem;
+    line-height: 1.2;
+  }
+
+  /* 其他一般卡片 */
   .card-btn {
     width: min(320px, 92vw);
     min-height: 150px;
